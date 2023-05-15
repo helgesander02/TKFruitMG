@@ -1,17 +1,136 @@
-import tkinter
 import customtkinter
+from company import Company_Main_Frame
+from order import Order_Main_Frame
+from accounting import Accounting_Main_Frame
+from printdata import Printdata_Main_Frame
 
-customtkinter.set_appearance_mode("System")  # Modes: system (default), light, dark
-customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
+class Select_Frame(customtkinter.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.copymsg = None
 
-app = customtkinter.CTk()  # create CTk window like you do with the Tk window
-app.geometry("400x240")
+        self.btn_home = customtkinter.CTkButton(self ,text="home" ,width=160 ,height=160,
+                                                                fg_color=("#5b5a5a"), corner_radius=0)
+        self.btn_home.grid(row=0, column=0)
 
-def button_function():
-    print("button pressed")
+        self.btn_copy = customtkinter.CTkButton(self ,text="copy" ,width=160 ,height=160,
+                                                                fg_color=("#5b5a5a"), corner_radius=0,
+                                                                command=self.open_copy)
+        self.btn_copy.grid(row=0, column=1)
 
-# Use CTkButton instead of tkinter Button
-button = customtkinter.CTkButton(master=app, text="CTkButton", command=button_function)
-button.place(relx=0.5, rely=0.5, anchor=tkinter.CENTER)
+        self.lab_other = customtkinter.CTkLabel(self, width = kwargs["width"]-320, height = kwargs["height"], 
+                                                                fg_color=("#5b5a5a"), text="")
 
+        self.lab_other.grid(row=0, column=2)
+
+    def open_copy(self):
+            if self.copymsg is None or not self.copymsg.winfo_exists():
+                self.copymsg = CopyMsg(self)
+                self.copymsg.focus()
+            else:
+                self.copymsg.focus()
+
+class Home_Main_Frame(customtkinter.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.btn_company = customtkinter.CTkButton(self ,text="Company" ,width=160 ,height=160 ,
+                                                                fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
+        self.btn_company.place(x=300, y=160)
+
+        self.btn_order = customtkinter.CTkButton(self ,text="Order" ,width=160 ,height=160 ,
+                                                                fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
+        self.btn_order.place(x=300, y=480)
+
+        self.btn_accounting = customtkinter.CTkButton(self ,text="Accounting" ,width=160 ,height=160 ,
+                                                                fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
+        self.btn_accounting.place(x=540, y=160)
+
+        self.btn_print = customtkinter.CTkButton(self ,text="Print" ,width=160 ,height=160 ,
+                                                                fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
+        self.btn_print.place(x=540, y=480)
+
+        self.btn_other1 = customtkinter.CTkButton(self ,text="" ,width=160 ,height=160 ,
+                                                                fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
+        self.btn_other1.place(x=780, y=160)
+
+        self.btn_other2 = customtkinter.CTkButton(self ,text="" ,width=160 ,height=160 ,
+                                                                fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
+        self.btn_other2.place(x=780, y=480)
+
+        self.btn_other3 = customtkinter.CTkButton(self ,text="" ,width=160 ,height=160 ,
+                                                                fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
+        self.btn_other3.place(x=1020, y=160)
+
+        self.btn_other4 = customtkinter.CTkButton(self ,text="" ,width=160 ,height=160 ,
+                                                                fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
+        self.btn_other4.place(x=1020, y=480)
+    
+
+class CopyMsg(customtkinter.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.geometry("400x300")
+
+        self.label = customtkinter.CTkLabel(self, text="是否要處存資料?")
+        self.label.pack(padx=20, pady=20)      
+
+class App(customtkinter.CTk):
+    def __init__(self):
+        super().__init__()
+        w = self.winfo_screenwidth()
+        h = self.winfo_screenheight()
+        self.geometry(f"{w}x{h}+{0}+{0}")
+        self.title("Management System")
+
+        #Select_Frame
+        self.Select_Frame = Select_Frame(self, width = w , height = 160, fg_color=("#5b5a5a"))
+        self.Select_Frame.grid(row=0, column=0, sticky='nsew')
+        #Main_Frame
+        self.Main_Frame = Home_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
+        self.Main_Frame.grid(row=1, column=0, sticky='nsew')
+
+        #關掉主要的Frame開啟對應btn的Frame
+        #隱藏的方法 https://www.delftstack.com/zh-tw/howto/python-tkinter/how-to-hide-recover-and-delete-tkinter-widgets/
+        def open_home (event):   
+            self.Main_Frame.grid_forget()
+            self.Main_Frame = Home_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
+            self.Main_Frame.grid(row=1, column=0,sticky='nsew')
+            self.Main_Frame.btn_company.bind("<Button-1>", open_company)
+            self.Main_Frame.btn_order.bind("<Button-1>", open_order)
+            self.Main_Frame.btn_accounting.bind("<Button-1>", open_accounting)
+            self.Main_Frame.btn_print.bind("<Button-1>", open_printdata)
+
+        def open_company (event):   
+            self.Main_Frame.grid_forget()
+            self.Main_Frame = Company_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
+            self.Main_Frame.grid(row=1, column=0,sticky='nsew')
+
+        def open_order (event):   
+            self.Main_Frame.grid_forget()
+            self.Main_Frame = Company_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
+            self.Main_Frame.grid(row=1, column=0,sticky='nsew')
+
+        def open_accounting (event):   
+            self.Main_Frame.grid_forget()
+            self.Main_Frame = Company_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
+            self.Main_Frame.grid(row=1, column=0,sticky='nsew')
+
+        def open_printdata (event):   
+            self.Main_Frame.grid_forget()
+            self.Main_Frame = Company_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
+            self.Main_Frame.grid(row=1, column=0,sticky='nsew')
+
+        #切換功能
+        #btn事件教學 https://ithelp.ithome.com.tw/articles/10275712?sc=iThomeR
+        self.Select_Frame.btn_home.bind("<Button-1>", open_home)
+        self.Main_Frame.btn_company.bind("<Button-1>", open_company)
+        self.Main_Frame.btn_order.bind("<Button-1>", open_order)
+        self.Main_Frame.btn_accounting.bind("<Button-1>", open_accounting)
+        self.Main_Frame.btn_print.bind("<Button-1>", open_printdata)
+    
+        
+
+
+app = App()
 app.mainloop()
