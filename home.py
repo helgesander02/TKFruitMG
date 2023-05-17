@@ -8,7 +8,6 @@ class Select_Frame(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.copymsg = None
-
         self.btn_home = customtkinter.CTkButton(self ,text="home" ,width=160 ,height=160,
                                                                 fg_color=("#5b5a5a"), corner_radius=0)
         self.btn_home.grid(row=0, column=0)
@@ -33,7 +32,7 @@ class Select_Frame(customtkinter.CTkFrame):
 class Home_Main_Frame(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-
+        #self.frame = customtkinter.CTkFrame(self, width=kwargs["width"],height=kwargs["height"],fg_color="green")
         self.btn_company = customtkinter.CTkButton(self ,text="Company" ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_company.place(x=300, y=160)
@@ -66,6 +65,7 @@ class Home_Main_Frame(customtkinter.CTkFrame):
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_other4.place(x=1020, y=480)
     
+        #self.frame.grid(row=0,column=0,columnspan=3)
 
 class CopyMsg(customtkinter.CTkToplevel):
     def __init__(self, *args, **kwargs):
