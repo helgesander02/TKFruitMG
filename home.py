@@ -41,21 +41,37 @@ class Home_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         #self.frame = ctk.CTkFrame(self, width=kwargs["width"],height=kwargs["height"],fg_color="green")
-        self.btn_company = ctk.CTkButton(self ,text="Company" ,width=160 ,height=160 ,
+        companyimg = Image.open(f"{os.getcwd()}\\img\\company.png")
+        Recompanyimg = ctk.CTkImage(companyimg,size=(60,60))
+        self.btn_company = ctk.CTkButton(self ,text="" ,image=Recompanyimg  ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_company.place(x=300, y=160)
+        self.lab_company = ctk.CTkLabel(self, text="公司管理", font=("microsoft yahei", 20, 'bold'))
+        self.lab_company.place(x=340, y=340)
 
-        self.btn_order = ctk.CTkButton(self ,text="Order" ,width=160 ,height=160 ,
+        orderimg = Image.open(f"{os.getcwd()}\\img\\order.png")
+        Reorderimg = ctk.CTkImage(orderimg,size=(60,60))
+        self.btn_order = ctk.CTkButton(self ,text="" ,image=Reorderimg ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_order.place(x=300, y=480)
+        self.lab_order = ctk.CTkLabel(self, text="訂貨單輸入", font=("microsoft yahei", 20, 'bold'))
+        self.lab_order.place(x=330, y=660)
 
-        self.btn_accounting = ctk.CTkButton(self ,text="Accounting" ,width=160 ,height=160 ,
+        accountingimg = Image.open(f"{os.getcwd()}\\img\\accounting.png")
+        Reaccountingimg = ctk.CTkImage(accountingimg,size=(60,60))
+        self.btn_accounting = ctk.CTkButton(self ,text="" ,image=Reaccountingimg ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_accounting.place(x=540, y=160)
+        self.lab_accounting = ctk.CTkLabel(self, text="入賬管理", font=("microsoft yahei", 20, 'bold'))
+        self.lab_accounting.place(x=580, y=340)
 
-        self.btn_print = ctk.CTkButton(self ,text="Print" ,width=160 ,height=160 ,
+        printimg = Image.open(f"{os.getcwd()}\\img\\print.png")
+        Reprintimg = ctk.CTkImage(printimg,size=(60,60))
+        self.btn_print = ctk.CTkButton(self ,text="" ,image=Reprintimg ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_print.place(x=540, y=480)
+        self.lab_print = ctk.CTkLabel(self, text="明細單列印", font=("microsoft yahei", 20, 'bold'))
+        self.lab_print.place(x=570, y=660)
 
         self.btn_other1 = ctk.CTkButton(self ,text="" ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
