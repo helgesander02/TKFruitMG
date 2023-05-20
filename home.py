@@ -1,23 +1,31 @@
-import customtkinter
-from company import Company_Main_Frame
-from order import Order_Main_Frame
-from accounting import Accounting_Main_Frame
-from printdata import Printdata_Main_Frame
+import customtkinter as ctk
+import os
+from PIL import ImageTk,Image
+from typing import Optional, Tuple, Union
 
-class Select_Frame(customtkinter.CTkFrame):
+from Company.company import Company_Main_Frame
+from Order.order import Order_Main_Frame
+from Accounting.accounting import Accounting_Main_Frame
+from Printdata.printdata import Printdata_Main_Frame
+
+class Select_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.copymsg = None
-        self.btn_home = customtkinter.CTkButton(self ,text="home" ,width=160 ,height=160,
+        homeimg = Image.open(f"{os.getcwd()}\\img\\home.png")
+        Rehomeimg = ctk.CTkImage(homeimg,size=(50,50))
+        self.btn_home = ctk.CTkButton(self ,text="" ,image=Rehomeimg ,width=160 ,height=160,
                                                                 fg_color=("#5b5a5a"), corner_radius=0)
         self.btn_home.grid(row=0, column=0)
 
-        self.btn_copy = customtkinter.CTkButton(self ,text="copy" ,width=160 ,height=160,
+        copyimg = Image.open(f"{os.getcwd()}\\img\\copy.png")
+        Recopyimg = ctk.CTkImage(copyimg,size=(50,50))
+        self.btn_copy = ctk.CTkButton(self ,text="" ,image=Recopyimg ,width=160 ,height=160,
                                                                 fg_color=("#5b5a5a"), corner_radius=0,
                                                                 command=self.open_copy)
         self.btn_copy.grid(row=0, column=1)
 
-        self.lab_other = customtkinter.CTkLabel(self, width = kwargs["width"]-320, height = kwargs["height"], 
+        self.lab_other = ctk.CTkLabel(self, width = kwargs["width"]-320, height = kwargs["height"], 
                                                                 fg_color=("#5b5a5a"), text="")
 
         self.lab_other.grid(row=0, column=2)
@@ -29,53 +37,53 @@ class Select_Frame(customtkinter.CTkFrame):
             else:
                 self.copymsg.focus()
 
-class Home_Main_Frame(customtkinter.CTkFrame):
+class Home_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        #self.frame = customtkinter.CTkFrame(self, width=kwargs["width"],height=kwargs["height"],fg_color="green")
-        self.btn_company = customtkinter.CTkButton(self ,text="Company" ,width=160 ,height=160 ,
+        #self.frame = ctk.CTkFrame(self, width=kwargs["width"],height=kwargs["height"],fg_color="green")
+        self.btn_company = ctk.CTkButton(self ,text="Company" ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_company.place(x=300, y=160)
 
-        self.btn_order = customtkinter.CTkButton(self ,text="Order" ,width=160 ,height=160 ,
+        self.btn_order = ctk.CTkButton(self ,text="Order" ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_order.place(x=300, y=480)
 
-        self.btn_accounting = customtkinter.CTkButton(self ,text="Accounting" ,width=160 ,height=160 ,
+        self.btn_accounting = ctk.CTkButton(self ,text="Accounting" ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_accounting.place(x=540, y=160)
 
-        self.btn_print = customtkinter.CTkButton(self ,text="Print" ,width=160 ,height=160 ,
+        self.btn_print = ctk.CTkButton(self ,text="Print" ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_print.place(x=540, y=480)
 
-        self.btn_other1 = customtkinter.CTkButton(self ,text="" ,width=160 ,height=160 ,
+        self.btn_other1 = ctk.CTkButton(self ,text="" ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_other1.place(x=780, y=160)
 
-        self.btn_other2 = customtkinter.CTkButton(self ,text="" ,width=160 ,height=160 ,
+        self.btn_other2 = ctk.CTkButton(self ,text="" ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_other2.place(x=780, y=480)
 
-        self.btn_other3 = customtkinter.CTkButton(self ,text="" ,width=160 ,height=160 ,
+        self.btn_other3 = ctk.CTkButton(self ,text="" ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_other3.place(x=1020, y=160)
 
-        self.btn_other4 = customtkinter.CTkButton(self ,text="" ,width=160 ,height=160 ,
+        self.btn_other4 = ctk.CTkButton(self ,text="" ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
         self.btn_other4.place(x=1020, y=480)
     
         #self.frame.grid(row=0,column=0,columnspan=3)
 
-class CopyMsg(customtkinter.CTkToplevel):
+class CopyMsg(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.geometry("400x300")
 
-        self.label = customtkinter.CTkLabel(self, text="是否要處存資料?")
+        self.label = ctk.CTkLabel(self, text="是否要處存資料?")
         self.label.pack(padx=20, pady=20)      
 
-class App(customtkinter.CTk):
+class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         w = self.winfo_screenwidth()

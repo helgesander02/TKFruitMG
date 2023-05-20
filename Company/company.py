@@ -1,5 +1,7 @@
-from typing import Optional, Tuple, Union
 import customtkinter as ctk
+import os
+
+from typing import Optional, Tuple, Union
 from PIL import ImageTk,Image
 
 class Top_level_add_customer(ctk.CTkToplevel):
@@ -23,19 +25,20 @@ class Top_level_edit_customer(ctk.CTkToplevel):
 class right_top_part_A(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        img = Image.open("C:\\Users\\User\\Desktop\\TKFruitMG\\search-icon-free-vector.jpg")
-        btn_image = ctk.CTkImage(img,size=(48,48))
+        
+        img = Image.open(f"{os.getcwd()}\\img\\search.png")
+        btn_image = ctk.CTkImage(img,size=(25,25))
         
         self.toplevel_window = None
-        text_1 = ctk.CTkTextbox(self,width=150,height=50,font=("Arial",24))
-        button_for_search = ctk.CTkButton(self,width=50,image=btn_image,text="",border_spacing=0,corner_radius=0)
-        button_1 = ctk.CTkButton(self,width=100,height=40,text="新增客戶",command=self.open_toplevel_add_customer)
-        button_2 = ctk.CTkButton(self,width=100,height=40,text="編輯客戶",command=self.open_toplevel_edit_customer)
+        text_1 = ctk.CTkTextbox(self,width=250,height=50,font=("Arial",24))
+        button_for_search = ctk.CTkButton(self,width=50,height=50,image=btn_image,text="",border_spacing=0,corner_radius=0)
+        button_1 = ctk.CTkButton(self,width=200,height=50,text="新增客戶",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_add_customer)
+        button_2 = ctk.CTkButton(self,width=200,height=50,text="編輯客戶",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_edit_customer)
         
         text_1.place(x=100,y=75)
-        button_for_search.place(x=255,y=75)
-        button_1.place(x=1550,y=45)
-        button_2.place(x=1550,y=95)
+        button_for_search.place(x=350,y=75)
+        button_1.place(x=900,y=40)
+        button_2.place(x=900,y=110)
     def open_toplevel_add_customer(self):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_add_customer(self)
@@ -50,17 +53,18 @@ class right_top_part_A(ctk.CTkFrame):
 class right_top_part_B(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        img = Image.open("C:\\Users\\User\\Desktop\\TKFruitMG\\search-icon-free-vector.jpg")
-        btn_image = ctk.CTkImage(img,size=(48,48))
-        text_1 = ctk.CTkTextbox(self,width=150,height=50,font=("Arial",24))
-        button_for_search = ctk.CTkButton(self,width=50,image=btn_image,text="",border_spacing=0,corner_radius=0)
-        button_1 = ctk.CTkButton(self,width=100,height=40,text="新增品項")
-        button_2 = ctk.CTkButton(self,width=100,height=40,text="編輯品項")
+        img = Image.open(f"{os.getcwd()}\\img\\search.png")
+        btn_image = ctk.CTkImage(img,size=(25,25))
+
+        text_1 = ctk.CTkTextbox(self,width=250,height=50,font=("Arial",24))
+        button_for_search = ctk.CTkButton(self,width=50,height=50,image=btn_image,text="",border_spacing=0,corner_radius=0)
+        button_1 = ctk.CTkButton(self,width=200,height=50,text="新增品項",font=("microsoft yahei", 14, 'bold'))
+        button_2 = ctk.CTkButton(self,width=200,height=50,text="編輯品項",font=("microsoft yahei", 14, 'bold'))
 
         text_1.place(x=100,y=75)
-        button_for_search.place(x=255,y=75)
-        button_1.place(x=1550,y=45)
-        button_2.place(x=1550,y=95)
+        button_for_search.place(x=350,y=75)
+        button_1.place(x=900,y=40)
+        button_2.place(x=900,y=110)
 
 class left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -101,34 +105,36 @@ class Company_Main_Frame(ctk.CTkFrame):
         def button_event_customer(event):
             self.right_bot.grid_forget()
             self.right_top.grid_forget()
-            self.right_top = right_top_part_A(self,width=1680,height=200,fg_color="pink")
-            self.right_bot = right_bot_part_A(self,width=1680,height=580,fg_color="pink")
+            self.right_top = right_top_part_A(self,width=1200,height=200,fg_color="#EEEEEE")
+            self.right_bot = right_bot_part_A(self,width=1200,height=500,fg_color="#EEEEEE")
             self.right_top.grid(row=0,column=1,padx=10,pady=10)
             self.right_bot.grid(row=1,column=1,padx=10,pady=10)
         
         def button_event_item(event):
             self.right_bot.grid_forget()
             self.right_top.grid_forget()
-            self.right_top = right_top_part_B(self,width=1680,height=200,fg_color="pink")
-            self.right_bot = right_bot_part_B(self,fg_color="pink",width=1680,height=580)
+            self.right_top = right_top_part_B(self,width=1200,height=200,fg_color="#EEEEEE")
+            self.right_bot = right_bot_part_B(self,width=1200,height=500,fg_color="#EEEEEE")
             self.right_top.grid(row=0,column=1,padx=10,pady=10)
             self.right_bot.grid(row=1,column=1,padx=10,pady=10)
 
         
         
         #left label
-        self.left = left_part(self, width=200,height=800,fg_color="pink")
-        self.right_top = right_top_part_A(self,width=1680,height=200,fg_color="pink")
-        self.right_bot = right_bot_part_A(self,width=1680,height=580,fg_color="pink")
+        self.left = left_part(self, width=250,height=750,fg_color="#EEEEEE")
+        self.right_top = right_top_part_A(self,width=1200,height=200,fg_color="#EEEEEE")
+        self.right_bot = right_bot_part_A(self,width=1200,height=500,fg_color="#EEEEEE")
 
         #button
-        self.botton_1 = ctk.CTkButton(self.left, width=160, 
+        self.botton_1 = ctk.CTkButton(self.left, width=200, 
                                       height=40, fg_color="white", 
-                                      text="客戶管理", text_color="black"
+                                      text="客戶管理", text_color="black",
+                                      font=("microsoft yahei", 16, 'bold')
                                       )
-        self.botton_2 = ctk.CTkButton(self.left, width=160, 
+        self.botton_2 = ctk.CTkButton(self.left, width=200, 
                                       height=40, fg_color="white", 
-                                      text="品項管理", text_color="black"
+                                      text="品項管理", text_color="black",
+                                      font=("microsoft yahei", 16, 'bold')
                                       )
 
         self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
