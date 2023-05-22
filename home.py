@@ -137,7 +137,7 @@ class App(ctk.CTk):
 
         def open_accounting (event):   
             self.Main_Frame.grid_forget()
-            self.Main_Frame = Company_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
+            self.Main_Frame = Accounting_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
             self.Main_Frame.grid(row=1, column=0,sticky='nsew')
 
         def open_printdata (event):   
