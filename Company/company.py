@@ -8,10 +8,36 @@ class Top_level_add_customer(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.geometry("200x300")
+        self.geometry("250x325")
 
-        label = ctk.CTkLabel(self, text="add customer", font=("Arial", 25))
-        label.pack(padx=20,pady=20)
+        confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
+        cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
+        customer_id = ctk.CTkLabel(self, text="客戶編號：")
+        name = ctk.CTkLabel(self, text="　　名稱：")
+        phone = ctk.CTkLabel(self, text="　　手機：")
+        address = ctk.CTkLabel(self, text="　　住址：")
+        remark = ctk.CTkLabel(self, text="　　備註：")
+
+        id_entry = ctk.CTkEntry(self,border_width=0)
+        name_entry = ctk.CTkEntry(self,border_width=0)
+        phone_entry = ctk.CTkEntry(self,border_width=0)
+        address_entry = ctk.CTkEntry(self,border_width=0)
+        remark_entry = ctk.CTkTextbox(self,width=140,height=80)
+
+        customer_id.place(x=20,y=20)
+        name.place(x=20,y=60)
+        phone.place(x=20,y=100)
+        address.place(x=20,y=140)
+        remark.place(x=20,y=180)
+
+        confirm.place(x=25,y=280)
+        cancel.place(x=145,y=280)
+
+        id_entry.place(x=85,y=20)
+        name_entry.place(x=85,y=60)
+        phone_entry.place(x=85,y=100)
+        address_entry.place(x=85,y=140)
+        remark_entry.place(x=85,y=180)
 
 class Top_level_edit_customer(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
@@ -42,12 +68,14 @@ class right_top_part_A(ctk.CTkFrame):
     def open_toplevel_add_customer(self):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_add_customer(self)
+            self.toplevel_window.attributes('-topmost','true')
         else:
             self.toplevel_window.focus()
 
     def open_toplevel_edit_customer(self):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_edit_customer(self)
+            self.toplevel_window.attributes('-topmost','true')
         else:
             self.toplevel_window.focus()
 class right_top_part_B(ctk.CTkFrame):
