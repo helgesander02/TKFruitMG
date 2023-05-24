@@ -1,2 +1,3 @@
 tk
 customtkinter
+psycopg2

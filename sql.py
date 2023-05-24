@@ -5,12 +5,18 @@ con =  psycopg2.connect(
     host = "localhost",
     database = "postgres",
     user = "postgres",
-    password = "admin"
+    password = "admin",
+    port = "5432"
 )
 cur = con.cursor()
 
-cur.execute("SELECT * from customer")
-rows = cur.fetchall()
 
-for row in rows:
-    print(f"id:{row[0]}\nname:{row[1]}\nphone:{row[2]}\naddress:{row[3]}\nremark:{row[4]}")
+query = '''CREATE TABLE customer1(
+	ID CHAR(50) NOT NULL PRIMARY KEY,
+	CUSTOMER_NAME CHAR(50) NOT NULL,
+	PHONE_NUMBER CHAR (50) NOT NULL,
+	ADDRESS CHAR (50) NOT NULL,
+	REMARK CHAR (50)
+);'''
+
+cur.execute(query=query)

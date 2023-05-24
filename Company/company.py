@@ -3,12 +3,21 @@ import os
 
 from typing import Optional, Tuple, Union
 from PIL import ImageTk,Image
-class cancel_btn(ctk.CTkButton):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
-        cancel.place(x=145,y=280)
-
+import psycopg2
+class MyDatabase():
+    def __init__(self) -> None:
+        self.conn = psycopg2.connect(
+            host = "localhost",
+            database = "postgres",
+            user = "postgres",
+            password = "admin"
+        )
+        self.cur = self.conn.cursor()
+    def query(self, query):
+        self.cur.execute(query)
+    def close(self):
+        self.cur.close()
+        self.conn.close()
 
 class Top_level_add_customer(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
