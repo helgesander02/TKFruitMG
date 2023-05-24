@@ -4,33 +4,30 @@ import os
 from typing import Optional, Tuple, Union
 from PIL import ImageTk,Image
 import psycopg2
-class MyDatabase():
-    def __init__(self) -> None:
-        self.conn = psycopg2.connect(
-            host = "localhost",
-            database = "postgres",
-            user = "postgres",
-            password = "admin"
-        )
-        self.cur = self.conn.cursor()
-    def query(self, query):
-        self.cur.execute(query)
-    def close(self):
-        self.cur.close()
-        self.conn.close()
 
 class Top_level_add_customer(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         def click():
-            print(id_entry.get())
-            print(name_entry.get())
-            print(phone_entry.get())
-            print(address_entry.get())
-            print(remark_entry.get(1.0,"end-1c"))
+            con = psycopg2.connect(database='postgres',
+                                   user='postgres',
+                                    password='admin')
+            with con:
+                cur = con.cursor()
+                cur.execute(f"INSERT INTO customer(id,customer_name,phone_number,address,remark) \
+                            VALUES('{id_entry.get()}', \
+                            '{name_entry.get()}', \
+                            '{phone_entry.get()}', \
+                            '{address_entry.get()}' \
+                            ,'{remark_entry.get(1.0,'end-1c')}') \
+                            ")
+            print("successful")
+            self.destroy()
+
         def cancel():
             self.destroy()
+
         self.geometry("250x325")
         confirm = ctk.CTkButton(self,width=80,height=15,text="確認",command=click)
         cancel = ctk.CTkButton(self,width=80,height=15,text="取消",command=cancel)
