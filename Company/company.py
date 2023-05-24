@@ -3,15 +3,28 @@ import os
 
 from typing import Optional, Tuple, Union
 from PIL import ImageTk,Image
+class cancel_btn(ctk.CTkButton):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
+        cancel.place(x=145,y=280)
+
 
 class Top_level_add_customer(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        def click():
+            print(id_entry.get())
+            print(name_entry.get())
+            print(phone_entry.get())
+            print(address_entry.get())
+            print(remark_entry.get(1.0,"end-1c"))
+        def cancel():
+            self.destroy()
         self.geometry("250x325")
-
-        confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
-        cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
+        confirm = ctk.CTkButton(self,width=80,height=15,text="確認",command=click)
+        cancel = ctk.CTkButton(self,width=80,height=15,text="取消",command=cancel)
         customer_id = ctk.CTkLabel(self, text="客戶編號：")
         name = ctk.CTkLabel(self, text="　　名稱：")
         phone = ctk.CTkLabel(self, text="　　手機：")
@@ -49,6 +62,7 @@ class Top_level_edit_customer(ctk.CTkToplevel):
         label.pack(padx=20,pady=20)
 
 class right_top_part_A(ctk.CTkFrame):
+    
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         
@@ -65,6 +79,8 @@ class right_top_part_A(ctk.CTkFrame):
         button_for_search.place(x=350,y=75)
         button_1.place(x=900,y=40)
         button_2.place(x=900,y=110)
+        
+    
     def open_toplevel_add_customer(self):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_add_customer(self)
@@ -78,6 +94,7 @@ class right_top_part_A(ctk.CTkFrame):
             self.toplevel_window.attributes('-topmost','true')
         else:
             self.toplevel_window.focus()
+    
 class right_top_part_B(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
