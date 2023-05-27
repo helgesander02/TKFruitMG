@@ -1,9 +1,23 @@
-import customtkinter
+import customtkinter as ctk
 
-class Order_Main_Frame(customtkinter.CTkFrame):
+class bar(ctk.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        serial = ctk.CTkLabel(self)
+        serial = ctk.CTkLabel(self)
+        serial = ctk.CTkLabel(self)
+        serial = ctk.CTkLabel(self)
+        serial = ctk.CTkLabel(self)
+        serial = ctk.CTkLabel(self)
+        serial = ctk.CTkLabel(self)
+        serial = ctk.CTkLabel(self)
+        serial = ctk.CTkLabel(self)
+class Order_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.btn_order = customtkinter.CTkButton(self ,text="Order" ,width=160 ,height=160 ,
-                                                                fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
-        self.btn_order.place(x=300, y=480)
+        top_part = ctk.CTkFrame(self,width=1800,height=100)
+        top_part.place(x=60,y=20)
+        bot_part = ctk.CTkFrame(self,width=1800,height=600)
+        bot_part.place(x=60,y=140)
+        

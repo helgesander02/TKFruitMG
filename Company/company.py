@@ -13,7 +13,7 @@ class Top_level_add_item(ctk.CTkToplevel):
                                     password='admin')
             with con:
                 cur = con.cursor()
-                cur.execute(f"INSERT INTO item VALUES('{item_id_entry.get()}','{item_name_entry.get()}')")
+                cur.execute(f"INSERT INTO item(item_id, item_name) VALUES('{item_id_entry.get()}','{item_name_entry.get()}')")
             self.destroy()
         def cancel():
             self.destroy()
@@ -39,8 +39,8 @@ class Top_level_edit_item(ctk.CTkToplevel):
                                     password='admin')
             with con:
                 cur = con.cursor()
-                cur.execute(f"UPDATE item SET name = '{item_name_entry.get()}' \
-                            WHERE id = '{item_id_entry.get()}'")
+                cur.execute(f"UPDATE item SET item_name = '{item_name_entry.get()}' \
+                            WHERE item_id = '{item_id_entry.get()}'")
             self.destroy()
         def cancel():
             self.destroy()
@@ -119,11 +119,11 @@ class Top_level_edit_customer(ctk.CTkToplevel):
                                     password='admin')
             with con:
                 cur = con.cursor()
-                cur.execute(f"UPDATE customer SET customer_name = '{name_entry.get()}', \
-                            phone_number = '{phone_entry.get()}', \
+                cur.execute(f"UPDATE customer SET name = '{name_entry.get()}', \
+                            phone = '{phone_entry.get()}', \
                             address = '{address_entry.get()}', \
                             remark = '{remark_entry.get(1.0,'end-1c')}' \
-                            WHERE id = '{id_entry.get()}'")
+                            WHERE c_id = '{id_entry.get()}'")
             self.destroy()
 
         def cancel():
@@ -260,7 +260,7 @@ class right_bot_part_C(ctk.CTkScrollableFrame):
         def search():
             con = psycopg2.connect(database='postgres', user='postgres',
                        password='admin')
-            temp_row = row
+            row = 1
             with con:
                 cur = con.cursor()
                 cur.execute(f"SELECT * FROM customer WHERE c_id = '{bar_7.get()}'")
@@ -270,11 +270,10 @@ class right_bot_part_C(ctk.CTkScrollableFrame):
                 for j in i:
                     temp = ctk.CTkEntry(self)
                     temp.insert(0, str(j).rstrip())
-                    temp.grid(row=temp_row,column=x)
+                    temp.grid(row=row,column=x)
                     x+=1
-                temp_row+=1
+                row += 1
             # print(result)
-        row = 1
         bar_1 = ctk.CTkLabel(self, width=176, height=40,text="序號",fg_color='yellow')
         bar_2 = ctk.CTkLabel(self, width=176, height=40,text="客戶編號",fg_color='blue')
         bar_3 = ctk.CTkLabel(self, width=176, height=40,text="客戶名稱",fg_color='yellow')
@@ -291,31 +290,36 @@ class right_bot_part_C(ctk.CTkScrollableFrame):
         bar_6.grid(row=0,column=5)
         bar_7.grid(row=0,column=6)
         bar_8.grid(row=0,column=7)
-    
-class right_top_element(ctk.CTkFrame):
-    def __init__(self,master, **kwargs):
-        super().__init__(master, **kwargs)
-        bar_2 = ctk.CTkLabel(self, width=176, height=40,text="客戶編號",fg_color='blue')
-        bar_3 = ctk.CTkLabel(self, width=176, height=40,text="客戶名稱",fg_color='yellow')
-        bar_4 = ctk.CTkLabel(self, width=176, height=40,text="手機",fg_color='blue')
-        bar_5 = ctk.CTkLabel(self, width=176, height=40,text="住址",fg_color='green')
-        bar_6 = ctk.CTkLabel(self, width=400, height=40,text="備註",fg_color='blue')
-        bar_2.grid(row=0,column=0)
-        bar_3.grid(row=0,column=1)
-        bar_4.grid(row=0,column=2)
-        bar_5.grid(row=0,column=3)
-        bar_6.grid(row=0,column=4)
 
-class right_bot_part_B(ctk.CTkFrame):
+class right_bot_part_B(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+        def search():
+            con = psycopg2.connect(database='postgres', user='postgres',
+                       password='admin')
+            row = 1
+            with con:
+                cur = con.cursor()
+                cur.execute(f"SELECT * FROM item WHERE item_id = '{bar_4.get()}'")
+                result = cur.fetchall()
+            for i in result:
+                x=0
+                for j in i:
+                    temp = ctk.CTkEntry(self)
+                    temp.insert(0, str(j).rstrip())
+                    temp.grid(row=row,column=x)
+                    x+=1
+                row += 1
         bar_1 = ctk.CTkLabel(self, width=176, height=40,text="序號")
         bar_2 = ctk.CTkLabel(self, width=176, height=40,text="品項編號")
         bar_3 = ctk.CTkLabel(self, width=176, height=40,text="品項名稱")
-        bar_1.place(x=0,y=0)
-        bar_2.place(x=176,y=0)
-        bar_3.place(x=352,y=0)
-
+        bar_4 = ctk.CTkEntry(self,width=100,height=40)
+        bar_5 = ctk.CTkButton(self,width=76,height=40,text="搜尋",command=search)
+        bar_1.grid(row=0,column=0)
+        bar_2.grid(row=0,column=1)
+        bar_3.grid(row=0,column=2)
+        bar_4.grid(row=0,column=3)
+        bar_5.grid(row=0,column=4)
 class Company_Main_Frame(ctk.CTkFrame):
 
     def __init__(self, master, **kwargs):
@@ -323,16 +327,16 @@ class Company_Main_Frame(ctk.CTkFrame):
         def button_event_customer(event):
             self.right_bot.grid_forget()
             self.right_top.grid_forget()
-            self.right_top = right_top_part_A(self,width=1200,height=200,fg_color="#EEEEEE")
-            self.right_bot = right_bot_part_C(self,width=1200,height=500,fg_color="#EEEEEE")
+            self.right_top = right_top_part_A(self,width=1400,height=200,fg_color="#EEEEEE")
+            self.right_bot = right_bot_part_C(self,width=1380,height=500,fg_color="#EEEEEE")
             self.right_top.grid(row=0,column=1,padx=10,pady=10)
             self.right_bot.grid(row=1,column=1,padx=10,pady=10)
         
         def button_event_item(event):
             self.right_bot.grid_forget()
             self.right_top.grid_forget()
-            self.right_top = right_top_part_B(self,width=1200,height=200,fg_color="#EEEEEE")
-            self.right_bot = right_bot_part_B(self,width=1200,height=500,fg_color="#EEEEEE")
+            self.right_top = right_top_part_B(self,width=1400,height=200,fg_color="#EEEEEE")
+            self.right_bot = right_bot_part_B(self,width=1380,height=500,fg_color="#EEEEEE")
             self.right_top.grid(row=0,column=1,padx=10,pady=10)
             self.right_bot.grid(row=1,column=1,padx=10,pady=10)
 
