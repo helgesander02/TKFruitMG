@@ -30,6 +30,7 @@ class Top_level_add_item(ctk.CTkToplevel):
         item_name_entry.grid(row=1, column=1,padx=10,pady=10)
         cancel.grid(row=2,column=1,padx=10,pady=10)
         confirm.grid(row=2,column=0,padx=10,pady=10)
+
 class Top_level_edit_item(ctk.CTkToplevel):
     def __init__(self,master, **kwargs):
         super().__init__(master, **kwargs)
@@ -57,23 +58,24 @@ class Top_level_edit_item(ctk.CTkToplevel):
         item_name_entry.grid(row=1, column=1,padx=10,pady=10)
         cancel.grid(row=2,column=1,padx=10,pady=10)
         confirm.grid(row=2,column=0,padx=10,pady=10)
+
 class Top_level_add_customer(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         def click():
-            con = psycopg2.connect(database='postgres',
-                                   user='postgres',
-                                    password='admin')
-            with con:
-                cur = con.cursor()
-                cur.execute(f"INSERT INTO customer(c_id,name,phone,address,remark) \
+            con = psycopg2.connect("postgres://su:7gpk4xkkNxGi7RqJOPKiNsQTLui0KrX5@dpg-choutv7dvk4goesube90-a.singapore-postgres.render.com/fruit")
+            cur = con.cursor()
+            cur.execute(f"INSERT INTO Company (ID, Name, Phone, Adress, Remark) \
                             VALUES('{id_entry.get()}', \
                             '{name_entry.get()}', \
                             '{phone_entry.get()}', \
                             '{address_entry.get()}' \
                             ,'{remark_entry.get(1.0,'end-1c')}') \
                             ")
+
+            conn.commit()
+            conn.close()
             self.destroy()
 
         def cancel():
@@ -162,31 +164,29 @@ class Top_level_edit_customer(ctk.CTkToplevel):
 class right_top_part_A(ctk.CTkFrame):
     
     def __init__(self, master, **kwargs):
-
-        def search():
-            con = psycopg2.connect(database='postgres', user='postgres',
-                       password='admin')
-            with con:
-                cur = con.cursor()
-                cur.execute(f"SELECT * FROM customer WHERE id = '{text_1.get(1.0, 'end-1c')}'")
-                result = cur.fetchall()
-        super().__init__(master, **kwargs)
-        
+        super().__init__(master, **kwargs)      
         img = Image.open(f"{os.getcwd()}\\img\\search.png")
         btn_image = ctk.CTkImage(img,size=(25,25))
         
         self.toplevel_window = None
-        text_1 = ctk.CTkTextbox(self,width=250,height=50,font=("Arial",24))
-        button_for_search = ctk.CTkButton(self,width=50,height=50,image=btn_image,text="",border_spacing=0,corner_radius=0,command=search)
-        button_1 = ctk.CTkButton(self,width=200,height=50,text="新增客戶",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_add_customer)
-        button_2 = ctk.CTkButton(self,width=200,height=50,text="編輯客戶",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_edit_customer)
+        self.text_1 = ctk.CTkTextbox(self,width=250,height=50,font=("Arial",24))
+        self.button_for_search = ctk.CTkButton(self,width=50,height=50,image=btn_image,text="",border_spacing=0,corner_radius=0,command=self.search)
+        self.button_1 = ctk.CTkButton(self,width=200,height=50,text="新增客戶",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_add_customer)
+        self.button_2 = ctk.CTkButton(self,width=200,height=50,text="編輯客戶",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_edit_customer)
+        self.right_bot = right_bot_part_A(self,width=1380,height=500,fg_color="#EEEEEE")
+
+        self.text_1.place(x=100,y=75)
+        self.button_for_search.place(x=350,y=75)
+        self.button_1.place(x=900,y=40)
+        self.button_2.place(x=900,y=110)
+        self.right_bot.place(x=0, y=200)
         
-        text_1.place(x=100,y=75)
-        button_for_search.place(x=350,y=75)
-        button_1.place(x=900,y=40)
-        button_2.place(x=900,y=110)
-        
-    
+    def search(self):
+        self.right_bot = right_bot_part_A(self,width=1380,height=500,fg_color="#EEEEEE")
+        self.right_bot.place(x=0, y=200)
+        ID = self.text_1.get(1.0, 'end-1c')
+        self.right_bot.InsertData(ID)
+
     def open_toplevel_add_customer(self):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_add_customer(self)
@@ -207,15 +207,19 @@ class right_top_part_B(ctk.CTkFrame):
         img = Image.open(f"{os.getcwd()}\\img\\search.png")
         btn_image = ctk.CTkImage(img,size=(25,25))
 
-        text_1 = ctk.CTkTextbox(self,width=250,height=50,font=("Arial",24))
-        button_for_search = ctk.CTkButton(self,width=50,height=50,image=btn_image,text="",border_spacing=0,corner_radius=0)
-        button_1 = ctk.CTkButton(self,width=200,height=50,text="新增品項",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_add_item)
-        button_2 = ctk.CTkButton(self,width=200,height=50,text="編輯品項",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_edit_item)
         self.toplevel_window = None
-        text_1.place(x=100,y=75)
-        button_for_search.place(x=350,y=75)
-        button_1.place(x=900,y=40)
-        button_2.place(x=900,y=110)
+        self.text_1 = ctk.CTkTextbox(self,width=250,height=50,font=("Arial",24))
+        self.button_for_search = ctk.CTkButton(self,width=50,height=50,image=btn_image,text="",border_spacing=0,corner_radius=0,command=self.search)
+        self.button_1 = ctk.CTkButton(self,width=200,height=50,text="新增品項",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_add_item)
+        self.button_2 = ctk.CTkButton(self,width=200,height=50,text="編輯品項",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_edit_item)
+
+        self.text_1.place(x=100,y=75)
+        self.button_for_search.place(x=350,y=75)
+        self.button_1.place(x=900,y=40)
+        self.button_2.place(x=900,y=110)
+
+    def search():
+        pass
 
     def open_toplevel_add_item(self):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
@@ -230,79 +234,33 @@ class right_top_part_B(ctk.CTkFrame):
             self.toplevel_window.attributes('-topmost','true')
         else:
             self.toplevel_window.focus()
-class left_part(ctk.CTkFrame):
-    def __init__(self, master, **kwargs):
-            super().__init__(master, **kwargs)
 
-
-class right_bot_part_A(ctk.CTkFrame):
+class right_bot_part_A(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        # bar_1 = ctk.CTkLabel(self, width=176, height=40,text="序號")
-        bar_2 = ctk.CTkLabel(self, width=176, height=40,text="客戶編號")
-        bar_3 = ctk.CTkLabel(self, width=176, height=40,text="客戶名稱")
-        bar_4 = ctk.CTkLabel(self, width=176, height=40,text="手機")
-        bar_5 = ctk.CTkLabel(self, width=176, height=40,text="住址")
-        bar_6 = ctk.CTkLabel(self, width=176, height=40,text="備註")
-        
-        # bar_1.place(x=0,y=0)
-        bar_2.place(x=0,y=0)
-        bar_3.place(x=176,y=0)
-        bar_4.place(x=352,y=0)
-        bar_5.place(x=528,y=0)
-        bar_6.place(x=704,y=0)
-        # 0 176 352 528 704 880
-    def add(result):
-        print(result)
-class right_bot_part_C(ctk.CTkScrollableFrame):
-    def __init__(self, master, **kwargs):
-        super().__init__(master, **kwargs)
-        def search():
-            con = psycopg2.connect(database='postgres', user='postgres',
-                       password='admin')
-            row = 1
-            with con:
-                cur = con.cursor()
-                cur.execute(f"SELECT * FROM customer WHERE c_id = '{bar_7.get()}'")
-                result = cur.fetchall()
-            for i in result:
-                x=0
-                for j in i:
-                    temp = ctk.CTkEntry(self)
-                    temp.insert(0, str(j).rstrip())
-                    temp.grid(row=row,column=x)
-                    x+=1
-                row += 1
-            # print(result)
-        bar_1 = ctk.CTkLabel(self, width=176, height=40,text="序號",fg_color='yellow')
-        bar_2 = ctk.CTkLabel(self, width=176, height=40,text="客戶編號",fg_color='blue')
-        bar_3 = ctk.CTkLabel(self, width=176, height=40,text="客戶名稱",fg_color='yellow')
-        bar_4 = ctk.CTkLabel(self, width=176, height=40,text="手機",fg_color='blue')
-        bar_5 = ctk.CTkLabel(self, width=176, height=40,text="住址",fg_color='green')
-        bar_6 = ctk.CTkLabel(self, width=300, height=40,text="備註",fg_color='blue')
-        bar_7 = ctk.CTkEntry(self,width=100,height=40)
-        bar_8 = ctk.CTkButton(self,width=76,height=40,text="搜尋",command=search)
+        bar_1 = ctk.CTkLabel(self, width=160, height=40,text="序號",fg_color='yellow')
+        bar_2 = ctk.CTkLabel(self, width=160, height=40,text="客戶編號",fg_color='blue')
+        bar_3 = ctk.CTkLabel(self, width=160, height=40,text="客戶名稱",fg_color='yellow')
+        bar_4 = ctk.CTkLabel(self, width=160, height=40,text="手機",fg_color='blue')
+        bar_5 = ctk.CTkLabel(self, width=160, height=40,text="住址",fg_color='green')
+        bar_6 = ctk.CTkLabel(self, width=160, height=40,text="備註",fg_color='blue')
         bar_1.grid(row=0,column=0)
         bar_2.grid(row=0,column=1)
         bar_3.grid(row=0,column=2)
         bar_4.grid(row=0,column=3)
         bar_5.grid(row=0,column=4)
         bar_6.grid(row=0,column=5)
-        bar_7.grid(row=0,column=6)
-        bar_8.grid(row=0,column=7)
 
-class right_bot_part_B(ctk.CTkScrollableFrame):
-    def __init__(self, master, **kwargs):
-        super().__init__(master, **kwargs)
-        def search():
-            con = psycopg2.connect(database='postgres', user='postgres',
-                       password='admin')
-            row = 1
-            with con:
-                cur = con.cursor()
-                cur.execute(f"SELECT * FROM item WHERE item_id = '{bar_4.get()}'")
-                result = cur.fetchall()
-            for i in result:
+    def InsertData(self, ID):
+        conn = psycopg2.connect("postgres://su:7gpk4xkkNxGi7RqJOPKiNsQTLui0KrX5@dpg-choutv7dvk4goesube90-a.singapore-postgres.render.com/fruit")
+        cur = conn.cursor()
+        if ID == '':
+            cur.execute(f"SELECT * FROM Company")
+        else:
+            cur.execute(f"SELECT * FROM Company WHERE ID = '{ID}'")
+        result = cur.fetchall()
+        row = 1
+        for i in result:
                 x=0
                 for j in i:
                     temp = ctk.CTkEntry(self)
@@ -310,25 +268,32 @@ class right_bot_part_B(ctk.CTkScrollableFrame):
                     temp.grid(row=row,column=x)
                     x+=1
                 row += 1
-        bar_1 = ctk.CTkLabel(self, width=176, height=40,text="序號")
-        bar_2 = ctk.CTkLabel(self, width=176, height=40,text="品項編號")
-        bar_3 = ctk.CTkLabel(self, width=176, height=40,text="品項名稱")
-        bar_4 = ctk.CTkEntry(self,width=100,height=40)
-        bar_5 = ctk.CTkButton(self,width=76,height=40,text="搜尋",command=search)
-        bar_1.grid(row=0,column=0)
-        bar_2.grid(row=0,column=1)
-        bar_3.grid(row=0,column=2)
-        bar_4.grid(row=0,column=3)
-        bar_5.grid(row=0,column=4)
-class Company_Main_Frame(ctk.CTkFrame):
 
+        conn.commit()
+        conn.close()
+
+class right_bot_part_B(ctk.CTkScrollableFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.bar_1 = ctk.CTkLabel(self, width=176, height=40,text="序號")
+        self.bar_2 = ctk.CTkLabel(self, width=176, height=40,text="品項編號")
+        self.bar_3 = ctk.CTkLabel(self, width=176, height=40,text="品項名稱")
+        self.bar_1.grid(row=0,column=0)
+        self.bar_2.grid(row=0,column=1)
+        self.bar_3.grid(row=0,column=2)
+
+class left_part(ctk.CTkFrame):
+    def __init__(self, master, **kwargs):
+            super().__init__(master, **kwargs)
+
+class Company_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         def button_event_customer(event):
             self.right_bot.grid_forget()
             self.right_top.grid_forget()
             self.right_top = right_top_part_A(self,width=1400,height=200,fg_color="#EEEEEE")
-            self.right_bot = right_bot_part_C(self,width=1380,height=500,fg_color="#EEEEEE")
+            self.right_bot = right_bot_part_A(self,width=1380,height=500,fg_color="#EEEEEE")
             self.right_top.grid(row=0,column=1,padx=10,pady=10)
             self.right_bot.grid(row=1,column=1,padx=10,pady=10)
         
@@ -344,8 +309,8 @@ class Company_Main_Frame(ctk.CTkFrame):
         
         #left label
         self.left = left_part(self, width=250,height=750,fg_color="#EEEEEE")
-        self.right_top = right_top_part_A(self,width=1400,height=200,fg_color="#EEEEEE")
-        self.right_bot = right_bot_part_C(self,width=1380,height=500,fg_color="#EEEEEE")
+        self.right_top = right_top_part_A(self,width=1400,height=750,fg_color="#EEEEEE")
+        #self.right_bot = right_bot_part_A(self,width=1380,height=500,fg_color="#EEEEEE")
 
         #button
         self.botton_1 = ctk.CTkButton(self.left, width=200, 
@@ -361,7 +326,7 @@ class Company_Main_Frame(ctk.CTkFrame):
 
         self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
         self.right_top.grid(row=0,column=1,padx=10,pady=10)
-        self.right_bot.grid(row=1,column=1,padx=10,pady=10)
+        #self.right_bot.grid(row=1,column=1,padx=10,pady=10)
 
         self.botton_1.place(x=20,y=20)
         self.botton_2.place(x=20,y=80)
