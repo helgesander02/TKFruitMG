@@ -58,7 +58,41 @@ class Top_level_edit_item(ctk.CTkToplevel):
         item_name_entry.grid(row=1, column=1,padx=10,pady=10)
         cancel.grid(row=2,column=1,padx=10,pady=10)
         confirm.grid(row=2,column=0,padx=10,pady=10)
-  
+
+class right_bot_part_B(ctk.CTkScrollableFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.bar_1 = ctk.CTkLabel(self, width=176, height=40,text="序號")
+        self.bar_2 = ctk.CTkLabel(self, width=176, height=40,text="品項編號")
+        self.bar_3 = ctk.CTkLabel(self, width=176, height=40,text="品項名稱")
+        self.bar_1.grid(row=0,column=0)
+        self.bar_2.grid(row=0,column=1)
+        self.bar_3.grid(row=0,column=2)
+
+    def InsertData(self, ID):
+        conn = psycopg2.connect(database='postgres', 
+                                user='postgres',
+                                password='admin')
+        cur = conn.cursor()
+        if ID == '':
+            cur.execute(f"SELECT * FROM item")
+        else:
+            cur.execute(f"SELECT * FROM item WHERE item_id = '{ID}'")
+        result = cur.fetchall()
+        row = 1
+        for i in result:
+                x=0
+                for j in i:
+                    temp = ctk.CTkEntry(self)
+                    temp.insert(0, str(j).rstrip())
+                    temp.grid(row=row,column=x)
+                    temp.configure(state="disabled")
+                    x+=1
+                row += 1
+
+        conn.commit()
+        conn.close()
+
 class right_top_part_B(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -70,14 +104,20 @@ class right_top_part_B(ctk.CTkFrame):
         self.button_for_search = ctk.CTkButton(self,width=50,height=50,image=btn_image,text="",border_spacing=0,corner_radius=0,command=self.search)
         self.button_1 = ctk.CTkButton(self,width=200,height=50,text="新增品項",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_add_item)
         self.button_2 = ctk.CTkButton(self,width=200,height=50,text="編輯品項",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_edit_item)
+        self.right_bot = right_bot_part_B(self,width=1380,height=500,fg_color="#EEEEEE")
+
 
         self.text_1.place(x=100,y=75)
         self.button_for_search.place(x=350,y=75)
         self.button_1.place(x=900,y=40)
         self.button_2.place(x=900,y=110)
+        self.right_bot.place(x=0, y=200)
 
-    def search():
-        pass
+    def search(self):
+        self.right_bot = right_bot_part_B(self,width=1380,height=500,fg_color="#EEEEEE")
+        self.right_bot.place(x=0, y=200)
+        ID = self.text_1.get(1.0, 'end-1c')
+        self.right_bot.InsertData(ID)
 
     def open_toplevel_add_item(self):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
@@ -93,12 +133,3 @@ class right_top_part_B(ctk.CTkFrame):
         else:
             self.toplevel_window.focus()
 
-class right_bot_part_B(ctk.CTkScrollableFrame):
-    def __init__(self, master, **kwargs):
-        super().__init__(master, **kwargs)
-        self.bar_1 = ctk.CTkLabel(self, width=176, height=40,text="序號")
-        self.bar_2 = ctk.CTkLabel(self, width=176, height=40,text="品項編號")
-        self.bar_3 = ctk.CTkLabel(self, width=176, height=40,text="品項名稱")
-        self.bar_1.grid(row=0,column=0)
-        self.bar_2.grid(row=0,column=1)
-        self.bar_3.grid(row=0,column=2)

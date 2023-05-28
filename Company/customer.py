@@ -122,12 +122,13 @@ class right_bot_part_A(ctk.CTkScrollableFrame):
         bar_6.grid(row=0,column=5)
 
     def InsertData(self, ID):
-        conn = psycopg2.connect("postgres://su:7gpk4xkkNxGi7RqJOPKiNsQTLui0KrX5@dpg-choutv7dvk4goesube90-a.singapore-postgres.render.com/fruit")
+        conn = psycopg2.connect(database='postgres', user='postgres',
+                       password='admin')
         cur = conn.cursor()
         if ID == '':
-            cur.execute(f"SELECT * FROM Company")
+            cur.execute(f"SELECT * FROM customer")
         else:
-            cur.execute(f"SELECT * FROM Company WHERE ID = '{ID}'")
+            cur.execute(f"SELECT * FROM customer WHERE c_id = '{ID}'")
         result = cur.fetchall()
         row = 1
         for i in result:
@@ -136,6 +137,7 @@ class right_bot_part_A(ctk.CTkScrollableFrame):
                     temp = ctk.CTkEntry(self)
                     temp.insert(0, str(j).rstrip())
                     temp.grid(row=row,column=x)
+                    temp.configure(state="disabled")
                     x+=1
                 row += 1
 
