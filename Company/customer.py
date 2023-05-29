@@ -8,13 +8,14 @@ class Top_level_edit_customer(ctk.CTkToplevel):
         super().__init__(*args, **kwargs)
 
         def click():
-            conn = psycopg2.connect("postgres://su:7gpk4xkkNxGi7RqJOPKiNsQTLui0KrX5@dpg-choutv7dvk4goesube90-a.singapore-postgres.render.com/fruit")
+            conn = psycopg2.connect(database='postgres', user='postgres',
+                       password='admin')
             cur = conn.cursor()
-            cur.execute(f"UPDATE Company SET NAME = '{name_entry.get()}', \
-                            Phone = '{phone_entry.get()}', \
-                            Adress = '{address_entry.get()}', \
-                            Remark = '{remark_entry.get(1.0,'end-1c')}' \
-                            WHERE ID = '{id_entry.get()}'")
+            cur.execute(f"UPDATE customer SET name = '{name_entry.get()}', \
+                            phone = '{phone_entry.get()}', \
+                            address = '{address_entry.get()}', \
+                            remark = '{remark_entry.get(1.0,'end-1c')}' \
+                            WHERE c_id = '{id_entry.get()}'")
 
             conn.commit()
             conn.close()
@@ -58,9 +59,10 @@ class Top_level_add_customer(ctk.CTkToplevel):
         super().__init__(*args, **kwargs)
 
         def click():
-            conn = psycopg2.connect("postgres://su:7gpk4xkkNxGi7RqJOPKiNsQTLui0KrX5@dpg-choutv7dvk4goesube90-a.singapore-postgres.render.com/fruit")
+            conn = psycopg2.connect(database='postgres', user='postgres',
+                       password='admin')
             cur = conn.cursor()
-            cur.execute(f"INSERT INTO Company (ID, Name, Phone, Adress, Remark) \
+            cur.execute(f"INSERT INTO customer (c_id, name, phone, address, remark) \
                             VALUES('{id_entry.get()}', \
                             '{name_entry.get()}', \
                             '{phone_entry.get()}', \
