@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import tkcalendar as tkc
 import psycopg2
-
+from datetime import date
 class bar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -50,16 +50,38 @@ class entrybox(ctk.CTkFrame):
 
 class top(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
+        def select_od_id():
+            con = psycopg2.connect(database='postgres', user='postgres',
+                       password='admin')
+            
+            cur = con.cursor()
+            cur.execute(f"select order_id from order_it where date='{date.today()}' order by order_id")
+            dt_time = cur.fetchall()
+            td = date.today()
+            order_id = f"{td.year}{td.month}{td.day}"
+            cur.close()
+            con.close()
+            if len(dt_time) == 0:
+                return f"{order_id}0001"
+            else:
+                n_id = str(dt_time[-1][0]).rstrip()
+                o_id = str(int(n_id[-4:]) + 1).zfill(4)
+                # print(n_id,o_id)
+                return f"{order_id}{o_id}"
         super().__init__(master, **kwargs)
         self.c_id = ctk.CTkEntry(self,width=250,height=50,placeholder_text="輸入客戶代號",font=("Arial",24))
         self.cal = tkc.DateEntry(self)
+        self.order_id = ctk.CTkLabel(self)
         self.c_id.place(x=40,y=30)
         self.cal.place(x=310,y=30)
-        self.bot = bot(self,width=1800,height=630,border_width=3,border_color="green",c_id=self.c_id,cal=self.cal)
+        self.order_id.place(x=310,y=60)
+        self.c_id.focus()
+        self.order_id.configure(text=select_od_id())
+        self.bot = bot(self,width=1800,height=630,border_width=3,border_color="green",c_id=self.c_id,cal=self.cal,order_id=self.order_id.cget("text"))
         self.bot.place(x=0,y=120)
-
+        
 class bot(ctk.CTkFrame):
-    def __init__(self, master, c_id, cal, **kwargs):
+    def __init__(self, master, c_id, cal,order_id, **kwargs):
         super().__init__(master, **kwargs)
         def next_row(event):
             self.entry_1 = entrybox(self.mid_frame)
@@ -67,8 +89,8 @@ class bot(ctk.CTkFrame):
             self.entry_1.serial.focus()
             self.entry_1.remark.bind('<Return>',temp_data)
             self.entry_1.remark.bind('<Return>',next_row)
-            self.entry_1.item_id.bind('<Return>',item_name)
-            self.entry_1.quantity.bind('<Return>',total_price)
+            self.entry_1.item_id.bind('<Tab>',item_name)
+            self.entry_1.quantity.bind('<Tab>',total_price)
         def item_name(event):
             con = psycopg2.connect(database='postgres', user='postgres',
                        password='admin')
@@ -78,8 +100,7 @@ class bot(ctk.CTkFrame):
             result = cur.fetchone()
             cur.close()
             self.entry_1.item_name.insert(0,str(result[0]).rstrip())
-            self.entry_1.specification.focus()
-            
+            self.entry_1.specification.focus()            
         def total_price(event):
             price = self.entry_1.price.get()
             quan = self.entry_1.quantity.get()
@@ -100,14 +121,16 @@ class bot(ctk.CTkFrame):
             self.temp.append(self.entry_1.remark.get())
             self.temp.append(c_id.get())
             self.temp.append(cal.get_date())
+            self.temp.append(order_id)
             self.save_file.append(self.temp)
+            print(order_id)
         def save_data():
             con = psycopg2.connect(database='postgres', user='postgres',
                        password='admin')
             cur = con.cursor()
             for i in self.save_file:
-                cur.execute(f"insert into order_it(item_id, item_name, specification, size, price, quantity, subtotal, remark, c_id, date)\
-                            values('{i[0]}','{i[1]}','{i[2]}','{i[3]}','{i[4]}','{i[5]}','{i[6]}','{i[7]}','{i[8]}','{i[9]}')")
+                cur.execute(f"insert into order_it(item_id, item_name, specification, size, price, quantity, subtotal, remark, c_id, date, order_id)\
+                            values('{i[0]}','{i[1]}','{i[2]}','{i[3]}','{i[4]}','{i[5]}','{i[6]}','{i[7]}','{i[8]}','{i[9]}','{i[10]}')")
             cur.close()
             con.commit()
             con.close()
@@ -128,10 +151,11 @@ class bot(ctk.CTkFrame):
         self.save_file = []
         self.entry_1 = entrybox(self.mid_frame)
         self.entry_1.pack()
-        self.entry_1.item_id.bind('<Return>',item_name)
+        # self.entry_1.serial.bind('<Tab>',)
+        self.entry_1.item_id.bind('<Tab>',item_name)
         self.entry_1.remark.bind('<Return>',temp_data)
         self.entry_1.remark.bind('<Return>',next_row)
-        self.entry_1.quantity.bind('<Return>',total_price)
+        self.entry_1.quantity.bind('<Tab>',total_price)
         
 class Order_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
