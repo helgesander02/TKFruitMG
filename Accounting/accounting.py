@@ -2,7 +2,7 @@ import customtkinter as ctk
 import os
 import tkcalendar as tkc
 import psycopg2
-
+from .into_account import Into_Account_Main_Frame
 from typing import Optional, Tuple, Union
 from PIL import ImageTk,Image
 
@@ -46,8 +46,7 @@ class left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         def search():
-            con = psycopg2.connect(database='postgres', user='postgres',
-                       password='admin')
+            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             cur = con.cursor()
             cur.execute(f"select name, phone, address, remark from customer where c_id='{customer_id_entry.get()}'")
             result = cur.fetchone()
@@ -63,13 +62,13 @@ class left_part(ctk.CTkFrame):
             s_total = 0
             for i in result2:
                 s_total += int(result2[row][6])
-                it = item(right_bot.mid,fg_color="#EEEEEE")
+                it = item(self.right_bot.mid,fg_color="#EEEEEE")
                 it.dat.configure(text=f"{result2[row][9]}")
                 it.sbtotal.configure(text=f"{result2[row][6]}")
                 it.remark.configure(text=f"{result2[row][7]}")
                 it.pack()
                 row += 1
-            right_bot.label.configure(text="總計："+str(s_total))
+            self.right_bot.label.configure(text="總計："+str(s_total))
         def reset():
             customer_id_entry.delete(0,'end')
             sell_date_entry.delete(0,'end')
@@ -77,20 +76,20 @@ class left_part(ctk.CTkFrame):
             right_top.phone_entry.configure(text="")
             right_top.address_entry.delete(1.0,'end')
             right_top.remark_entry.delete(1.0,'end')
-            right_bot.label.configure(text="總計：")
+            self.right_bot.label.configure(text="總計：")
         customer_id_entry = ctk.CTkEntry(self,width=200, height=40,fg_color="yellow",font=("Arial", 20),placeholder_text="客戶代號")
         sell_date_entry = tkc.DateEntry(self,selectmode='day')
         confirm_btn = ctk.CTkButton(self,width=200,height=40,fg_color="blue",text="確認查詢",font=("Arial",20),command=search)
         reset_btn = ctk.CTkButton(self,width=200,height=40,fg_color="green",text="重設查詢",font=("Arial",20),command=reset)
         right_top = right_top_part(self,width=1200,height=200,fg_color="#EEEEEE")
-        right_bot = right_bot_part(self,width=1200,height=500,fg_color="#EEEEEE")
+        self.right_bot = right_bot_part(self,width=1200,height=500,fg_color="#EEEEEE")
         
         reset_btn.place(x=25,y=660)
         confirm_btn.place(x=25,y=610)
         customer_id_entry.place(x=25,y=50)
         sell_date_entry.place(x=25,y=110)
         right_top.place(x=270,y=0)
-        right_bot.place(x=270,y=220)
+        self.right_bot.place(x=270,y=220)
 
 class top_bar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -115,20 +114,25 @@ class right_bot_part(ctk.CTkFrame):
         self.mid = ctk.CTkScrollableFrame(self,width=1150,height=420,fg_color="#EEEEEE")
         bot = ctk.CTkFrame(self,width=1200,height=40)
         self.label = ctk.CTkLabel(bot,width=50,height=40,text="總計：",font=("Arial",20))
-        self.btn = ctk.CTkButton(bot,text="入賬")
+        self.j_btn = ctk.CTkButton(bot,text="入賬")
         top.place(x=0,y=0)
         self.mid.place(x=0,y=40)
         bot.place(x=0,y=440)
         self.label.place(x=0,y=0)
-        self.btn.place(x=1030,y=5)
+        self.j_btn.place(x=1030,y=5)
 class Accounting_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-
+        def open_into_account(event):
+            self.left.grid_forget()
+            self.left = Into_Account_Main_Frame(self,width=1450,height=700,fg_color="white")
+            self.left.grid(row=0,column=0,padx=10,pady=10)
         self.left = left_part(self, width=1450,height=700,fg_color="white")
         # self.right_top = right_top_part(self,width=1200,height=200,fg_color="#EEEEEE")
         # self.right_bot = right_bot_part(self,width=1200,height=500,fg_color="#EEEEEE")
-
+        # self.jump_button = ctk.CTkButton(self.left,command=open_into_account,text="入賬頁面")
         self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
+        # self.jump_button.place(x=25,y=150)
+        self.left.right_bot.j_btn.bind("<Button-1>",open_into_account)
         # self.right_top.grid(row=0,column=1,padx=10,pady=10)
         # self.right_bot.grid(row=1,column=1,padx=10,pady=10)

@@ -8,8 +8,7 @@ class Top_level_edit_customer(ctk.CTkToplevel):
         super().__init__(*args, **kwargs)
 
         def click():
-            conn = psycopg2.connect(database='postgres', user='postgres',
-                       password='admin')
+            conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             cur = conn.cursor()
             cur.execute(f"UPDATE customer SET name = '{name_entry.get()}', \
                             phone = '{phone_entry.get()}', \
@@ -59,8 +58,7 @@ class Top_level_add_customer(ctk.CTkToplevel):
         super().__init__(*args, **kwargs)
 
         def click():
-            conn = psycopg2.connect(database='postgres', user='postgres',
-                       password='admin')
+            conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             cur = conn.cursor()
             cur.execute(f"INSERT INTO customer (c_id, name, phone, address, remark) \
                             VALUES('{id_entry.get()}', \
@@ -124,8 +122,7 @@ class right_bot_part_A(ctk.CTkScrollableFrame):
         bar_6.grid(row=0,column=5)
 
     def InsertData(self, ID):
-        conn = psycopg2.connect(database='postgres', user='postgres',
-                       password='admin')
+        conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         cur = conn.cursor()
         if ID == '':
             cur.execute(f"SELECT * FROM customer")

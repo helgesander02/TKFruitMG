@@ -51,8 +51,7 @@ class entrybox(ctk.CTkFrame):
 class top(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         def select_od_id():
-            con = psycopg2.connect(database='postgres', user='postgres',
-                       password='admin')
+            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             
             cur = con.cursor()
             cur.execute(f"select order_id from order_it where date='{date.today()}' order by order_id")
@@ -92,8 +91,7 @@ class bot(ctk.CTkFrame):
             self.entry_1.item_id.bind('<Tab>',item_name)
             self.entry_1.quantity.bind('<Tab>',total_price)
         def item_name(event):
-            con = psycopg2.connect(database='postgres', user='postgres',
-                       password='admin')
+            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
 
             cur = con.cursor()
             cur.execute(f"SELECT item_name from item where item_id = '{self.entry_1.item_id.get()}'")
@@ -123,10 +121,8 @@ class bot(ctk.CTkFrame):
             self.temp.append(cal.get_date())
             self.temp.append(order_id)
             self.save_file.append(self.temp)
-            print(order_id)
         def save_data():
-            con = psycopg2.connect(database='postgres', user='postgres',
-                       password='admin')
+            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             cur = con.cursor()
             for i in self.save_file:
                 cur.execute(f"insert into order_it(item_id, item_name, specification, size, price, quantity, subtotal, remark, c_id, date, order_id)\

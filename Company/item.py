@@ -8,9 +8,7 @@ class Top_level_add_item(ctk.CTkToplevel):
         super().__init__(master, **kwargs)
         # self.geometry("200x200")
         def confirm():
-            con = psycopg2.connect(database='postgres', 
-                                   user='postgres',
-                                    password='admin')
+            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             with con:
                 cur = con.cursor()
                 cur.execute(f"INSERT INTO item(item_id, item_name) VALUES('{item_id_entry.get()}','{item_name_entry.get()}')")
@@ -35,9 +33,7 @@ class Top_level_edit_item(ctk.CTkToplevel):
     def __init__(self,master, **kwargs):
         super().__init__(master, **kwargs)
         def confirm():
-            con = psycopg2.connect(database='postgres', 
-                                   user='postgres',
-                                    password='admin')
+            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             with con:
                 cur = con.cursor()
                 cur.execute(f"UPDATE item SET item_name = '{item_name_entry.get()}' \
@@ -70,10 +66,8 @@ class right_bot_part_B(ctk.CTkScrollableFrame):
         self.bar_3.grid(row=0,column=2)
 
     def InsertData(self, ID):
-        conn = psycopg2.connect(database='postgres', 
-                                user='postgres',
-                                password='admin')
-        cur = conn.cursor()
+        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        cur = con.cursor()
         if ID == '':
             cur.execute(f"SELECT * FROM item")
         else:
@@ -90,8 +84,8 @@ class right_bot_part_B(ctk.CTkScrollableFrame):
                     x+=1
                 row += 1
 
-        conn.commit()
-        conn.close()
+        con.commit()
+        con.close()
 
 class right_top_part_B(ctk.CTkFrame):
     def __init__(self, master, **kwargs):

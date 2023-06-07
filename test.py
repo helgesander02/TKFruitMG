@@ -1,51 +1,35 @@
-
 import tkinter as tk
-from tkinter import ttk
-from tkcalendar import Calendar, DateEntry
-
-def example1():
-    def print_sel():
-        print(cal.selection_get())
-
-    top = tk.Toplevel(root)
-
-    cal = Calendar(top, font="Arial 14", selectmode='day', locale='en_US',
-                   cursor="hand1", year=2018, month=2, day=5)
-
-    cal.pack(fill="both", expand=True)
-    ttk.Button(top, text="ok", command=print_sel).pack()
-
-
-def example2():
-
-    top = tk.Toplevel(root)
-
-    cal = Calendar(top, selectmode='none')
-    date = cal.datetime.today() + cal.timedelta(days=2)
-    cal.calevent_create(date, 'Hello World', 'message')
-    cal.calevent_create(date, 'Reminder 2', 'reminder')
-    cal.calevent_create(date + cal.timedelta(days=-2), 'Reminder 1', 'reminder')
-    cal.calevent_create(date + cal.timedelta(days=3), 'Message', 'message')
-
-    cal.tag_config('reminder', background='red', foreground='yellow')
-
-    cal.pack(fill="both", expand=True)
-    ttk.Label(top, text="Hover over the events.").pack()
-
-
-def example3():
-    top = tk.Toplevel(root)
-
-    ttk.Label(top, text='Choose date').pack(padx=10, pady=10)
-
-    cal = DateEntry(top, width=12, background='darkblue',
-                    foreground='white', borderwidth=2, year=2010)
-    cal.pack(padx=10, pady=10)
-
 
 root = tk.Tk()
-ttk.Button(root, text='Calendar', command=example1).pack(padx=10, pady=10)
-ttk.Button(root, text='Calendar with events', command=example2).pack(padx=10, pady=10)
-ttk.Button(root, text='DateEntry', command=example3).pack(padx=10, pady=10)
+root.geometry("350x400+200+300")
+root.title('cuteluluWindow')
+root.configure(bg="#7AFEC6")
+# root.iconbitmap('heart_green.ico')
+root.geometry('350x200')
+
+def fruitselect():
+    selection = ""
+    for i in checkboxes:
+        if checkboxes[i].get() == True:
+            selection = selection +fruits[i] + "\t"
+    print(selection)
+        
+lF=tk.LabelFrame(root,text="Choise your favirot fruit.",fg="#FFAAD5", bg="#7AFEC6",font=("Ravie",10,"bold"),width=30)
+lF.pack(ipadx=5,ipady=5,pady=10)
+
+fruits = {0:"Strawberry",1: "Peach",2:"mango",3:"Cherry"}
+
+checkboxes = {}
+
+for i in range(len(fruits)):
+    checkboxes[i] = tk.BooleanVar()
+    cb=tk.Checkbutton(lF,text=fruits[i],variable=checkboxes[i])
+    cb.grid(row=i+1,sticky='w')
+    print(checkboxes[i])
+
+
+
+btn = tk.Button (root,text="DOWN",width=10,command=fruitselect)
+btn.pack()
 
 root.mainloop()
