@@ -108,18 +108,49 @@ class Top_level_add_customer(ctk.CTkToplevel):
 class right_bot_part_A(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        bar_1 = ctk.CTkLabel(self, width=160, height=40,text="序號",fg_color='yellow')
-        bar_2 = ctk.CTkLabel(self, width=160, height=40,text="客戶編號",fg_color='blue')
-        bar_3 = ctk.CTkLabel(self, width=160, height=40,text="客戶名稱",fg_color='yellow')
-        bar_4 = ctk.CTkLabel(self, width=160, height=40,text="手機",fg_color='blue')
-        bar_5 = ctk.CTkLabel(self, width=160, height=40,text="住址",fg_color='green')
-        bar_6 = ctk.CTkLabel(self, width=160, height=40,text="備註",fg_color='blue')
-        bar_1.grid(row=0,column=0)
-        bar_2.grid(row=0,column=1)
-        bar_3.grid(row=0,column=2)
-        bar_4.grid(row=0,column=3)
-        bar_5.grid(row=0,column=4)
-        bar_6.grid(row=0,column=5)
+        w = kwargs["width"]/6
+        self.bar_1 = ctk.CTkLabel(self, width=w, height=40,
+                                        text="序號",
+                                        fg_color='#3B8ED0',
+                                        font=("microsoft yahei", 14, 'bold'), 
+                                        text_color=("#FFFFFF"))
+
+        self.bar_2 = ctk.CTkLabel(self, width=w, height=40,
+                                        text="客戶編號",
+                                        fg_color='#3B8ED0',
+                                        font=("microsoft yahei", 14, 'bold'), 
+                                        text_color=("#FFFFFF"))
+
+        self.bar_3 = ctk.CTkLabel(self, width=w, height=40,
+                                        text="客戶名稱",
+                                        fg_color='#3B8ED0',
+                                        font=("microsoft yahei", 14, 'bold'), 
+                                        text_color=("#FFFFFF"))
+
+        self.bar_4 = ctk.CTkLabel(self, width=w, height=40,
+                                        text="手機",
+                                        fg_color='#3B8ED0',
+                                        font=("microsoft yahei", 14, 'bold'), 
+                                        text_color=("#FFFFFF"))
+
+        self.bar_5 = ctk.CTkLabel(self, width=w, height=40,
+                                        text="住址",
+                                        fg_color='#3B8ED0',
+                                        font=("microsoft yahei", 14, 'bold'), 
+                                        text_color=("#FFFFFF"))
+
+        self.bar_6 = ctk.CTkLabel(self, width=w, height=40,
+                                        text="備註",
+                                        fg_color='#3B8ED0',
+                                        font=("microsoft yahei", 14, 'bold'), 
+                                        text_color=("#FFFFFF"))
+                                        
+        self.bar_1.grid(row=0,column=0)
+        self.bar_2.grid(row=0,column=1)
+        self.bar_3.grid(row=0,column=2)
+        self.bar_4.grid(row=0,column=3)
+        self.bar_5.grid(row=0,column=4)
+        self.bar_6.grid(row=0,column=5)
 
     def InsertData(self, ID):
         conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
@@ -146,25 +177,25 @@ class right_bot_part_A(ctk.CTkScrollableFrame):
 class right_top_part_A(ctk.CTkFrame):
     
     def __init__(self, master, **kwargs):
-        super().__init__(master, **kwargs)      
+        super().__init__(master, **kwargs) 
+        self.w = kwargs["width"]  
         img = Image.open(f"{os.getcwd()}\\img\\search.png")
         btn_image = ctk.CTkImage(img,size=(25,25))
-        
         self.toplevel_window = None
         self.text_1 = ctk.CTkTextbox(self,width=250,height=50,font=("Arial",24))
         self.button_for_search = ctk.CTkButton(self,width=50,height=50,image=btn_image,text="",border_spacing=0,corner_radius=0,command=self.search)
         self.button_1 = ctk.CTkButton(self,width=200,height=50,text="新增客戶",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_add_customer)
         self.button_2 = ctk.CTkButton(self,width=200,height=50,text="編輯客戶",font=("microsoft yahei", 14, 'bold'),command=self.open_toplevel_edit_customer)
-        self.right_bot = right_bot_part_A(self,width=1380,height=500,fg_color="#EEEEEE")
+        self.right_bot = right_bot_part_A(self,width=self.w,height=500,fg_color="#EEEEEE")
 
         self.text_1.place(x=100,y=75)
         self.button_for_search.place(x=350,y=75)
-        self.button_1.place(x=900,y=40)
-        self.button_2.place(x=900,y=110)
+        self.button_1.place(x=self.w-300,y=40)
+        self.button_2.place(x=self.w-300,y=110)
         self.right_bot.place(x=0, y=200)
         
     def search(self):
-        self.right_bot = right_bot_part_A(self,width=1380,height=500,fg_color="#EEEEEE")
+        self.right_bot = right_bot_part_A(self,width=self.w,height=500,fg_color="#EEEEEE")
         self.right_bot.place(x=0, y=200)
         ID = self.text_1.get(1.0, 'end-1c')
         self.right_bot.InsertData(ID)

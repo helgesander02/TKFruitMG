@@ -5,6 +5,7 @@ import win32print
 import psycopg2
 import pandas as pd
 from collections import defaultdict
+
 class Right_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
