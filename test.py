@@ -7,7 +7,7 @@ con = psycopg2.connect(database='postgres', user='postgres',
 con.autocommit = True
 
 cur = con.cursor()
-cur.execute('''select * from order_it''')
+cur.execute(f"select * from order_it where c_id='001' and date='2023-06-05'")
 field_name = [des[0] for des in cur.description]
 result = cur.fetchall()
 test = []

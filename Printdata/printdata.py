@@ -44,7 +44,7 @@ class Left_part(ctk.CTkFrame):
             con.autocommit = True
 
             cur = con.cursor()
-            cur.execute('''select * from order_it''')
+            cur.execute(f"select * from order_it where c_id='{self.search_id.get()}' and date='{self.cal.get_date()}'")
             field_name = [des[0] for des in cur.description]
             result = cur.fetchall()
             test = []
