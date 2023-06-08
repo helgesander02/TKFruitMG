@@ -58,7 +58,7 @@ class Left_part(ctk.CTkFrame):
                 for i in range(len(test[count])):
                     better_dict[field_name[i]].append(test[count][i])
 
-            print(pd.DataFrame(better_dict).to_csv("20230609.csv",encoding="utf_8_sig"))
+            print(pd.DataFrame(better_dict).to_csv("download.csv",encoding="utf_8_sig"))
         self.search_id = ctk.CTkEntry(self,width=140,height=40,placeholder_text="客戶代號")
         self.cal = tkc.DateEntry(self)
         self.confirm = ctk.CTkButton(self,width=140,height=40,text="確認查詢",font=("Arial",20),command=search)
