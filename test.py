@@ -1,35 +1,24 @@
-import tkinter as tk
+import psycopg2
+import pandas as pd
+from collections import defaultdict
+better_dict = defaultdict(list)
+con = psycopg2.connect(database='postgres', user='postgres',
+                       password='admin')
+con.autocommit = True
 
-root = tk.Tk()
-root.geometry("350x400+200+300")
-root.title('cuteluluWindow')
-root.configure(bg="#7AFEC6")
-# root.iconbitmap('heart_green.ico')
-root.geometry('350x200')
+cur = con.cursor()
+cur.execute('''select * from order_it''')
+field_name = [des[0] for des in cur.description]
+result = cur.fetchall()
+test = []
+for i in result:
+    temp = []
+    for j in i:
+        temp.append(str(j).rstrip())
+    test.append(temp)
+# print(test)
+for count in range(len(test)):
+    for i in range(len(test[count])):
+        better_dict[field_name[i]].append(test[count][i])
 
-def fruitselect():
-    selection = ""
-    for i in checkboxes:
-        if checkboxes[i].get() == True:
-            selection = selection +fruits[i] + "\t"
-    print(selection)
-        
-lF=tk.LabelFrame(root,text="Choise your favirot fruit.",fg="#FFAAD5", bg="#7AFEC6",font=("Ravie",10,"bold"),width=30)
-lF.pack(ipadx=5,ipady=5,pady=10)
-
-fruits = {0:"Strawberry",1: "Peach",2:"mango",3:"Cherry"}
-
-checkboxes = {}
-
-for i in range(len(fruits)):
-    checkboxes[i] = tk.BooleanVar()
-    cb=tk.Checkbutton(lF,text=fruits[i],variable=checkboxes[i])
-    cb.grid(row=i+1,sticky='w')
-    print(checkboxes[i])
-
-
-
-btn = tk.Button (root,text="DOWN",width=10,command=fruitselect)
-btn.pack()
-
-root.mainloop()
+print(pd.DataFrame(better_dict).to_csv("20230609.csv",encoding="utf_8_sig"))
