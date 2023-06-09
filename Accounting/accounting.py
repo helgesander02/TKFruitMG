@@ -49,7 +49,7 @@ class right_bot_part(ctk.CTkFrame):
         self.bot.place(x=0,y=kwargs["height"]-40)
 
         self.label.place(x=10,y=0)
-        self.j_btn.place(x=1030,y=5)
+        self.j_btn.place(x=kwargs["width"]-200,y=5)
 
 class top_bar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -124,7 +124,7 @@ class left_part(ctk.CTkFrame):
                                                     )
 
         self.sell_date_entry = tkc.DateEntry(self, selectmode='day',
-                                                    font=("microsoft yahei", 30),)
+                                                    font=("microsoft yahei", 20),)
 
         self.confirm_btn = ctk.CTkButton(self,width=200,height=40,
                                                     fg_color="#3B8ED0",
@@ -142,7 +142,7 @@ class left_part(ctk.CTkFrame):
         self.right_bot = right_bot_part(self,width=kwargs["width"]-300,height=kwargs["height"]-320,fg_color="#EEEEEE")
         
         self.customer_id_entry.place(x=25,y=50)
-        self.sell_date_entry.place(x=40,y=200)
+        self.sell_date_entry.place(x=25,y=200)
         self.confirm_btn.place(x=25,y=kwargs["height"]-220)
         self.reset_btn.place(x=25,y=kwargs["height"]-160)
              

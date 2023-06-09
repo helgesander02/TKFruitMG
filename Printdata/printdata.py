@@ -31,7 +31,7 @@ class Right_part(ctk.CTkFrame):
         
         self.top_bar = ctk.CTkFrame(self,width=1180,height=40,fg_color="blue")
         self.main_body = ctk.CTkScrollableFrame(self,width=1160,height=620,fg_color="green")
-        self.download_btn = ctk.CTkButton(self.top_bar,width=200,height=40,text="確認下載",command=search)
+        self.download_btn = ctk.CTkButton(self.top_bar,width=200,height=40,text="確認下載")
         self.top_bar.grid(row=0,column=0)
         self.main_body.grid(row=1,column=0)
         self.download_btn.place(x=490,y=0)
