@@ -93,7 +93,7 @@ class top(ctk.CTkFrame):
             con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             
             cur = con.cursor()
-            cur.execute(f"select cart.o_id,goods.date from cart join goods on cart.item_id = goods.item_id where goods.date='{date.today()}' order by cart.o_id")
+            cur.execute(f"select o_id,date from goods where date='{date.today()}' order by o_id")
             dt_time = cur.fetchall()
             td = date.today()
             order_id = f"{td.year}{td.month}{td.day}"
@@ -205,14 +205,11 @@ class bot(ctk.CTkFrame):
     def save_data(self):
         con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         cur = con.cursor()
-        cur.execute(f"insert into order_form(c_id,o_id) \
-                    values('{self.save_file[0][8]}','{self.save_file[0][10]}')")
+        cur.execute(f"insert into order_form(o_id, c_id) \
+                    values('{self.save_file[0][10]}','{self.save_file[0][8]}')")
         for i in self.save_file:
-            cur.execute(f"insert into cart(o_id,item_id)\
-                        values('{i[10]}','{i[0]}')")
-            cur.execute(f"insert into goods(item_id,item_name,date,specification,size,price,quantity,sub_total,remark)\
-                        values('{i[0]}','{i[1]}','{i[9]}','{i[2]}','{i[3]}','{i[4]}','{i[5]}','{i[6]}','{i[7]}')")
-        cur.close()
+            cur.execute(f"insert into goods(o_id,item_id,item_name,date,specification,size,price,quantity,sub_total,remark)\
+                        values('{i[10]}','{i[0]}','{i[1]}','{i[9]}','{i[2]}','{i[3]}','{i[4]}','{i[5]}','{i[6]}','{i[7]}')")
         con.commit()
         con.close()
         self.remind.configure(text="已存檔")

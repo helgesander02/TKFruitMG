@@ -4,6 +4,6 @@ con = psycopg2.connect('postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02R
 
 with con:
     cur = con.cursor()
-    cur.execute(f"select cart.o_id,goods.date from cart join goods on cart.item_id = goods.item_id where goods.date='{date.today()}' order by cart.o_id")
+    cur.execute("select * from goods")
     result = cur.fetchall()
     print(result)
