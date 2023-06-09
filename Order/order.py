@@ -86,15 +86,6 @@ class entrybox(ctk.CTkFrame):
         self.subtotal.grid(row=0,column=7)
         self.remark.grid(row=0,column=8)
 
-# class ToplevelWindow(ctk.CTkToplevel):
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.geometry("150x80")
-
-#         self.label = ctk.CTkLabel(self, text="您已經存檔",font=("Arial", 20))
-#         self.label.pack(padx=20, pady=20)
-
-
 class top(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -102,7 +93,7 @@ class top(ctk.CTkFrame):
             con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             
             cur = con.cursor()
-            cur.execute(f"select order_id from order_it where date='{date.today()}' order by order_id")
+            cur.execute(f"select cart.o_id,goods.date from cart join goods on cart.item_id = goods.item_id where goods.date='{date.today()}' order by cart.o_id")
             dt_time = cur.fetchall()
             td = date.today()
             order_id = f"{td.year}{td.month}{td.day}"
@@ -113,7 +104,6 @@ class top(ctk.CTkFrame):
             else:
                 n_id = str(dt_time[-1][0]).rstrip()
                 o_id = str(int(n_id[-4:]) + 1).zfill(4)
-                # print(n_id,o_id)
                 return f"{order_id}{o_id}"
 
         self.order_id = ctk.CTkLabel(self)
@@ -174,7 +164,7 @@ class bot(ctk.CTkFrame):
             self.temp.append(self.entry_1.remark.get())
             self.temp.append(c_id.get())
             self.temp.append(cal.get_date())
-            self.temp.append(order_id)
+            self.temp.append(order_id[6:])
             self.save_file.append(self.temp)
         def exit():
             pass
@@ -215,22 +205,18 @@ class bot(ctk.CTkFrame):
     def save_data(self):
         con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         cur = con.cursor()
+        cur.execute(f"insert into order_form(c_id,o_id) \
+                    values('{self.save_file[0][8]}','{self.save_file[0][10]}')")
         for i in self.save_file:
-            cur.execute(f"insert into order_it(item_id, item_name, specification, size, price, quantity, subtotal, remark, c_id, date, order_id)\
-                            values('{i[0]}','{i[1]}','{i[2]}','{i[3]}','{i[4]}','{i[5]}','{i[6]}','{i[7]}','{i[8]}','{i[9]}','{i[10]}')")
+            cur.execute(f"insert into cart(o_id,item_id)\
+                        values('{i[10]}','{i[0]}')")
+            cur.execute(f"insert into goods(item_id,item_name,date,specification,size,price,quantity,sub_total,remark)\
+                        values('{i[0]}','{i[1]}','{i[9]}','{i[2]}','{i[3]}','{i[4]}','{i[5]}','{i[6]}','{i[7]}')")
         cur.close()
         con.commit()
         con.close()
         self.remind.configure(text="已存檔")
 
-    
-    # def open_toplevel(self,event):
-    #     if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-    #         self.toplevel_window = ToplevelWindow(self)  # create window if its None or destroyed
-    #         self.toplevel_window.attributes('-topmost','true')
-    #     else:
-    #         self.toplevel_window.focus()  # if window exists focus it
-        
 class Order_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
