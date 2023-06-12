@@ -1,4 +1,5 @@
-tk
 customtkinter
+tkcalendar
 psycopg2
+Pillow
 win32printing

@@ -6,3 +6,14 @@
 
 * Clone this repo by `git clone https://github.com/helgesander02/TKFruitMG`
 * Python libraries. Install core requirements by `pip install -r requirements.txt`
+
+## Packaging
+
+* tkcalendar Error: https://github.com/j4321/tkcalendar/issues/79#issuecomment-1509958936
+* Packaging: `pyinstaller --noconfirm --onedir --windowed --add-data "<path to python>\Lib\site-packages\customtkinter;customtkinter/" --add-data "<path to python>\Lib\site-packages\tkcalendar;tkcalendar/" --add-data "<path to python>\Lib\site-packages\babel;babel/"  "C:\Users\helge\OneDrive\桌面\Fruit\home.py"`
+
+## TODO
+
+* 所有資料 Copy 功能
+* 客戶編輯與品項編輯 應該輸入編號後自動把剩下的資料填入
+* 明細單列印

@@ -1,7 +1,6 @@
 import customtkinter as ctk
 import os
 from PIL import ImageTk,Image
-from typing import Optional, Tuple, Union
 
 from Company.company import Company_Main_Frame
 from Order.order import Order_Main_Frame
