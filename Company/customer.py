@@ -32,11 +32,11 @@ class Top_level_edit_customer(ctk.CTkToplevel):
         address = ctk.CTkLabel(self, text="　　住址：")
         remark = ctk.CTkLabel(self, text="　　備註：")
 
-        id_entry = ctk.CTkEntry(self,border_width=0)
-        name_entry = ctk.CTkEntry(self,border_width=0)
-        phone_entry = ctk.CTkEntry(self,border_width=0)
-        address_entry = ctk.CTkEntry(self,border_width=0)
-        remark_entry = ctk.CTkTextbox(self,width=140,height=80)
+        self.id_entry = ctk.CTkEntry(self,border_width=0)
+        self.name_entry = ctk.CTkEntry(self,border_width=0)
+        self.phone_entry = ctk.CTkEntry(self,border_width=0)
+        self.address_entry = ctk.CTkEntry(self,border_width=0)
+        self.remark_entry = ctk.CTkTextbox(self,width=140,height=80)
 
         customer_id.place(x=20,y=20)
         name.place(x=20,y=60)
@@ -47,11 +47,11 @@ class Top_level_edit_customer(ctk.CTkToplevel):
         confirm.place(x=25,y=280)
         cancel.place(x=145,y=280)
 
-        id_entry.place(x=85,y=20)
-        name_entry.place(x=85,y=60)
-        phone_entry.place(x=85,y=100)
-        address_entry.place(x=85,y=140)
-        remark_entry.place(x=85,y=180)
+        self.id_entry.place(x=85,y=20)
+        self.name_entry.place(x=85,y=60)
+        self.phone_entry.place(x=85,y=100)
+        self.address_entry.place(x=85,y=140)
+        self.remark_entry.place(x=85,y=180)
 
 class Top_level_add_customer(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
@@ -208,8 +208,18 @@ class right_top_part_A(ctk.CTkFrame):
             self.toplevel_window.focus()
 
     def open_toplevel_edit_customer(self):
+        conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        with conn:
+            cur = conn.cursor()
+            cur.execute(f"select * from customer where c_id='{self.text_1.get(1.0, 'end-1c')}'")
+            result = cur.fetchone()
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_edit_customer(self)
             self.toplevel_window.attributes('-topmost','true')
+            self.toplevel_window.id_entry.insert(0, str(result[0]).rstrip())
+            self.toplevel_window.name_entry.insert(0, str(result[1]).rstrip())
+            self.toplevel_window.phone_entry.insert(0, str(result[2]).rstrip())
+            self.toplevel_window.address_entry.insert(0, str(result[3]).rstrip())
+            self.toplevel_window.remark_entry.insert(0, str(result[4]).rstrip())
         else:
             self.toplevel_window.focus()

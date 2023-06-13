@@ -1,21 +1,20 @@
-import os, sys
-import win32print
-printer_name = win32print.GetDefaultPrinter ()
-drivers = win32print.EnumPrinterDrivers(None, None, 2)
-hPrinter = win32print.OpenPrinter(printer_name)
-printer_info = win32print.GetPrinter(hPrinter, 2)
-for driver in drivers:
-    if driver["Name"] == printer_info["pDriverName"]:
-        printer_driver = driver
-raw_type = "XPS_PASS" if printer_driver["Version"] == 4 else "RAW"
-raw_data = "This is a test"
+import psycopg2
+import sys
+
+
+con = None
+
 try:
-  hJob = win32print.StartDocPrinter(hPrinter, 1, ("test of raw data", None, raw_type))
-  try:
-    win32print.StartPagePrinter(hPrinter)
-    win32print.WritePrinter(hPrinter, raw_data.encode())
-    win32print.EndPagePrinter(hPrinter)
-  finally:
-    win32print.EndDocPrinter(hPrinter)
+
+    con = psycopg2.connect(database='postgres', user='postgres', password='admin')
+    cur = con.cursor()
+    cur.execute('SELECT * FROM customer')
+    f = open('test.sql', 'w')
+    for row in cur:
+        f.write("insert into t values (" + str(row) + ");")
+except psycopg2.DatabaseError as e:
+    print('Error %s',e)
+    sys.exit(1)
 finally:
-  win32print.ClosePrinter(hPrinter)
+    if con:
+        con.close()

@@ -43,15 +43,15 @@ class Top_level_edit_item(ctk.CTkToplevel):
             self.destroy()
         item_id = ctk.CTkLabel(self,text="品項編號：")
         item_name = ctk.CTkLabel(self,text="品項名稱：")
-        item_id_entry = ctk.CTkEntry(self)
-        item_name_entry = ctk.CTkEntry(self)
+        self.item_id_entry = ctk.CTkEntry(self)
+        self.item_name_entry = ctk.CTkEntry(self)
         confirm = ctk.CTkButton(self,text="確認",command=confirm)
         cancel = ctk.CTkButton(self,text="取消",command=cancel)
 
         item_id.grid(row=0, column=0,padx=10,pady=10)
         item_name.grid(row=1, column=0,padx=10,pady=10)
-        item_id_entry.grid(row=0, column=1,padx=10,pady=10)
-        item_name_entry.grid(row=1, column=1,padx=10,pady=10)
+        self.item_id_entry.grid(row=0, column=1,padx=10,pady=10)
+        self.item_name_entry.grid(row=1, column=1,padx=10,pady=10)
         cancel.grid(row=2,column=1,padx=10,pady=10)
         confirm.grid(row=2,column=0,padx=10,pady=10)
 
@@ -126,9 +126,16 @@ class right_top_part_B(ctk.CTkFrame):
             self.toplevel_window.focus()
     
     def open_toplevel_edit_item(self):
+        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        with con:
+            cur = con.cursor()
+            cur.execute(f"select * from item where item_id='{self.text_1.get(1.0, 'end-1c')}'")
+            result = cur.fetchone()
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_edit_item(self)
             self.toplevel_window.attributes('-topmost','true')
+            self.toplevel_window.item_id_entry.insert(0, str(result[1]).rstrip())
+            self.toplevel_window.item_name_entry.insert(0, str(result[2]).rstrip())
         else:
             self.toplevel_window.focus()
 
