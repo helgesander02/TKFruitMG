@@ -3,3 +3,5 @@ tkcalendar
 psycopg2
 Pillow
 win32printing
+
+pyinstaller
