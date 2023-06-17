@@ -216,10 +216,13 @@ class right_top_part_A(ctk.CTkFrame):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_edit_customer(self)
             self.toplevel_window.attributes('-topmost','true')
-            self.toplevel_window.id_entry.insert(0, str(result[0]).rstrip())
-            self.toplevel_window.name_entry.insert(0, str(result[1]).rstrip())
-            self.toplevel_window.phone_entry.insert(0, str(result[2]).rstrip())
-            self.toplevel_window.address_entry.insert(0, str(result[3]).rstrip())
-            self.toplevel_window.remark_entry.insert(0, str(result[4]).rstrip())
+            try:
+                self.toplevel_window.id_entry.insert(0, str(result[0]).rstrip())
+                self.toplevel_window.name_entry.insert(0, str(result[1]).rstrip())
+                self.toplevel_window.phone_entry.insert(0, str(result[2]).rstrip())
+                self.toplevel_window.address_entry.insert(0, str(result[3]).rstrip())
+                self.toplevel_window.remark_entry.insert(0, str(result[4]).rstrip())
+            except TypeError as e:
+                pass
         else:
             self.toplevel_window.focus()
