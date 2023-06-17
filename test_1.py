@@ -5,7 +5,6 @@ import sys
 con = None
 
 try:
-
     con = psycopg2.connect(database='postgres', user='postgres', password='admin')
     cur = con.cursor()
     cur.execute('SELECT * FROM customer')
