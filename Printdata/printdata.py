@@ -1,5 +1,7 @@
 import customtkinter as ctk
 import tkcalendar as tkc
+from tkinter import ttk
+from tkinter import filedialog
 import os, sys
 import psycopg2
 import win32print
@@ -28,8 +30,7 @@ class Right_part(ctk.CTkFrame):
                     win32print.EndDocPrinter (hPrinter)
             finally:
                 win32print.ClosePrinter (hPrinter)
-        def main_print():
-            pass
+        w = kwargs["width"] / 7
         self.top_bar = ctk.CTkFrame(self,width=1180,height=40,fg_color="blue")
         self.main_body = ctk.CTkScrollableFrame(self,width=1160,height=620,fg_color="green")
         self.download_btn = ctk.CTkButton(self.top_bar,width=200,height=40,text="確認下載",command=printer)
@@ -54,12 +55,35 @@ class Left_part(ctk.CTkFrame):
                 for j in i:
                     temp.append(str(j).rstrip())
                 test.append(temp)
-            print(test)
             for count in range(len(test)):
                 for i in range(len(test[count])):
                     better_dict[field_name[i]].append(test[count][i])
 
-            print(pd.DataFrame(better_dict).to_csv("download.csv",encoding="utf_8_sig"))
+            pd.DataFrame(better_dict).to_excel("download.xlsx")
+            # ,encoding="utf_8_sig"
+        # def op():
+        #     sfname = filedialog.askopenfilename(title='選擇', filetypes=[('Excel', '*.xlsx'), ('All Files', '*')])
+        #     return sfname
+        # def read(sfname):
+        #     df = pd.read_excel(sfname,header=0)
+        #     cols = list(df.columns)
+        #     return df,cols
+        # def show(frame,df,cols):
+        #     tree = ttk.Treeview(frame)
+        #     tree.pack()
+        #     tree["columns"] = cols
+        #     for i in cols:
+        #         tree.column(i,anchor="center")
+        #         tree.heading(i,text=i,anchor='center')
+        #     for index, row in df.iterrows():
+        #         tree.insert("",'end',text = index,values=list(row))
+        #     return tree
+        # def oas(event):
+        #     # global root
+        #     filename = op()
+        #     data,c = read(filename)
+        #     tree = show(self.right.main_body,data,c)
+        #     tree.place(x=0,y=0)
         self.search_id = ctk.CTkEntry(self,width=140,height=40,placeholder_text="客戶代號")
         self.cal = tkc.DateEntry(self)
         self.confirm = ctk.CTkButton(self,width=140,height=40,text="確認查詢",font=("Arial",20),command=search)
@@ -71,6 +95,7 @@ class Left_part(ctk.CTkFrame):
         self.cal.place(x=20,y=75)
         self.confirm.place(x=20,y=600)
         self.reset.place(x=20,y=650)
+        # self.confirm.bind("<Button-1>", oas)
 class Printdata_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)

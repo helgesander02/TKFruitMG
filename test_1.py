@@ -1,19 +1,25 @@
-import psycopg2
-import sys
+# Importing tkinter to make gui in python
+from tkinter import*
 
+# Importing tkPDFViewer to place pdf file in gui.
+# In tkPDFViewer library there is
+# an tkPDFViewer module. That I have imported as pdf
+from tkPDFViewer import tkPDFViewer as pdf
 
-con = None
+# Initializing tk
+root = Tk()
 
-try:
-    con = psycopg2.connect(database='postgres', user='postgres', password='admin')
-    cur = con.cursor()
-    cur.execute('SELECT * FROM customer')
-    f = open('test.sql', 'w')
-    for row in cur:
-        f.write("insert into t values (" + str(row) + ");")
-except psycopg2.DatabaseError as e:
-    print('Error %s',e)
-    sys.exit(1)
-finally:
-    if con:
-        con.close()
+# Set the width and height of our root window.
+root.geometry("550x750")
+
+# creating object of ShowPdf from tkPDFViewer.
+v1 = pdf.ShowPdf()
+
+# Adding pdf location and width and height.
+v2 = v1.pdf_view(root,
+				pdf_location = r"location",
+				width = 50, height = 100)
+
+# Placing Pdf in my gui.
+v2.pack()
+root.mainloop()

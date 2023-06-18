@@ -3,3 +3,4 @@ tkcalendar
 psycopg2
 Pillow
 win32print
+openpyxl
