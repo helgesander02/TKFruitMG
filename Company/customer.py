@@ -61,11 +61,11 @@ class Top_level_add_customer(ctk.CTkToplevel):
             conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             cur = conn.cursor()
             cur.execute(f"INSERT INTO customer (c_id, name, phone, address, remark) \
-                            VALUES('{id_entry.get()}', \
-                            '{name_entry.get()}', \
-                            '{phone_entry.get()}', \
-                            '{address_entry.get()}' \
-                            ,'{remark_entry.get(1.0,'end-1c')}') \
+                            VALUES('{self.id_entry.get()}', \
+                            '{self.name_entry.get()}', \
+                            '{self.phone_entry.get()}', \
+                            '{self.address_entry.get()}' \
+                            ,'{self.remark_entry.get(1.0,'end-1c')}') \
                             ")
 
             conn.commit()

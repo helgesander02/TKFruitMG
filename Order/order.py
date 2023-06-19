@@ -89,23 +89,6 @@ class entrybox(ctk.CTkFrame):
 class top(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        def select_od_id():
-            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
-            
-            cur = con.cursor()
-            cur.execute(f"select o_id,date from goods where date='{date.today()}' order by o_id")
-            dt_time = cur.fetchall()
-            td = date.today()
-            order_id = f"{td.year}{td.month}{td.day}"
-            cur.close()
-            con.close()
-            if len(dt_time) == 0:
-                return f"{order_id}0001"
-            else:
-                n_id = str(dt_time[-1][0]).rstrip()
-                o_id = str(int(n_id[-4:]) + 1).zfill(4)
-                return f"{order_id}{o_id}"
-
         self.order_id = ctk.CTkLabel(self)
         self.order_id.place(x=kwargs["width"]-400,y=50)
 
@@ -116,9 +99,26 @@ class top(ctk.CTkFrame):
         self.cal.place(x=450,y=40)
 
         self.c_id.focus()
-        self.order_id.configure(text=f"訂貨單編號：{select_od_id()}", font=("microsoft yahei", 24, 'bold'))
+        self.order_id.configure(text=f"訂貨單編號：{self.select_od_id()}", font=("microsoft yahei", 24, 'bold'))
         self.bot = bot(self,width=kwargs["width"],height=kwargs["height"],c_id=self.c_id,cal=self.cal,order_id=self.order_id.cget("text"))
         self.bot.place(x=0,y=120)
+
+    def select_od_id(self):
+        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            
+        cur = con.cursor()
+        cur.execute(f"select o_id,date from goods where date='{date.today()}' order by o_id")
+        dt_time = cur.fetchall()
+        td = date.today()
+        order_id = f"{td.year}{td.month}{td.day}"
+        cur.close()
+        con.close()
+        if len(dt_time) == 0:
+            return f"{order_id}0001"
+        else:
+            n_id = str(dt_time[-1][0]).rstrip()
+            o_id = str(int(n_id[-4:]) + 1).zfill(4)
+            return f"{order_id}{o_id}"
         
 class bot(ctk.CTkFrame):
     def __init__(self, master, c_id, cal,order_id, **kwargs):
@@ -177,10 +177,10 @@ class bot(ctk.CTkFrame):
 
         self.bot_frame = ctk.CTkFrame(self,width=self.w,height=40,fg_color="#EEEEEE")
         self.bot_frame.place(x=0,y=kwargs["height"]-160)       
-        self.btn_exit = ctk.CTkButton(self.bot_frame,width=120,height=20,text="重設訂單", font=("microsoft yahei", 12, 'bold'))
-        self.btn_save = ctk.CTkButton(self.bot_frame,width=120,height=20,text="存檔", font=("microsoft yahei", 12, 'bold') ,command=self.save_data)
-        self.btn_exit.place(x=self.w-300,y=10)
-        self.btn_save.place(x=self.w-150,y=10)
+        self.btn_exit = ctk.CTkButton(self.bot_frame,width=150,height=30,text="重設訂單", font=("microsoft yahei", 14, 'bold'))
+        self.btn_save = ctk.CTkButton(self.bot_frame,width=150,height=30,text="存檔", font=("microsoft yahei", 14, 'bold') ,command=self.save_data)
+        self.btn_exit.place(x=self.w-400,y=5)
+        self.btn_save.place(x=self.w-200,y=5)
         self.total = ctk.CTkLabel(self.bot_frame,text="總計：",font=("microsoft yahei", 20, 'bold'))
         self.total.place(x=10,y=7)
 
