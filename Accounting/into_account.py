@@ -85,6 +85,8 @@ class left_part(ctk.CTkFrame):
 
         self.right_top = right_top_part(self,width=self.w-450,height=330,fg_color="#EEEEEE")
         self.right_top.mid.insertdata(self.o_id)
+        self.right_top.bot.sum.configure(text=f"收款總額：{self.right_top.mid.sum}")
+
         self.right_bot = right_bot_part(self,width=self.w-450,height=self.h-450,fg_color="#EEEEEE")
         self.right_bot.bot.reset_btn.bind("<Button-1>", rightbot_reset)
         self.right_bot.bot.confirm_btn.bind("<Button-1>", rightbot_confirm)
@@ -167,7 +169,7 @@ class right_top_mid(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.w = kwargs["width"]
-        self.all_entry = []
+        self.sum = 0
 
     def insertdata(self, o_id):
         con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")       
@@ -190,18 +192,13 @@ class right_top_mid(ctk.CTkScrollableFrame):
             entry.bar_3.insert(0, str(result[row][3]).rstrip())
             entry.bar_4.insert(0, str(result[row][4]).rstrip())
             entry.bar_5.insert(0, str(result[row][5]).rstrip())
-            self.all_entry.append(entry)
-
+            self.sum += int(result[row][3])-int(result[row][4])
         
 class right_top_botbar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.sum = ctk.CTkLabel(self,text="收款總額：", font=("microsoft yahei", 14, 'bold'))
-
-        self.over = ctk.CTkLabel(self,text="餘額：", font=("microsoft yahei", 14, 'bold'))
-
-        self.sum.place(x=kwargs["width"]-500,y=5)
-        self.over.place(x=kwargs["width"]-250,y=5)
+        self.sum.place(x=kwargs["width"]-200,y=5)
 
 class right_bot_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):

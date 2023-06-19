@@ -104,7 +104,6 @@ class right_bot_part(ctk.CTkFrame):
         self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-80, fg_color="#EEEEEE")
         self.select_order = []
         self.bot = ctk.CTkFrame(self, width=self.w, height=40)
-        self.label = ctk.CTkLabel(self.bot, width=50, height=40, text="總計：" ,font=("microsoft yahei", 20, 'bold'))
         self.j_btn = ctk.CTkButton(self.bot, width=150, height=30, text="入賬" ,font=("microsoft yahei", 14, 'bold'))
         self.j_text = ctk.CTkLabel(self.bot, width=50, height=40, text="" ,font=("microsoft yahei", 20, 'bold'), text_color="#FF0000")
 
@@ -112,7 +111,6 @@ class right_bot_part(ctk.CTkFrame):
         self.mid.place(x=0,y=40)
         self.bot.place(x=0,y=self.h-40)
 
-        self.label.place(x=10,y=0)
         self.j_btn.place(x=self.w-200,y=5)
 
     def InsertData(self, c_id, date1, date2, chk):
@@ -140,9 +138,7 @@ class right_bot_part(ctk.CTkFrame):
         cur.close()
         con.close()
 
-        s_total = 0
         for i in range(len(result1)):
-            s_total += int(result1[i][2])
             al = 0
             overage = result1[i][2]
             for j in range(len(result2)):
@@ -160,8 +156,6 @@ class right_bot_part(ctk.CTkFrame):
            
             self.select_order.append(it)              
             it.pack()
-
-        self.label.configure(text="總計："+str(s_total))
 
     def SelectOrder(self):
         select_chkbox = []
