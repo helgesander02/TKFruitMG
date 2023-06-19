@@ -134,8 +134,11 @@ class right_top_part_B(ctk.CTkFrame):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_edit_item(self)
             self.toplevel_window.attributes('-topmost','true')
-            self.toplevel_window.item_id_entry.insert(0, str(result[1]).rstrip())
-            self.toplevel_window.item_name_entry.insert(0, str(result[2]).rstrip())
+            try:
+                self.toplevel_window.item_id_entry.insert(0, str(result[1]).rstrip())
+                self.toplevel_window.item_name_entry.insert(0, str(result[2]).rstrip())
+            except TypeError as e:
+                pass
         else:
             self.toplevel_window.focus()
 

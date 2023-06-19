@@ -1,4 +1,5 @@
 import customtkinter as ctk
+<<<<<<< HEAD
 import psycopg2
 
 from .into_top_level import Top_level_view_information, Top_level_item
@@ -162,10 +163,13 @@ class right_top_topbar(ctk.CTkFrame):
         self.bar_3.grid(row=0,column=2)
         self.bar_4.grid(row=0,column=3)
         self.bar_5.grid(row=0,column=4)
+=======
+>>>>>>> a1f0a3d95b87ae7e1f5b9ba1cf35e4d7eeb62881
 
 class right_top_mid(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+<<<<<<< HEAD
         self.w = kwargs["width"]
         self.all_entry = []
 
@@ -356,3 +360,8 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
     
     
           
+=======
+
+        test = ctk.CTkLabel(self,text="測試測試",fg_color="yellow")
+        test.grid(row=0,column=0)
+>>>>>>> a1f0a3d95b87ae7e1f5b9ba1cf35e4d7eeb62881

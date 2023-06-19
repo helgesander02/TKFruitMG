@@ -1,7 +1,13 @@
 customtkinter
 tkcalendar
 psycopg2
+<<<<<<< HEAD
 win32print
 pandas
 
 pyinstaller
+=======
+Pillow
+win32print
+openpyxl
+>>>>>>> a1f0a3d95b87ae7e1f5b9ba1cf35e4d7eeb62881

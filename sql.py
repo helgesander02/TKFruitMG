@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import psycopg2
 from datetime import date
 con = psycopg2.connect('postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop')
@@ -51,3 +52,10 @@ with con:
                     overage -= result2[j][1]
 
             print(al, overage)"""
+=======
+import gzip
+import delegator
+with gzip.open('backup.gz', 'wb') as f:
+    c = delegator.run('pg_dump PGPASSWORD=wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1 psql -h dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com -U fruitshop_user fruitshop')
+    f.write(c.out.encode('utf-8'))
+>>>>>>> a1f0a3d95b87ae7e1f5b9ba1cf35e4d7eeb62881

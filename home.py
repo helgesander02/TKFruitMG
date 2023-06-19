@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import os
+import sv_dt
 from PIL import ImageTk,Image
 
 from Company.company import Company_Main_Frame
@@ -30,19 +31,22 @@ class Select_Frame(ctk.CTkFrame):
         self.lab_other.grid(row=0, column=2)
 
     def open_copy(self):
+            
             if self.copymsg is None or not self.copymsg.winfo_exists():
                 self.copymsg = CopyMsg(self)
                 self.copymsg.focus()
+                self.copymsg.attributes('-topmost','true')
+                sv_dt.sv()
             else:
                 self.copymsg.focus()
 
 class CopyMsg(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.geometry("400x300")
+        self.geometry("200x100")
 
-        self.label = ctk.CTkLabel(self, text="是否要處存資料?")
-        self.label.pack(padx=20, pady=20)      
+        self.label = ctk.CTkLabel(self, text="已成功儲存資料")
+        self.label.pack(padx=20, pady=20)
 
 class Home_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):

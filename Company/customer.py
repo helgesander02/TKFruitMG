@@ -10,11 +10,11 @@ class Top_level_edit_customer(ctk.CTkToplevel):
         def click():
             conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             cur = conn.cursor()
-            cur.execute(f"UPDATE customer SET name = '{name_entry.get()}', \
-                            phone = '{phone_entry.get()}', \
-                            address = '{address_entry.get()}', \
-                            remark = '{remark_entry.get(1.0,'end-1c')}' \
-                            WHERE c_id = '{id_entry.get()}'")
+            cur.execute(f"UPDATE customer SET name = '{self.name_entry.get()}', \
+                            phone = '{self.phone_entry.get()}', \
+                            address = '{self.address_entry.get()}', \
+                            remark = '{self.remark_entry.get(1.0,'end-1c')}' \
+                            WHERE c_id = '{self.id_entry.get()}'")
 
             conn.commit()
             conn.close()
@@ -216,10 +216,13 @@ class right_top_part_A(ctk.CTkFrame):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_edit_customer(self)
             self.toplevel_window.attributes('-topmost','true')
-            self.toplevel_window.id_entry.insert(0, str(result[0]).rstrip())
-            self.toplevel_window.name_entry.insert(0, str(result[1]).rstrip())
-            self.toplevel_window.phone_entry.insert(0, str(result[2]).rstrip())
-            self.toplevel_window.address_entry.insert(0, str(result[3]).rstrip())
-            self.toplevel_window.remark_entry.insert(0, str(result[4]).rstrip())
+            try:
+                self.toplevel_window.id_entry.insert(0, str(result[0]).rstrip())
+                self.toplevel_window.name_entry.insert(0, str(result[1]).rstrip())
+                self.toplevel_window.phone_entry.insert(0, str(result[2]).rstrip())
+                self.toplevel_window.address_entry.insert(0, str(result[3]).rstrip())
+                self.toplevel_window.remark_entry.insert(0, str(result[4]).rstrip())
+            except TypeError as e:
+                pass
         else:
             self.toplevel_window.focus()
