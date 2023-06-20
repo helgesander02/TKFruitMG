@@ -8,7 +8,7 @@ class Top_level_edit_customer(ctk.CTkToplevel):
         super().__init__(*args, **kwargs)
 
         def click():
-            conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            conn = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             cur = conn.cursor()
             cur.execute(f"UPDATE customer SET name = '{self.name_entry.get()}', \
                             phone = '{self.phone_entry.get()}', \
@@ -58,7 +58,7 @@ class Top_level_add_customer(ctk.CTkToplevel):
         super().__init__(*args, **kwargs)
 
         def click():
-            conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            conn = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             cur = conn.cursor()
             cur.execute(f"INSERT INTO customer (c_id, name, phone, address, remark) \
                             VALUES('{self.id_entry.get()}', \
@@ -153,7 +153,7 @@ class right_bot_part_A(ctk.CTkScrollableFrame):
         self.bar_6.grid(row=0,column=5)
 
     def InsertData(self, ID):
-        conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        conn = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = conn.cursor()
         if ID == '':
             cur.execute(f"SELECT * FROM customer")
@@ -208,7 +208,7 @@ class right_top_part_A(ctk.CTkFrame):
             self.toplevel_window.focus()
 
     def open_toplevel_edit_customer(self):
-        conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        conn = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         with conn:
             cur = conn.cursor()
             cur.execute(f"select * from customer where c_id='{self.text_1.get(1.0, 'end-1c')}'")

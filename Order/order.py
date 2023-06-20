@@ -104,7 +104,7 @@ class top(ctk.CTkFrame):
         self.bot.place(x=0,y=120)
 
     def select_od_id(self):
-        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             
         cur = con.cursor()
         cur.execute(f"select o_id,date from goods where date='{date.today()}' order by o_id")
@@ -134,7 +134,7 @@ class bot(ctk.CTkFrame):
             self.entry_1.quantity.bind('<Tab>',total_price)
 
         def item_name(event):
-            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
 
             cur = con.cursor()
             cur.execute(f"SELECT item_name from item where item_id = '{self.entry_1.item_id.get()}'")
@@ -203,7 +203,7 @@ class bot(ctk.CTkFrame):
         self.entry_1.quantity.bind('<Tab>',total_price)
 
     def save_data(self):
-        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = con.cursor()
         cur.execute(f"insert into order_form(o_id, c_id) \
                     values('{self.save_file[0][10]}','{self.save_file[0][8]}')")

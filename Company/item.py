@@ -8,7 +8,7 @@ class Top_level_add_item(ctk.CTkToplevel):
         super().__init__(master, **kwargs)
         # self.geometry("200x200")
         def confirm():
-            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             with con:
                 cur = con.cursor()
                 cur.execute(f"INSERT INTO item(item_id, item_name) VALUES('{item_id_entry.get()}','{item_name_entry.get()}')")
@@ -33,7 +33,7 @@ class Top_level_edit_item(ctk.CTkToplevel):
     def __init__(self,master, **kwargs):
         super().__init__(master, **kwargs)
         def confirm():
-            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             with con:
                 cur = con.cursor()
                 cur.execute(f"UPDATE item SET item_name = '{item_name_entry.get()}' \
@@ -70,7 +70,7 @@ class right_bot_part_B(ctk.CTkScrollableFrame):
         
 
     def InsertData(self, ID):
-        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = con.cursor()
         if ID == '':
             cur.execute(f"SELECT * FROM item")
@@ -126,7 +126,7 @@ class right_top_part_B(ctk.CTkFrame):
             self.toplevel_window.focus()
     
     def open_toplevel_edit_item(self):
-        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         with con:
             cur = con.cursor()
             cur.execute(f"select * from item where item_id='{self.text_1.get(1.0, 'end-1c')}'")
