@@ -7,75 +7,81 @@ class Top_level_add_item(ctk.CTkToplevel):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         # self.geometry("200x200")
-        def confirm():
+        def confirm(event):
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             with con:
                 cur = con.cursor()
-                cur.execute(f"INSERT INTO item(item_id, item_name) VALUES('{item_id_entry.get()}','{item_name_entry.get()}')")
+                cur.execute(f"INSERT INTO item(item_id, item_name) VALUES('{self.item_id_entry.get()}','{self.item_name_entry.get()}')")
             self.destroy()
-        def cancel():
-            self.destroy()
-        item_id = ctk.CTkLabel(self,text="品項編號：")
-        item_name = ctk.CTkLabel(self,text="品項名稱：")
-        item_id_entry = ctk.CTkEntry(self)
-        item_name_entry = ctk.CTkEntry(self)
-        confirm = ctk.CTkButton(self,text="確認",command=confirm)
-        cancel = ctk.CTkButton(self,text="取消",command=cancel)
 
-        item_id.grid(row=0, column=0,padx=10,pady=10)
-        item_name.grid(row=1, column=0,padx=10,pady=10)
-        item_id_entry.grid(row=0, column=1,padx=10,pady=10)
-        item_name_entry.grid(row=1, column=1,padx=10,pady=10)
-        cancel.grid(row=2,column=1,padx=10,pady=10)
-        confirm.grid(row=2,column=0,padx=10,pady=10)
+        def cancel(event):
+            self.destroy()
+
+        self.item_id = ctk.CTkLabel(self,text="品項編號：")
+        self.item_name = ctk.CTkLabel(self,text="品項名稱：")
+        self.item_id_entry = ctk.CTkEntry(self)
+        self.item_name_entry = ctk.CTkEntry(self)
+        self.confirm = ctk.CTkButton(self,text="確認",command=confirm)
+        self.confirm.bind('<Button-1>', confirm)
+        self.cancel = ctk.CTkButton(self,text="取消",command=cancel)
+        self.cancel = ctk.CTkButton(self,text="取消")
+
+        self.item_id.grid(row=0, column=0,padx=10,pady=10)
+        self.item_name.grid(row=1, column=0,padx=10,pady=10)
+        self.item_id_entry.grid(row=0, column=1,padx=10,pady=10)
+        self.item_name_entry.grid(row=1, column=1,padx=10,pady=10)
+        self.cancel.grid(row=2,column=1,padx=10,pady=10)
+        self.confirm.grid(row=2,column=0,padx=10,pady=10)
 
 class Top_level_edit_item(ctk.CTkToplevel):
     def __init__(self,master, **kwargs):
         super().__init__(master, **kwargs)
-        def confirm():
+        def confirm(event):
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             with con:
                 cur = con.cursor()
-                cur.execute(f"UPDATE item SET item_name = '{item_name_entry.get()}' \
-                            WHERE item_id = '{item_id_entry.get()}'")
+                cur.execute(f"UPDATE item SET item_name = '{self.item_name_entry.get()}' \
+                            WHERE item_id = '{self.item_id_entry.get()}'")
             self.destroy()
-        def cancel():
+
+        def cancel(event):
             self.destroy()
-        item_id = ctk.CTkLabel(self,text="品項編號：")
-        item_name = ctk.CTkLabel(self,text="品項名稱：")
+
+        self.item_id = ctk.CTkLabel(self,text="品項編號：")
+        self.item_name = ctk.CTkLabel(self,text="品項名稱：")
         self.item_id_entry = ctk.CTkEntry(self)
         self.item_name_entry = ctk.CTkEntry(self)
-        confirm = ctk.CTkButton(self,text="確認",command=confirm)
-        cancel = ctk.CTkButton(self,text="取消",command=cancel)
+        self.confirm = ctk.CTkButton(self,text="確認")
+        self.confirm.bind('<Button-1>', confirm)
+        self.cancel = ctk.CTkButton(self,text="取消")
+        self.cancel.bind('<Button-1>', cancel)
 
-        item_id.grid(row=0, column=0,padx=10,pady=10)
-        item_name.grid(row=1, column=0,padx=10,pady=10)
+        self.item_id.grid(row=0, column=0,padx=10,pady=10)
+        self.item_name.grid(row=1, column=0,padx=10,pady=10)
         self.item_id_entry.grid(row=0, column=1,padx=10,pady=10)
         self.item_name_entry.grid(row=1, column=1,padx=10,pady=10)
-        cancel.grid(row=2,column=1,padx=10,pady=10)
-        confirm.grid(row=2,column=0,padx=10,pady=10)
+        self.cancel.grid(row=2,column=1,padx=10,pady=10)
+        self.confirm.grid(row=2,column=0,padx=10,pady=10)
 
 class right_bot_part_B(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        w = kwargs["width"]/6
-        self.bar_1 = ctk.CTkLabel(self, width=w, height=40,text="序號",fg_color='#3B8ED0',font=("microsoft yahei", 14, 'bold'), text_color=("#FFFFFF"))
-        self.bar_2 = ctk.CTkLabel(self, width=w, height=40,text="品項編號",fg_color='#3B8ED0',font=("microsoft yahei", 14, 'bold'), text_color=("#FFFFFF"))
-        self.bar_3 = ctk.CTkLabel(self, width=w, height=40,text="品項名稱",fg_color='#3B8ED0',font=("microsoft yahei", 14, 'bold'), text_color=("#FFFFFF"))
-        self.bar_4 = ctk.CTkLabel(self, width=w+w+w, height=40,text="",fg_color='#3B8ED0')
+        w = kwargs["width"]/5
+        self.bar_1 = ctk.CTkLabel(self, width=w, height=40,text="品項編號",fg_color='#3B8ED0',font=("microsoft yahei", 14, 'bold'), text_color=("#FFFFFF"))
+        self.bar_2 = ctk.CTkLabel(self, width=w, height=40,text="品項名稱",fg_color='#3B8ED0',font=("microsoft yahei", 14, 'bold'), text_color=("#FFFFFF"))
+        self.bar_3 = ctk.CTkLabel(self, width=w+w+w, height=40,text="",fg_color='#3B8ED0')
         self.bar_1.grid(row=0,column=0)
         self.bar_2.grid(row=0,column=1)
         self.bar_3.grid(row=0,column=2)
-        self.bar_4.grid(row=0,column=3)
         
 
     def InsertData(self, ID):
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = con.cursor()
         if ID == '':
-            cur.execute(f"SELECT * FROM item")
+            cur.execute(f"SELECT * FROM item ORDER BY item_id")
         else:
-            cur.execute(f"SELECT * FROM item WHERE item_id = '{ID}'")
+            cur.execute(f"SELECT * FROM item WHERE item_id = '{ID}' ORDER BY item_id")
         result = cur.fetchall()
         row = 1
         for i in result:
@@ -135,8 +141,8 @@ class right_top_part_B(ctk.CTkFrame):
             self.toplevel_window = Top_level_edit_item(self)
             self.toplevel_window.attributes('-topmost','true')
             try:
-                self.toplevel_window.item_id_entry.insert(0, str(result[1]).rstrip())
-                self.toplevel_window.item_name_entry.insert(0, str(result[2]).rstrip())
+                self.toplevel_window.item_id_entry.insert(0, str(result[0]).rstrip())
+                self.toplevel_window.item_name_entry.insert(0, str(result[1]).rstrip())
             except TypeError as e:
                 pass
         else:

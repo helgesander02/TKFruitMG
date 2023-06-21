@@ -7,7 +7,7 @@ class Top_level_edit_customer(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        def click():
+        def click(event):
             conn = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             cur = conn.cursor()
             cur.execute(f"UPDATE customer SET name = '{self.name_entry.get()}', \
@@ -20,17 +20,19 @@ class Top_level_edit_customer(ctk.CTkToplevel):
             conn.close()
             self.destroy()
 
-        def cancel():
+        def cancel(event):
             self.destroy()
 
         self.geometry("250x325")
-        confirm = ctk.CTkButton(self,width=80,height=15,text="確認",command=click)
-        cancel = ctk.CTkButton(self,width=80,height=15,text="取消",command=cancel)
-        customer_id = ctk.CTkLabel(self, text="客戶編號：")
-        name = ctk.CTkLabel(self, text="　　名稱：")
-        phone = ctk.CTkLabel(self, text="　　手機：")
-        address = ctk.CTkLabel(self, text="　　住址：")
-        remark = ctk.CTkLabel(self, text="　　備註：")
+        self.confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
+        self.confirm.bind('<Button-1>', click)
+        self.cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
+        self.cancel.bind('<Button-1>', cancel)
+        self.customer_id = ctk.CTkLabel(self, text="客戶編號：")
+        self.name = ctk.CTkLabel(self, text="　　名稱：")
+        self.phone = ctk.CTkLabel(self, text="　　手機：")
+        self.address = ctk.CTkLabel(self, text="　　住址：")
+        self.remark = ctk.CTkLabel(self, text="　　備註：")
 
         self.id_entry = ctk.CTkEntry(self,border_width=0)
         self.name_entry = ctk.CTkEntry(self,border_width=0)
@@ -38,14 +40,14 @@ class Top_level_edit_customer(ctk.CTkToplevel):
         self.address_entry = ctk.CTkEntry(self,border_width=0)
         self.remark_entry = ctk.CTkTextbox(self,width=140,height=80)
 
-        customer_id.place(x=20,y=20)
-        name.place(x=20,y=60)
-        phone.place(x=20,y=100)
-        address.place(x=20,y=140)
-        remark.place(x=20,y=180)
+        self.customer_id.place(x=20,y=20)
+        self.name.place(x=20,y=60)
+        self.phone.place(x=20,y=100)
+        self.address.place(x=20,y=140)
+        self.remark.place(x=20,y=180)
 
-        confirm.place(x=25,y=280)
-        cancel.place(x=145,y=280)
+        self.confirm.place(x=25,y=280)
+        self.cancel.place(x=145,y=280)
 
         self.id_entry.place(x=85,y=20)
         self.name_entry.place(x=85,y=60)
@@ -57,7 +59,7 @@ class Top_level_add_customer(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        def click():
+        def click(event):
             conn = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             cur = conn.cursor()
             cur.execute(f"INSERT INTO customer (c_id, name, phone, address, remark) \
@@ -72,74 +74,71 @@ class Top_level_add_customer(ctk.CTkToplevel):
             conn.close()
             self.destroy()
 
-        def cancel():
+        def cancel(event):
             self.destroy()
 
         self.geometry("250x325")
-        confirm = ctk.CTkButton(self,width=80,height=15,text="確認",command=click)
-        cancel = ctk.CTkButton(self,width=80,height=15,text="取消",command=cancel)
-        customer_id = ctk.CTkLabel(self, text="客戶編號：")
-        name = ctk.CTkLabel(self, text="　　名稱：")
-        phone = ctk.CTkLabel(self, text="　　手機：")
-        address = ctk.CTkLabel(self, text="　　住址：")
-        remark = ctk.CTkLabel(self, text="　　備註：")
+        self.confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
+        self.confirm.bind('<Button-1>', click)
+        self.cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
+        self.cancel.bind('<Button-1>', cancel)
+        self.customer_id = ctk.CTkLabel(self, text="客戶編號：")
+        self.name = ctk.CTkLabel(self, text="　　名稱：")
+        self.phone = ctk.CTkLabel(self, text="　　手機：")
+        self.address = ctk.CTkLabel(self, text="　　住址：")
+        self.remark = ctk.CTkLabel(self, text="　　備註：")
 
-        id_entry = ctk.CTkEntry(self,border_width=0)
-        name_entry = ctk.CTkEntry(self,border_width=0)
-        phone_entry = ctk.CTkEntry(self,border_width=0)
-        address_entry = ctk.CTkEntry(self,border_width=0)
-        remark_entry = ctk.CTkTextbox(self,width=140,height=80)
+        self.id_entry = ctk.CTkEntry(self,border_width=0)
+        self.name_entry = ctk.CTkEntry(self,border_width=0)
+        self.phone_entry = ctk.CTkEntry(self,border_width=0)
+        self.address_entry = ctk.CTkEntry(self,border_width=0)
+        self.remark_entry = ctk.CTkTextbox(self,width=140,height=80)
 
-        customer_id.place(x=20,y=20)
-        name.place(x=20,y=60)
-        phone.place(x=20,y=100)
-        address.place(x=20,y=140)
-        remark.place(x=20,y=180)
+        self.customer_id.place(x=20,y=20)
+        self.name.place(x=20,y=60)
+        self.phone.place(x=20,y=100)
+        self.address.place(x=20,y=140)
+        self.remark.place(x=20,y=180)
 
-        confirm.place(x=25,y=280)
-        cancel.place(x=145,y=280)
+        self.confirm.place(x=25,y=280)
+        self.cancel.place(x=145,y=280)
 
-        id_entry.place(x=85,y=20)
-        name_entry.place(x=85,y=60)
-        phone_entry.place(x=85,y=100)
-        address_entry.place(x=85,y=140)
-        remark_entry.place(x=85,y=180)
+        self.id_entry.place(x=85,y=20)
+        self.name_entry.place(x=85,y=60)
+        self.phone_entry.place(x=85,y=100)
+        self.address_entry.place(x=85,y=140)
+        self.remark_entry.place(x=85,y=180)
 
 class right_bot_part_A(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        w = kwargs["width"]/6
-        self.bar_1 = ctk.CTkLabel(self, width=w, height=40,
-                                        text="序號",
-                                        fg_color='#3B8ED0',
-                                        font=("microsoft yahei", 14, 'bold'), 
-                                        text_color=("#FFFFFF"))
+        w = kwargs["width"]/5
 
-        self.bar_2 = ctk.CTkLabel(self, width=w, height=40,
+        self.bar_1 = ctk.CTkLabel(self, width=w, height=40,
                                         text="客戶編號",
                                         fg_color='#3B8ED0',
                                         font=("microsoft yahei", 14, 'bold'), 
                                         text_color=("#FFFFFF"))
 
-        self.bar_3 = ctk.CTkLabel(self, width=w, height=40,
+        self.bar_2 = ctk.CTkLabel(self, width=w, height=40,
                                         text="客戶名稱",
                                         fg_color='#3B8ED0',
                                         font=("microsoft yahei", 14, 'bold'), 
                                         text_color=("#FFFFFF"))
 
-        self.bar_4 = ctk.CTkLabel(self, width=w, height=40,
+        self.bar_3 = ctk.CTkLabel(self, width=w, height=40,
                                         text="手機",
                                         fg_color='#3B8ED0',
                                         font=("microsoft yahei", 14, 'bold'), 
                                         text_color=("#FFFFFF"))
 
-        self.bar_5 = ctk.CTkLabel(self, width=w, height=40,
+        self.bar_4 = ctk.CTkLabel(self, width=w, height=40,
                                         text="住址",
                                         fg_color='#3B8ED0',
                                         font=("microsoft yahei", 14, 'bold'), 
                                         text_color=("#FFFFFF"))
 
-        self.bar_6 = ctk.CTkLabel(self, width=w, height=40,
+        self.bar_5 = ctk.CTkLabel(self, width=w, height=40,
                                         text="備註",
                                         fg_color='#3B8ED0',
                                         font=("microsoft yahei", 14, 'bold'), 
@@ -150,15 +149,14 @@ class right_bot_part_A(ctk.CTkScrollableFrame):
         self.bar_3.grid(row=0,column=2)
         self.bar_4.grid(row=0,column=3)
         self.bar_5.grid(row=0,column=4)
-        self.bar_6.grid(row=0,column=5)
 
     def InsertData(self, ID):
         conn = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = conn.cursor()
         if ID == '':
-            cur.execute(f"SELECT * FROM customer")
+            cur.execute(f"SELECT * FROM customer ORDER BY c_id")
         else:
-            cur.execute(f"SELECT * FROM customer WHERE c_id = '{ID}'")
+            cur.execute(f"SELECT * FROM customer WHERE c_id = '{ID}' ORDER BY c_id")
         result = cur.fetchall()
         row = 1
         for i in result:

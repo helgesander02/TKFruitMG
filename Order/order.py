@@ -184,8 +184,8 @@ class bot(ctk.CTkFrame):
         self.total = ctk.CTkLabel(self.bot_frame,text="總計：",font=("microsoft yahei", 20, 'bold'))
         self.total.place(x=10,y=7)
 
-        self.remind = ctk.CTkLabel(self.bot_frame,text="",font=("microsoft yahei", 20, 'bold'))
-        self.remind.place(x=kwargs["width"]-400,y=7)
+        self.remind = ctk.CTkLabel(self.bot_frame,text="",font=("microsoft yahei", 20, 'bold'), text_color="#FF0000")
+        self.remind.place(x=kwargs["width"]-500,y=7)
 
 
         self.toplevel_window = None

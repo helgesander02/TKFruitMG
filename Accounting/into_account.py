@@ -178,7 +178,7 @@ class right_top_mid(ctk.CTkScrollableFrame):
                             FROM accounting JOIN receipt \
                             ON accounting.ac_id = receipt.ac_id \
                             WHERE accounting.o_id = '{o_id}' \
-                            GROUP BY receipt.ac_id")
+                            GROUP BY receipt.ac_id, receipt.date, receipt.m_way, receipt.remark")
         result = cur.fetchall()    
         cur.close()
         con.close()
