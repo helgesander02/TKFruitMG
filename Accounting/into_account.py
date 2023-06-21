@@ -2,6 +2,7 @@ import customtkinter as ctk
 import psycopg2
 
 from .into_top_level import Top_level_view_information, Top_level_item
+# from .accounting import Accounting_Main_Frame
 
 class left_part(ctk.CTkFrame):
     def __init__(self, master, o_id, m_id, **kwargs):
@@ -103,7 +104,7 @@ class left_part(ctk.CTkFrame):
 
     def select_ac_id(self):
         ac = f"ac{self.m_id}"
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         cur = con.cursor()
         cur.execute(f"select ac_id from accounting order by ac_id")
         ac_all = cur.fetchall()    
@@ -172,7 +173,7 @@ class right_top_mid(ctk.CTkScrollableFrame):
         self.sum = 0
 
     def insertdata(self, o_id):
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         cur = con.cursor()
         cur.execute(f"SELECT receipt.ac_id, receipt.date, receipt.m_way, SUM(receipt.money), SUM(receipt.discount), receipt.remark \
                             FROM accounting JOIN receipt \
@@ -334,7 +335,11 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
                 self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
                 self.left.forwark_btn.bind("<Button-1>", orderforwark)
                 self.left.backward_btn.bind("<Button-1>", orderbackward)
-
+        def back_to_accounting(event):
+            from .accounting import Accounting_Main_Frame
+            self.left.grid_forget()
+            self.left = Accounting_Main_Frame(self, width=kwargs["width"]-20, height=kwargs["height"]-20, fg_color="#FFFFFF")
+            self.left.grid(row=0,column=0,padx=10,pady=10)
 
         self.w = kwargs["width"]
         self.h = kwargs["height"]
@@ -345,6 +350,9 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
 
         self.left = left_part(self, self.o_id, self.m_id, 
                                         width=self.w, height=self.h, fg_color="#FFFFFF")
+        self.back_btn = ctk.CTkButton(self.left.right_bot.bot,width=150,height=30,text="返回")
+        self.back_btn.place(x=kwargs["width"]-1050,y=5)
+        self.back_btn.bind("<Button-1>", back_to_accounting)
         self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
         self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
         self.left.forwark_btn.bind("<Button-1>", orderforwark)

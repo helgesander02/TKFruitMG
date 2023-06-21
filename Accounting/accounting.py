@@ -8,11 +8,13 @@ class left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         def search(event):
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            customer_id = self.customer_id_entry.get()
+            # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             cur = con.cursor()
             cur.execute(f"SELECT name, phone, address, remark \
                             FROM customer \
-                            WHERE c_id='{self.customer_id_entry.get()}'")
+                            WHERE c_id='{customer_id}'")
             result = cur.fetchone()
             self.right_top.name_entry.configure(text=f"{str(result[0]).rstrip()}")
             self.right_top.phone_entry.configure(text=f"{str(result[1]).rstrip()}")
@@ -20,21 +22,21 @@ class left_part(ctk.CTkFrame):
             self.right_top.remark_entry.configure(text=f"{str(result[3]).rstrip()}")
             cur.close()
             con.close()
-            
-            self.right_bot.InsertData(self.customer_id_entry.get(), 
+            self.customer_id_entry.delete(0, 'end')
+            self.right_bot.InsertData(customer_id, 
                                         self.sell_date1_entry.get_date(), 
                                         self.sell_date2_entry.get_date(),
                                         self.finish_chk.get())
-
         self.w = kwargs["width"]
         self.h = kwargs["height"]
         self.customer_id_entry = ctk.CTkEntry(self,width=210, height=50,
                                                     fg_color="#EEEEEE",
                                                     placeholder_text="客戶編號" 
                                                     )
+        self.customer_id_entry.bind("<Return>", search)
 
         self.sell_date1_entry = tkc.DateEntry(self, selectmode='day',
-                                                    font=("microsoft yahei", 20),)
+                                                    font=("microsoft yahei", 20),year=2000,month=1,day=1)
         self.sell_date2_entry = tkc.DateEntry(self, selectmode='day',
                                                     font=("microsoft yahei", 20),)
 
@@ -114,7 +116,7 @@ class right_bot_part(ctk.CTkFrame):
         self.j_btn.place(x=self.w-200,y=5)
 
     def InsertData(self, c_id, date1, date2, chk):
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         cur = con.cursor()
         cur.execute(f"SELECT goods.o_id, goods.remark, SUM(goods.sub_total) \
                             FROM order_form JOIN goods \
