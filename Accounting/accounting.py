@@ -10,7 +10,7 @@ class left_part(ctk.CTkFrame):
         def search(event):
             customer_id = self.customer_id_entry.get()
             # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             cur = con.cursor()
             cur.execute(f"SELECT name, phone, address, remark \
                             FROM customer \
@@ -116,7 +116,7 @@ class right_bot_part(ctk.CTkFrame):
         self.j_btn.place(x=self.w-200,y=5)
 
     def InsertData(self, c_id, date1, date2, chk):
-        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = con.cursor()
         cur.execute(f"SELECT goods.o_id, goods.remark, SUM(goods.sub_total) \
                             FROM order_form JOIN goods \

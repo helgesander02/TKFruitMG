@@ -104,7 +104,7 @@ class left_part(ctk.CTkFrame):
 
     def select_ac_id(self):
         ac = f"ac{self.m_id}"
-        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = con.cursor()
         cur.execute(f"select ac_id from accounting order by ac_id")
         ac_all = cur.fetchall()    
@@ -173,7 +173,7 @@ class right_top_mid(ctk.CTkScrollableFrame):
         self.sum = 0
 
     def insertdata(self, o_id):
-        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = con.cursor()
         cur.execute(f"SELECT receipt.ac_id, receipt.date, receipt.m_way, SUM(receipt.money), SUM(receipt.discount), receipt.remark \
                             FROM accounting JOIN receipt \
