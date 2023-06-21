@@ -14,6 +14,11 @@
 
 ## TODO
 
-* 所有資料 Copy 功能
-* 客戶編輯與品項編輯 應該輸入編號後自動把剩下的資料填入
+* Order 訂單編號根據時間變動
+* Accounting 一次性輸入金額 選擇N筆訂單輸入金額直接更改
+* Accounting 查詢後直接重設後再查詢
+* Accounting 預設查詢日期2000年
+* Accounting 沒寫客戶編號查詢全部
+* Accounting 客戶編號案Enter也查詢
+* into Acounting 上一頁到Accounting
 * 明細單列印

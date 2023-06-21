@@ -3,6 +3,7 @@ import tkcalendar as tkc
 import psycopg2
 import requests
 import os
+from datetime import date
 from pathlib import Path
 from borb.pdf import Document
 from borb.pdf import Page
@@ -17,13 +18,13 @@ from borb.pdf.canvas.font.simple_font.true_type_font import TrueTypeFont
 class Right_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        w = kwargs["width"] / 7
-        self.top_bar = ctk.CTkFrame(self,width=1180,height=40,fg_color="blue")
-        self.main_body = ctk.CTkFrame(self,width=1160,height=620,fg_color="green")
-        self.download_btn = ctk.CTkButton(self.top_bar,width=200,height=40,text="預覽")
+        self.top_bar = ctk.CTkFrame(self,width=kwargs["width"],height=40)
+        self.main_body = ctk.CTkFrame(self,width=kwargs["width"]-20,height=kwargs["height"]-80)
+        self.download_btn = ctk.CTkButton(self.top_bar,width=kwargs["width"],height=40,text="預覽")
         self.top_bar.pack()
         self.main_body.pack()
-        self.download_btn.place(x=490,y=0)
+        self.download_btn.pack()
+
 class Left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -43,17 +44,19 @@ class Left_part(ctk.CTkFrame):
             layout = SingleColumnLayout(page)
             # download and store the font
             # this is obviously not needed if you already have a ttf font on disk
-            font_path: Path = Path(__file__).parent / "microsoft.ttf"
-            with open(font_path, "wb") as font_file_handle:
-                font_file_handle.write(
-                    requests.get(
-                        "https://drive.google.com/u/0/uc?id=1RdcCu1_CYdmXRrbq8J2aVfN9t5JSgq6-&export=download",
-                        stream=True,
-                    ).content
-                )
-
-            # construct the Font object
-            font_path: Path = Path(__file__).parent / "microsoft.ttf"
+            if not(os.path.exists('./Printdata/microsoft.ttf')):
+                font_path: Path = Path(__file__).parent / "microsoft.ttf"
+                with open(font_path, "wb") as font_file_handle:
+                    font_file_handle.write(
+                        requests.get(
+                            "https://drive.google.com/u/0/uc?id=1RdcCu1_CYdmXRrbq8J2aVfN9t5JSgq6-&export=download",
+                            stream=True,
+                        ).content
+                    )
+            else:
+                # construct the Font object
+                font_path: Path = Path(__file__).parent / "microsoft.ttf"
+         
             custom_font: Font = TrueTypeFont.true_type_font_from_file(font_path)
             layout.add(Paragraph("Item Specification Size Quantity SinglePrice Subtotal Remark", respect_spaces_in_text=True, border_top=True,border_bottom=True,border_width=1,text_alignment=Alignment.CENTERED))
             pre_s_num = result[0][0]
@@ -68,29 +71,44 @@ class Left_part(ctk.CTkFrame):
                 pre_s_num = i[0]
                 count += 1
             layout.add(Paragraph("------------------------------------------------------------------------------------"))
-            if not os.path.exists("./allpdf"):
+
+            if not(os.path.exists("./allpdf")):
                 os.mkdir("allpdf")
             os.chdir("./allpdf")
-            with open(Path("20230620.pdf"), "wb") as pdf_file_handle:
+            
+            td = date.today()
+            filename = f"{self.search_id.get()}{td.year}{td.month}{td.day}.pdf"
+            with open(Path(filename), "wb") as pdf_file_handle:
                 PDF.dumps(pdf_file_handle, pdf)
             os.chdir("../")
-        self.search_id = ctk.CTkEntry(self,width=140,height=40,placeholder_text="客戶代號")
-        self.cal1 = tkc.DateEntry(self)
-        self.cal2 = tkc.DateEntry(self)
-        self.confirm = ctk.CTkButton(self,width=140,height=40,text="確認查詢",font=("Arial",20))
-        self.reset = ctk.CTkButton(self,width=140,height=40,text="重設查詢",font=("Arial",20))
-        self.right = Right_part(self,width=1160,height=40)
-        # 以下是版面配置
-        self.right.place(x=200,y=20)
-        self.search_id.place(x=20,y=20)
-        self.cal1.place(x=20,y=75)
-        self.cal2.place(x=20,y=100)
-        self.confirm.place(x=20,y=600)
-        self.reset.place(x=20,y=650)
+
+        self.search_id = ctk.CTkEntry(self,width=210,height=50,placeholder_text="客戶代號")
+        self.cal1 = tkc.DateEntry(self, font=("microsoft yahei", 20))
+        self.cal2 = tkc.DateEntry(self, font=("microsoft yahei", 20))
+        self.confirm = ctk.CTkButton(self,width=200,height=40,text="確認查詢",font=("Arial",20))
         self.confirm.bind("<Button-1>", download)
+        self.reset = ctk.CTkButton(self,width=200,height=40,text="重設查詢",font=("Arial",20))
+        
+        self.right = Right_part(self,width=kwargs["width"]-300,height=kwargs["height"])
+
+        
+        self.search_id.place(x=30,y=20)
+        self.cal1.place(x=30,y=200)
+        self.cal2.place(x=30,y=250)
+        self.confirm.place(x=30,y=kwargs["height"]-150)
+        self.reset.place(x=30,y=kwargs["height"]-100)
+        self.right.place(x=280,y=20)     
+
 class Printdata_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+        def reset(event):
+            self.left.place_forget()
+            self.left = Left_part(self,width=kwargs["width"]-40,height=kwargs["height"]-90,fg_color="#EEEEEE")
+            self.left.grid(row=0,column=0,padx=15,pady=10)
+            self.left.reset.bind("<Button-1>", reset)
 
-        self.left = Left_part(self,width=1400,height=750,fg_color="yellow")
-        self.left.grid(row=0,column=0,padx=10,pady=10)
+
+        self.left = Left_part(self,width=kwargs["width"]-40,height=kwargs["height"]-90,fg_color="#EEEEEE")
+        self.left.grid(row=0,column=0,padx=15,pady=10)
+        self.left.reset.bind("<Button-1>", reset)
