@@ -2,6 +2,7 @@ import customtkinter as ctk
 import tkcalendar as tkc
 import psycopg2
 from datetime import date
+import datetime
 
 class bar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -104,21 +105,25 @@ class top(ctk.CTkFrame):
         self.bot.place(x=0,y=120)
 
     def select_od_id(self):
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            
-        cur = con.cursor()
-        cur.execute(f"select o_id,date from goods where date='{date.today()}' order by o_id")
-        dt_time = cur.fetchall()
-        td = date.today()
-        order_id = f"{td.year}{td.month}{td.day}"
-        cur.close()
-        con.close()
-        if len(dt_time) == 0:
-            return f"{order_id}0001"
-        else:
-            n_id = str(dt_time[-1][0]).rstrip()
-            o_id = str(int(n_id[-4:]) + 1).zfill(4)
-            return f"{order_id}{o_id}"
+        # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        
+        # cur = con.cursor()
+        # cur.execute(f"select o_id,date from goods where date='{date.today()}' order by o_id")
+        # dt_time = cur.fetchall()
+        # td = date.today()
+        # order_id = f"{td.year}{td.month}{td.day}"
+        # cur.close()
+        # con.close()
+        # if len(dt_time) == 0:
+        #     return f"{order_id}0001"
+        # else:
+        #     n_id = str(dt_time[-1][0]).rstrip()
+        #     o_id = str(int(n_id[-4:]) + 1).zfill(4)
+        #     return f"{order_id}{o_id}"
+
+        dt = datetime.datetime.now()
+        o_id = f"{dt.year}-{str(dt.month).zfill(2)}-{dt.day} {dt.hour}:{dt.minute}"
+        return o_id
         
 class bot(ctk.CTkFrame):
     def __init__(self, master, c_id, cal,order_id, **kwargs):
