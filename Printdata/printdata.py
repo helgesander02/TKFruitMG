@@ -16,23 +16,28 @@ from borb.pdf.canvas.layout.layout_element import Alignment
 from borb.pdf.canvas.font.simple_font.true_type_font import TrueTypeFont
 
 
-
 class Right_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        def printPDF(choice):
-            fn = os.getcwd() + "\\allpdf\\" + choice
-            win32api.ShellExecute (0,"print",fn,win32print.GetDefaultPrinter(),".",0)
+        def previewPDF(choice):
+            self.temp_fn = os.getcwd() + "\\allpdf\\" + choice
+            win32api.ShellExecute(0,"open",self.temp_fn,"",".",0)
+        def printPDF(event):
+            win32api.ShellExecute (0,"print",self.temp_fn,win32print.GetDefaultPrinter(),".",0)
         dir_path = os.getcwd() + r"\\allpdf"
         all_pdf_list = os.listdir(dir_path)
+        self.temp_fn = ""
         self.top_bar = ctk.CTkFrame(self,width=kwargs["width"],height=40)
         self.main_body = ctk.CTkFrame(self,width=kwargs["width"]-20,height=kwargs["height"]-80)
-        self.download_btn = ctk.CTkLabel(self.top_bar,width=kwargs["width"],height=40,text="選擇以啟動印表機列印")
-        self.op_menu = ctk.CTkOptionMenu(self.main_body,values=all_pdf_list,command=printPDF)
+        self.download_lbl = ctk.CTkLabel(self.top_bar,width=kwargs["width"],height=40,text="選擇後預覽訂單")
+        self.download_btn = ctk.CTkButton(self.main_body,text="確認列印")
+        self.download_btn.bind("<Button-1>", printPDF)
+        self.op_menu = ctk.CTkOptionMenu(self.main_body,values=all_pdf_list,command=previewPDF)
         self.op_menu.pack()
+        self.download_btn.pack(pady=10)
         self.top_bar.pack()
         self.main_body.pack()
-        self.download_btn.pack()
+        self.download_lbl.pack()
 
 class Left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
