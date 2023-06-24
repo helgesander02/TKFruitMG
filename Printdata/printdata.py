@@ -3,6 +3,8 @@ import tkcalendar as tkc
 import psycopg2
 import requests
 import os
+import win32api
+import win32print
 from datetime import date
 from pathlib import Path
 from borb.pdf import Document
@@ -18,9 +20,16 @@ from borb.pdf.canvas.font.simple_font.true_type_font import TrueTypeFont
 class Right_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+        def printPDF(choice):
+            fn = os.getcwd() + "\\allpdf\\" + choice
+            win32api.ShellExecute (0,"print",fn,win32print.GetDefaultPrinter(),".",0)
+        dir_path = os.getcwd() + r"\\allpdf"
+        all_pdf_list = os.listdir(dir_path)
         self.top_bar = ctk.CTkFrame(self,width=kwargs["width"],height=40)
         self.main_body = ctk.CTkFrame(self,width=kwargs["width"]-20,height=kwargs["height"]-80)
-        self.download_btn = ctk.CTkButton(self.top_bar,width=kwargs["width"],height=40,text="預覽")
+        self.download_btn = ctk.CTkLabel(self.top_bar,width=kwargs["width"],height=40,text="選擇以啟動印表機列印")
+        self.op_menu = ctk.CTkOptionMenu(self.main_body,values=all_pdf_list,command=printPDF)
+        self.op_menu.pack()
         self.top_bar.pack()
         self.main_body.pack()
         self.download_btn.pack()
@@ -81,7 +90,10 @@ class Left_part(ctk.CTkFrame):
             with open(Path(filename), "wb") as pdf_file_handle:
                 PDF.dumps(pdf_file_handle, pdf)
             os.chdir("../")
-
+        def printPDF(event):
+            dir_path = os.getcwd() + r"\\allpdf"
+            fn = os.getcwd() + "\\allpdf\\" + os.listdir(dir_path)[0]
+            win32api.ShellExecute (0,"print",fn,win32print.GetDefaultPrinter(),".",0)
         self.search_id = ctk.CTkEntry(self,width=210,height=50,placeholder_text="客戶代號")
         self.cal1 = tkc.DateEntry(self, font=("microsoft yahei", 20))
         self.cal2 = tkc.DateEntry(self, font=("microsoft yahei", 20))
@@ -90,7 +102,7 @@ class Left_part(ctk.CTkFrame):
         self.reset = ctk.CTkButton(self,width=200,height=40,text="重設查詢",font=("Arial",20))
         
         self.right = Right_part(self,width=kwargs["width"]-300,height=kwargs["height"])
-
+        self.right.download_btn.bind("<Button-1>", printPDF)
         
         self.search_id.place(x=30,y=20)
         self.cal1.place(x=30,y=200)
