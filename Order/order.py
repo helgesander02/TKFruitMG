@@ -90,40 +90,41 @@ class entrybox(ctk.CTkFrame):
 class top(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
+        def ch_date(*args):
+            self.order_id.configure(text=f"訂貨單編號：{self.select_od_id(date_in=self.sel.get())}", font=("microsoft yahei", 24, 'bold'))
+
         self.order_id = ctk.CTkLabel(self)
         self.order_id.place(x=kwargs["width"]-400,y=50)
 
         self.c_id = ctk.CTkEntry(self,width=250,height=50,placeholder_text="輸入客戶代號",font=("microsoft yahei", 24))
         self.c_id.place(x=40,y=40)
 
-        self.cal = tkc.DateEntry(self, font=("microsoft yahei", 20))
+        self.sel = ctk.StringVar()
+        self.sel.trace('w',ch_date)
+        self.cal = tkc.DateEntry(self, font=("microsoft yahei", 20),textvariable=self.sel,date_pattern="yyyy-mm-dd")
         self.cal.place(x=450,y=40)
 
         self.c_id.focus()
-        self.order_id.configure(text=f"訂貨單編號：{self.select_od_id()}", font=("microsoft yahei", 24, 'bold'))
+        self.order_id.configure(text=f"訂貨單編號：{self.select_od_id(date_in=self.cal.get_date())}", font=("microsoft yahei", 24, 'bold'))
         self.bot = bot(self,width=kwargs["width"],height=kwargs["height"],c_id=self.c_id,cal=self.cal,order_id=self.order_id.cget("text"))
         self.bot.place(x=0,y=120)
 
-    def select_od_id(self):
+    def select_od_id(self,date_in):
         # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        
-        # cur = con.cursor()
-        # cur.execute(f"select o_id,date from goods where date='{date.today()}' order by o_id")
-        # dt_time = cur.fetchall()
-        # td = date.today()
-        # order_id = f"{td.year}{td.month}{td.day}"
-        # cur.close()
-        # con.close()
-        # if len(dt_time) == 0:
-        #     return f"{order_id}0001"
-        # else:
-        #     n_id = str(dt_time[-1][0]).rstrip()
-        #     o_id = str(int(n_id[-4:]) + 1).zfill(4)
-        #     return f"{order_id}{o_id}"
-
-        dt = datetime.datetime.now()
-        o_id = f"{dt.year}-{str(dt.month).zfill(2)}-{dt.day} {dt.hour}:{dt.minute}"
-        return o_id
+        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        cur = con.cursor()
+        cur.execute(f"select o_id,date from goods where date='{date_in}' order by o_id")
+        dt_time = cur.fetchall()
+        td = date.today()
+        order_id = f"{date_in}"
+        cur.close()
+        con.close()
+        if len(dt_time) == 0:
+            return f"{order_id}0001"
+        else:
+            n_id = str(dt_time[-1][0]).rstrip()
+            o_id = str(int(n_id[-4:]) + 1).zfill(4)
+            return f"{order_id}{o_id}"
         
 class bot(ctk.CTkFrame):
     def __init__(self, master, c_id, cal,order_id, **kwargs):
@@ -139,8 +140,8 @@ class bot(ctk.CTkFrame):
             self.entry_1.quantity.bind('<Tab>',total_price)
 
         def item_name(event):
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-
+            # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             cur = con.cursor()
             cur.execute(f"SELECT item_name from item where item_id = '{self.entry_1.item_id.get()}'")
             result = cur.fetchone()
@@ -208,7 +209,8 @@ class bot(ctk.CTkFrame):
         self.entry_1.quantity.bind('<Tab>',total_price)
 
     def save_data(self):
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         cur = con.cursor()
         cur.execute(f"insert into order_form(o_id, c_id) \
                     values('{self.save_file[0][10]}','{self.save_file[0][8]}')")

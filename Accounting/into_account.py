@@ -11,7 +11,8 @@ class left_part(ctk.CTkFrame):
             if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
                 self.toplevel_window = Top_level_view_information(self)
                 self.toplevel_window.attributes('-topmost','true')
-                con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+                # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+                con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
                 cur = con.cursor()
                 cur.execute(f"SELECT item_name, specification, size, price, quantity, sub_total, remark FROM goods WHERE o_id = '{self.o_id}'")
                 result = cur.fetchall()
@@ -40,7 +41,8 @@ class left_part(ctk.CTkFrame):
             self.right_bot.place(x=400,y=340)
         
         def rightbot_confirm(event):
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             cur = con.cursor()
             cur.execute(f"insert into accounting(ac_id, o_id) \
                     values('{self.ac_id}','{self.o_id}')")
@@ -104,7 +106,8 @@ class left_part(ctk.CTkFrame):
 
     def select_ac_id(self):
         ac = f"ac{self.m_id}"
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = con.cursor()
         cur.execute(f"select ac_id from accounting order by ac_id")
         ac_all = cur.fetchall()    
@@ -173,7 +176,8 @@ class right_top_mid(ctk.CTkScrollableFrame):
         self.sum = 0
 
     def insertdata(self, o_id):
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = con.cursor()
         cur.execute(f"SELECT receipt.ac_id, receipt.date, receipt.m_way, SUM(receipt.money), SUM(receipt.discount), receipt.remark \
                             FROM accounting JOIN receipt \
@@ -350,7 +354,7 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
 
         self.left = left_part(self, self.o_id, self.m_id, 
                                         width=self.w, height=self.h, fg_color="#FFFFFF")
-        self.back_btn = ctk.CTkButton(self.left.right_bot.bot,width=150,height=30,text="返回")
+        self.back_btn = ctk.CTkButton(self.left.right_bot.bot,width=150,height=30,text="返回",font=("microsoft yahei", 20,"bold"))
         self.back_btn.place(x=kwargs["width"]-1050,y=5)
         self.back_btn.bind("<Button-1>", back_to_accounting)
         self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)

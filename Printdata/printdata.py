@@ -46,6 +46,7 @@ class Left_part(ctk.CTkFrame):
             pdf = Document()
             
             conn = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            # conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             with conn:
                 cur = conn.cursor()
                 cur.execute(f"SELECT order_form.o_id,order_form.c_id,goods.item_id,goods.item_name,goods.date,goods.specification,goods.size,\
@@ -72,7 +73,7 @@ class Left_part(ctk.CTkFrame):
                 font_path: Path = Path(__file__).parent / "microsoft.ttf"
          
             custom_font: Font = TrueTypeFont.true_type_font_from_file(font_path)
-            layout.add(Paragraph("Item Specification Size Quantity SinglePrice Subtotal Remark", respect_spaces_in_text=True, border_top=True,border_bottom=True,border_width=1,text_alignment=Alignment.CENTERED))
+            layout.add(Paragraph("品項名稱 規格 大小 數量 單價 小計 備註", respect_spaces_in_text=True, border_top=True,border_bottom=True,border_width=1,text_alignment=Alignment.CENTERED))
             pre_s_num = result[0][0]
             count = 0
             for i in result:
