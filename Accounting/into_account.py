@@ -361,7 +361,7 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
 
         self.left = left_part(self, self.o_id, self.m_id, 
                                         width=self.w, height=self.h, fg_color="#FFFFFF")
-        self.back_btn = ctk.CTkButton(self.left.right_bot.bot,width=150,height=30,text="返回",font=("microsoft yahei", 20,"bold"))
+        self.back_btn = ctk.CTkButton(self.left.right_bot.bot,width=150,height=30,text="返回",font=("microsoft yahei", 14,"bold"))
         self.back_btn.place(x=kwargs["width"]-1050,y=5)
         self.back_btn.bind("<Button-1>", back_to_accounting)
         self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)

@@ -61,7 +61,6 @@ class left_part(ctk.CTkFrame):
         self.finish_chk.place(x=25,y=120)
         self.finish_chk.select()
         self.confirm_btn.place(x=25,y=self.h-220)
-             
         self.right_top.place(x=270,y=5)
         self.right_bot.place(x=270,y=220)
 
