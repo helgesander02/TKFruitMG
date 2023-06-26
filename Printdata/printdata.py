@@ -23,7 +23,7 @@ class Right_part(ctk.CTkFrame):
             self.temp_fn = os.getcwd() + "\\allpdf\\" + choice
             win32api.ShellExecute(0,"open",self.temp_fn,"",".",0)
         def printPDF(event):
-            win32api.ShellExecute (0,"print",self.temp_fn,win32print.GetDefaultPrinter(),".",0)
+            win32api.ShellExecute(0,"print",self.temp_fn,win32print.GetDefaultPrinter(),".",0)
         dir_path = os.getcwd() + r"\\allpdf"
         all_pdf_list = os.listdir(dir_path)
         self.temp_fn = ""
