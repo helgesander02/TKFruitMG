@@ -8,7 +8,8 @@ def sv():
     if not os.path.exists("./save_data"):
         os.mkdir("save_data")
     os.chdir("./save_data")
-    con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+    con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+    #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
     con.autocommit = True
 
     table = ["customer","item","order_form","goods","accounting","receipt"]

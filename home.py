@@ -108,9 +108,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         w = self.winfo_screenwidth()
-        print(w)
         h = self.winfo_screenheight()
-        print(h)
         self.geometry(f"{w}x{h}+{0}+{0}")
         self.title("Management System")
 

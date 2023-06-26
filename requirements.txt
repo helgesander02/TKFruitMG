@@ -2,7 +2,7 @@ customtkinter
 tkcalendar
 psycopg2
 pandas
-borb
-requests
-
+reportlab
+PyMuPDF
+Pillow
 pyinstaller

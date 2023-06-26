@@ -7,40 +7,13 @@ from .into_account import Into_Account_Main_Frame
 class left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        def search(event):            
-            customer_id = self.customer_id_entry.get()
-            # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
-            cur = con.cursor()
-            cur.execute(f"SELECT name, phone, address, remark \
-                            FROM customer \
-                            WHERE c_id='{'abc' if customer_id == '' else customer_id}'")
-            result = cur.fetchone()
-            try:
-                self.left.right_top.name_entry.configure(text=f"{str(result[0]).rstrip()}")
-                self.left.right_top.phone_entry.configure(text=f"{str(result[1]).rstrip()}")
-                self.left.right_top.address_entry.configure(text=f"{str(result[2]).rstrip()}")
-                self.left.right_top.remark_entry.configure(text=f"{str(result[3]).rstrip()}")
-            except Exception as e:
-                pass
-            cur.close()
-            con.close()
-            # self.customer_id_entry.delete(0, 'end')
-            self.right_bot.InsertData(customer_id, 
-                                        self.sell_date1_entry.get_date(), 
-                                        self.sell_date2_entry.get_date(),
-                                        self.finish_chk.get())
-            
-            
-
-
         self.w = kwargs["width"]
         self.h = kwargs["height"]
         self.customer_id_entry = ctk.CTkEntry(self,width=210, height=50,
                                                     fg_color="#EEEEEE",
                                                     placeholder_text="客戶編號" 
                                                     )
-        self.customer_id_entry.bind("<Return>", search)
+        
 
         self.sell_date1_entry = tkc.DateEntry(self, selectmode='day',
                                                     font=("microsoft yahei", 20),year=2000,month=1,day=1,date_pattern="yyyy-mm-dd")
@@ -56,13 +29,6 @@ class left_part(ctk.CTkFrame):
                                                     text="確認查詢",
                                                     font=("microsoft yahei", 20, 'bold'),
                                                     )
-
-        self.reset_btn = ctk.CTkButton(self,width=200,height=40,
-                                                    fg_color="#3B8ED0",
-                                                    text="重設查詢",
-                                                    font=("microsoft yahei", 20, 'bold'),
-                                                    )
-        # self.confirm_btn.bind("<Button-1>", search)
         self.right_top = right_top_part(self,width=self.w-300,height=200,fg_color="#EEEEEE")
         self.right_bot = right_bot_part(self,width=self.w-300,height=self.h-320,fg_color="#EEEEEE")
         
@@ -72,8 +38,6 @@ class left_part(ctk.CTkFrame):
         self.finish_chk.place(x=25,y=120)
         self.finish_chk.select()
         self.confirm_btn.place(x=25,y=self.h-220)
-        self.reset_btn.place(x=25,y=self.h-160)
-             
         self.right_top.place(x=270,y=5)
         self.right_bot.place(x=270,y=220)
 
@@ -106,7 +70,8 @@ class once_enter(ctk.CTkToplevel):
     def __init__(self, master,overage, c_id,**kwargs):
         super().__init__(master, **kwargs)
         def insert_receipt():
-            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             with con:
                 cur = con.cursor()
                 money = int(self.entry3.get())
@@ -119,7 +84,7 @@ class once_enter(ctk.CTkToplevel):
                     elif int(overage[i][1]) > money:
                         temp = money
                         money = 0
-                    cur.execute(f"INSERT INTO accounting VALUES('{overage[i][0]}','{self.select_ac_id(c_id_=c_id)}')")
+                    cur.execute(f"INSERT INTO accounting VALUES('{self.select_ac_id(c_id_=c_id)}','{overage[i][0]}')")
                     cur.execute(f"INSERT INTO receipt VALUES('{self.select_ac_id(c_id_=c_id)}','{self.entry1.get()}','{self.entry2.get()}','{temp}','0','')")
                     con.commit()
             self.destroy()
@@ -143,8 +108,8 @@ class once_enter(ctk.CTkToplevel):
         # print(overage)
     def select_ac_id(self,c_id_):
         ac = f"ac{c_id_}"
-        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
-        # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = con.cursor()
         cur.execute(f"select ac_id from accounting order by ac_id")
         ac_all = cur.fetchall()    
@@ -169,7 +134,7 @@ class right_bot_part(ctk.CTkFrame):
         self.select_order = []
         self.bot = ctk.CTkFrame(self, width=self.w, height=40)
         self.j_btn = ctk.CTkButton(self.bot, width=150, height=30, text="入賬" ,font=("microsoft yahei", 14, 'bold'))
-        self.once_btn = ctk.CTkButton(self.bot, width=150, height=30, text="一次輸入" ,font=("microsoft yahei", 14, 'bold'),command=self.open_once_enter)
+        self.once_btn = ctk.CTkButton(self.bot, width=150, height=30, text="一次入帳多筆" ,font=("microsoft yahei", 14, 'bold'),command=self.open_once_enter)
         self.j_text = ctk.CTkLabel(self.bot, width=50, height=40, text="" ,font=("microsoft yahei", 20, 'bold'), text_color="#FF0000")
         self.top.place(x=0,y=0)
         self.mid.place(x=0,y=40)
@@ -190,8 +155,8 @@ class right_bot_part(ctk.CTkFrame):
             self.toplevel.focus()
         
     def InsertData(self, c_id, date1, date2, chk):
-        # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         cur = con.cursor()
         if c_id == "":
             cur.execute(f"SELECT goods.o_id, goods.remark, SUM(goods.sub_total) \
@@ -352,7 +317,7 @@ class Accounting_Main_Frame(ctk.CTkFrame):
                 self.left = Into_Account_Main_Frame(self, order_id_select, menber_id, width=kwargs["width"], height=kwargs["height"], fg_color="#FFFFFF")
                 self.left.grid(row=0,column=0,padx=10,pady=10)
 
-        def reset(event):
+        def reset():
             self.left.right_bot.place_forget()
             self.left.right_bot = right_bot_part(self.left,width=self.left.w-300,height=self.left.h-320,fg_color="#EEEEEE")
             self.left.right_bot.place(x=270,y=220)
@@ -362,12 +327,12 @@ class Accounting_Main_Frame(ctk.CTkFrame):
             self.left.right_top.place(x=270,y=5)
 
             self.left.right_bot.j_btn.bind("<Button-1>",open_into_account)
-            self.left.reset_btn.bind("<Button-1>", reset)
 
         def test(event):
+            reset()
             c_id = self.left.customer_id_entry.get()
-            # print(type(c_id))
-            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             cur = con.cursor()
             cur.execute(f"SELECT name, phone, address, remark \
                             FROM customer \
@@ -382,7 +347,6 @@ class Accounting_Main_Frame(ctk.CTkFrame):
                 pass
             cur.close()
             con.close()
-            # self.left.customer_id_entry.delete(0, 'end')
             self.left.right_bot.InsertData(c_id, 
                                         self.left.sell_date1_entry.get_date(), 
                                         self.left.sell_date2_entry.get_date(),
@@ -391,7 +355,5 @@ class Accounting_Main_Frame(ctk.CTkFrame):
         self.left = left_part(self, width=kwargs["width"], height=kwargs["height"], fg_color="#FFFFFF")
         self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
         self.left.right_bot.j_btn.bind("<Button-1>",open_into_account)
-        self.left.reset_btn.bind("<Button-1>", reset)
-        # self.left.confirm_btn.bind("<Button-1>",reset)
-        # self.left.confirm_btn.bind("<Button-1>",test)
-        
+        self.left.confirm_btn.bind("<Button-1>", test)
+        self.left.customer_id_entry.bind("<Return>", test)
