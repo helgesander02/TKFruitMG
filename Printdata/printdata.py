@@ -45,8 +45,8 @@ class Left_part(ctk.CTkFrame):
         def download(event):
             pdf = Document()
             
-            conn = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            # conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            # conn = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
             with conn:
                 cur = conn.cursor()
                 cur.execute(f"SELECT order_form.o_id,order_form.c_id,goods.item_id,goods.item_name,goods.date,goods.specification,goods.size,\
@@ -73,19 +73,23 @@ class Left_part(ctk.CTkFrame):
                 font_path: Path = Path(__file__).parent / "microsoft.ttf"
          
             custom_font: Font = TrueTypeFont.true_type_font_from_file(font_path)
-            layout.add(Paragraph("品項名稱 規格 大小 數量 單價 小計 備註", respect_spaces_in_text=True, border_top=True,border_bottom=True,border_width=1,text_alignment=Alignment.CENTERED))
+            space = "　"*3
+            another_space = "　"*3
+            layout.add(Paragraph(f"品項名稱{space}規格{space}大小{space}數量{space}單價{space}小計{space}備註", respect_spaces_in_text=True, border_top=True,\
+                                 border_bottom=True,border_width=1,text_alignment=Alignment.CENTERED,font = custom_font))
             pre_s_num = result[0][0]
             count = 0
             for i in result:
                 if i[0] != pre_s_num or count==0:
-                    layout.add(Paragraph("------------------------------------------------------------------------------------"))
-                    layout.add(Paragraph(f"Date:{str(i[4]).rstrip()}Serial Number:{str(i[0]).rstrip()}Price:{str(i[7]).rstrip()}",respect_spaces_in_text=True))
-                layout.add(Paragraph(f"{str(i[3]).rstrip()}      {str(i[5]).rstrip()}       {str(i[6]).rstrip()}\
-                                     {str(i[7]).rstrip()}      {str(i[8]).rstrip()}      {str(i[9]).rstrip()}      \
+                    layout.add(Paragraph("-------------------------------------------------------------------------------------------------------"))
+                    layout.add(Paragraph(f"Date:{str(i[4]).rstrip()}{space}Serial Number:{str(i[0]).rstrip()}{space}Price:{str(i[7]).rstrip()}",\
+                                         respect_spaces_in_text=True,font=custom_font))
+                layout.add(Paragraph(f"{str(i[3]).rstrip()}{another_space}{str(i[5]).rstrip()}{another_space}{str(i[6]).rstrip()}\
+                                     {str(i[7]).rstrip()}{another_space}{str(i[8]).rstrip()}{another_space}{str(i[9]).rstrip()}{another_space}\
                                      {str(i[10]).rstrip()}",font=custom_font,respect_spaces_in_text=True))
                 pre_s_num = i[0]
                 count += 1
-            layout.add(Paragraph("------------------------------------------------------------------------------------"))
+            layout.add(Paragraph("-------------------------------------------------------------------------------------------------------"))
 
             if not(os.path.exists("./allpdf")):
                 os.mkdir("allpdf")
@@ -96,13 +100,18 @@ class Left_part(ctk.CTkFrame):
             with open(Path(filename), "wb") as pdf_file_handle:
                 PDF.dumps(pdf_file_handle, pdf)
             os.chdir("../")
+            reload_right()
+        def reload_right():
+            self.right.place_forget()
+            self.right = Right_part(self,width=kwargs["width"]-300,height=kwargs["height"])
+            self.right.place(x=280,y=20)
         def printPDF(event):
             dir_path = os.getcwd() + r"\\allpdf"
             fn = os.getcwd() + "\\allpdf\\" + os.listdir(dir_path)[0]
             win32api.ShellExecute (0,"print",fn,win32print.GetDefaultPrinter(),".",0)
         self.search_id = ctk.CTkEntry(self,width=210,height=50,placeholder_text="客戶代號")
-        self.cal1 = tkc.DateEntry(self, font=("microsoft yahei", 20))
-        self.cal2 = tkc.DateEntry(self, font=("microsoft yahei", 20))
+        self.cal1 = tkc.DateEntry(self, font=("microsoft yahei", 20),year=2000,month=1,day=1,date_pattern="yyyy-mm-dd")
+        self.cal2 = tkc.DateEntry(self, font=("microsoft yahei", 20),date_pattern="yyyy-mm-dd")
         self.confirm = ctk.CTkButton(self,width=200,height=40,text="確認查詢",font=("Arial",20))
         self.confirm.bind("<Button-1>", download)
         self.reset = ctk.CTkButton(self,width=200,height=40,text="重設查詢",font=("Arial",20))
@@ -116,7 +125,7 @@ class Left_part(ctk.CTkFrame):
         self.confirm.place(x=30,y=kwargs["height"]-150)
         self.reset.place(x=30,y=kwargs["height"]-100)
         self.right.place(x=280,y=20)     
-
+        self.search_id.insert(0,"001")
 class Printdata_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)

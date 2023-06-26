@@ -41,19 +41,25 @@ class left_part(ctk.CTkFrame):
             self.right_bot.place(x=400,y=340)
         
         def rightbot_confirm(event):
-            # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
-            cur = con.cursor()
-            cur.execute(f"insert into accounting(ac_id, o_id) \
-                    values('{self.ac_id}','{self.o_id}')")
-
-            for en in self.right_bot.mid.all_entry:
-                cur.execute(f"insert into receipt(ac_id, date, m_way, money, discount, remark)\
-                        values('{self.ac_id}','{en.bar_1.get()}','{en.bar_2.get()}','{en.bar_3.get()}','{en.bar_4.get()}','{en.bar_5.get()}')")      
-            con.commit()
-            con.close()
-            self.right_bot.bot.save.configure(text="已儲存")
-
+            if not self.right_bot.mid.all_entry:
+                # con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+                con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+                cur = con.cursor()
+                cur.execute(f"insert into accounting(ac_id, o_id) \
+                        values('{self.ac_id}','{self.o_id}')")
+                for en in self.right_bot.mid.all_entry:
+                    cur.execute(f"insert into receipt(ac_id, date, m_way, money, discount, remark)\
+                            values('{self.ac_id}','{en.bar_1.get()}','{en.bar_2.get()}','{en.bar_3.get()}','{en.bar_4.get()}','{en.bar_5.get()}')")      
+                con.commit()
+                con.close()
+                self.right_bot.bot.save.configure(text="已儲存")
+            else:
+                self.right_bot.bot.save.configure(text="未按下Enter")
+        def reload_right_top_mid(event):
+            self.right_top.mid.place_forget()
+            self.right_top.mid = right_top_mid(self.right_top,width=self.w-470,height=self.h-530,fg_color="#EEEEEE")
+            self.right_top.mid.place(x=0,y=40)
+            self.right_top.mid.insertdata(self.o_id)
         self.w = kwargs["width"]
         self.h = kwargs["height"]
         self.o_id = o_id
@@ -93,6 +99,7 @@ class left_part(ctk.CTkFrame):
         self.right_bot = right_bot_part(self,width=self.w-450,height=self.h-450,fg_color="#EEEEEE")
         self.right_bot.bot.reset_btn.bind("<Button-1>", rightbot_reset)
         self.right_bot.bot.confirm_btn.bind("<Button-1>", rightbot_confirm)
+        self.right_bot.bot.confirm_btn.bind("<Button-1>", reload_right_top_mid)
         
         self.customer_id.place(x=25,y=25)
         self.order_id.place(x=25,y=80)

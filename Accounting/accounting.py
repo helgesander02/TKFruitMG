@@ -25,7 +25,7 @@ class left_part(ctk.CTkFrame):
                 pass
             cur.close()
             con.close()
-            self.customer_id_entry.delete(0, 'end')
+            # self.customer_id_entry.delete(0, 'end')
             self.right_bot.InsertData(customer_id, 
                                         self.sell_date1_entry.get_date(), 
                                         self.sell_date2_entry.get_date(),
