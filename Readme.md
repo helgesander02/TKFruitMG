@@ -14,6 +14,5 @@
 
 ## TODO
 
-* Accounting 查詢後直接重設後再查詢
-* PDF格式
+* Accounting 一次入帳後跟更新查詢
 * order編輯
