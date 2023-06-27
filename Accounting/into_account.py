@@ -41,7 +41,7 @@ class left_part(ctk.CTkFrame):
             self.right_bot.place(x=400,y=340)
         
         def rightbot_confirm(event):
-            if not self.right_bot.mid.all_entry:
+            if len(self.right_bot.mid.all_entry) != 0:
                 con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
                 #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
                 cur = con.cursor()
@@ -55,11 +55,14 @@ class left_part(ctk.CTkFrame):
                 self.right_bot.bot.save.configure(text="已儲存")
             else:
                 self.right_bot.bot.save.configure(text="未按下Enter")
+
         def reload_right_top_mid(event):
             self.right_top.mid.place_forget()
-            self.right_top.mid = right_top_mid(self.right_top,width=self.w-470,height=self.h-530,fg_color="#EEEEEE")
-            self.right_top.mid.place(x=0,y=40)
+            self.right_top = right_top_part(self,width=self.w-450,height=330,fg_color="#EEEEEE")
             self.right_top.mid.insertdata(self.o_id)
+            self.right_top.bot.sum.configure(text=f"收款總額：{self.right_top.mid.sum}")
+            self.right_top.place(x=400,y=0)
+
         self.w = kwargs["width"]
         self.h = kwargs["height"]
         self.o_id = o_id
@@ -316,7 +319,7 @@ class right_bot_botbar(ctk.CTkFrame):
 
         self.reset_btn.place(x=kwargs["width"]-400,y=5)
         self.confirm_btn.place(x=kwargs["width"]-200,y=5) 
-        self.save.place(x=kwargs["width"]-550,y=5)   
+        self.save.place(x=kwargs["width"]-1000,y=5)   
 
 class Into_Account_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, order_id_select, menber_id, **kwargs):
