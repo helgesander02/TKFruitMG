@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import tkcalendar as tkc
 import psycopg2
-
+from datetime import date
 from .into_account import Into_Account_Main_Frame
 
 class left_part(ctk.CTkFrame):
@@ -92,7 +92,11 @@ class once_enter(ctk.CTkToplevel):
         self.lbl1 = ctk.CTkLabel(self,text="收款日期",width=100,height=40,font=("microsoft yahei", 14, 'bold'))
         self.lbl2 = ctk.CTkLabel(self,text="收款方式",width=100,height=40,font=("microsoft yahei", 14, 'bold'))
         self.lbl3 = ctk.CTkLabel(self,text="收款金額",width=100,height=40,font=("microsoft yahei", 14, 'bold'))
-        self.entry1 = ctk.CTkEntry(self,placeholder_text="收款日期",width=150,height=40)
+        self.entry1 = ctk.CTkEntry(self,width=150,height=40)
+        if date.today().month<10:
+            self.entry1.insert(0, f"{date.today().year}0{date.today().month}{date.today().day}")
+        else:
+            self.entry1.insert(0, f"{date.today().year}{date.today().month}{date.today().day}")
         self.entry2 = ctk.CTkEntry(self,placeholder_text="收款方式",width=150,height=40)
         self.entry3 = ctk.CTkEntry(self,placeholder_text="收款金額",width=150,height=40)
         self.confirm_btn = ctk.CTkButton(self,text="確認入賬",width=100,height=40,command=insert_receipt)
@@ -111,7 +115,7 @@ class once_enter(ctk.CTkToplevel):
         #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = con.cursor()
-        cur.execute(f"select ac_id from accounting order by ac_id")
+        cur.execute(f"select ac_id from accounting")
         ac_all = cur.fetchall()    
         cur.close()
         con.close()

@@ -1,6 +1,6 @@
 import customtkinter as ctk
 import psycopg2
-
+from datetime import date
 from .into_top_level import Top_level_view_information, Top_level_item
 # from .accounting import Accounting_Main_Frame
 
@@ -119,11 +119,11 @@ class left_part(ctk.CTkFrame):
         #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         cur = con.cursor()
-        cur.execute(f"select ac_id from accounting order by ac_id")
+        cur.execute(f"select ac_id from accounting")
         ac_all = cur.fetchall()    
         cur.close()
         con.close()
-        if len(ac_all) > 0:
+        if len(ac_all) > 0:     
             n_id = str(ac_all[-1][0]).rstrip()
             ac_id = str(int(n_id[len(ac):]) + 1)
             return f"{ac}{ac_id}"
@@ -295,6 +295,10 @@ class right_bot_mid(ctk.CTkScrollableFrame):
 
         self.all_entry = []
         self.entry_1 = entrybox(self ,width=kwargs["width"])
+        if date.today().month < 10:
+            self.entry_1.bar_1.insert(0, f"{date.today().year}0{date.today().month}{date.today().day}")
+        else:
+            self.entry_1.bar_1.insert(0, f"{date.today().year}{date.today().month}{date.today().day}")
         self.entry_1.pack()
 
         self.entry_1.bar_5.bind('<Return>',temp_data)
