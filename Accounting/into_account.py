@@ -44,14 +44,14 @@ class left_part(ctk.CTkFrame):
             if len(self.right_bot.mid.all_entry) != 0:
                 con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
                 #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
-                cur = con.cursor()
-                cur.execute(f"insert into accounting(ac_id, o_id) \
-                        values('{self.ac_id}','{self.o_id}')")
-                for en in self.right_bot.mid.all_entry:
-                    cur.execute(f"insert into receipt(ac_id, date, m_way, money, discount, remark)\
-                            values('{self.ac_id}','{en.bar_1.get()}','{en.bar_2.get()}','{en.bar_3.get()}','{en.bar_4.get()}','{en.bar_5.get()}')")      
-                con.commit()
-                con.close()
+                with con:
+                    cur = con.cursor()
+                    cur.execute(f"insert into accounting(ac_id, o_id) \
+                            values('{self.ac_id}','{self.o_id}')")
+                    for en in self.right_bot.mid.all_entry:
+                        cur.execute(f"insert into receipt(ac_id, date, m_way, money, discount, remark)\
+                                values('{self.ac_id}','{en.bar_1.get()}','{en.bar_2.get()}','{en.bar_3.get()}','{en.bar_4.get()}','{en.bar_5.get()}')")      
+
                 self.right_bot.bot.save.configure(text="已儲存")
             else:
                 self.right_bot.bot.save.configure(text="未按下Enter")
@@ -118,11 +118,11 @@ class left_part(ctk.CTkFrame):
         ac = f"ac{self.m_id}"
         #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        cur = con.cursor()
-        cur.execute(f"select ac_id from accounting")
-        ac_all = cur.fetchall()    
-        cur.close()
-        con.close()
+        with con:
+            cur = con.cursor()
+            cur.execute(f"select ac_id from accounting")
+            ac_all = cur.fetchall()    
+
         if len(ac_all) > 0:     
             n_id = str(ac_all[-1][0]).rstrip()
             ac_id = str(int(n_id[len(ac):]) + 1)
@@ -188,15 +188,14 @@ class right_top_mid(ctk.CTkScrollableFrame):
     def insertdata(self, o_id):
         #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        cur = con.cursor()
-        cur.execute(f"SELECT receipt.ac_id, receipt.date, receipt.m_way, SUM(receipt.money), SUM(receipt.discount), receipt.remark \
-                            FROM accounting JOIN receipt \
-                            ON accounting.ac_id = receipt.ac_id \
-                            WHERE accounting.o_id = '{o_id}' \
-                            GROUP BY receipt.ac_id, receipt.date, receipt.m_way, receipt.remark")
-        result = cur.fetchall()    
-        cur.close()
-        con.close()
+        with con:
+            cur = con.cursor()
+            cur.execute(f"SELECT receipt.ac_id, receipt.date, receipt.m_way, SUM(receipt.money), SUM(receipt.discount), receipt.remark \
+                                FROM accounting JOIN receipt \
+                                ON accounting.ac_id = receipt.ac_id \
+                                WHERE accounting.o_id = '{o_id}' \
+                                GROUP BY receipt.ac_id, receipt.date, receipt.m_way, receipt.remark")
+            result = cur.fetchall()    
 
         for row in range(len(result)):
             entry = entrybox(self ,width=self.w)
@@ -318,9 +317,11 @@ class right_bot_botbar(ctk.CTkFrame):
                                                     text="確認入賬",
                                                     font=("microsoft yahei", 14, 'bold'),
                                                     )
-
+        self.back_btn = ctk.CTkButton(self,width=150,height=30,text="返回",font=("microsoft yahei", 14, "bold"),)
+        
         self.save = ctk.CTkLabel(self, text="", font=("microsoft yahei", 14, 'bold'), text_color="#FF0000")
 
+        self.back_btn.place(x=kwargs["width"]-600,y=5)
         self.reset_btn.place(x=kwargs["width"]-400,y=5)
         self.confirm_btn.place(x=kwargs["width"]-200,y=5) 
         self.save.place(x=kwargs["width"]-1000,y=5)   
@@ -338,6 +339,7 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
                                         width=self.w, height=self.h, fg_color="#FFFFFF")
                 self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
                 self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
+                self.left.right_bot.bot.back_btn.bind("<Button-1>", back_to_accounting)
                 self.left.forwark_btn.bind("<Button-1>", orderforwark)
                 self.left.backward_btn.bind("<Button-1>", orderbackward)
     
@@ -351,13 +353,15 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
                                         width=self.w, height=self.h, fg_color="#FFFFFF")
                 self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
                 self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
+                self.left.right_bot.bot.back_btn.bind("<Button-1>", back_to_accounting)
                 self.left.forwark_btn.bind("<Button-1>", orderforwark)
                 self.left.backward_btn.bind("<Button-1>", orderbackward)
+                
         def back_to_accounting(event):
             from .accounting import Accounting_Main_Frame
             self.left.grid_forget()
-            self.left = Accounting_Main_Frame(self, width=kwargs["width"]-20, height=kwargs["height"]-20, fg_color="#FFFFFF")
-            self.left.grid(row=0,column=0,padx=10,pady=10)
+            self.left = Accounting_Main_Frame(self, width=kwargs["width"], height=kwargs["height"], fg_color="#FFFFFF")
+            self.left.grid(row=0,column=0)
 
         self.w = kwargs["width"]
         self.h = kwargs["height"]
@@ -366,15 +370,13 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
         self.o_id = self.order_id_select[self.location]
         self.m_id = menber_id
 
-        self.left = left_part(self, self.o_id, self.m_id, 
-                                        width=self.w, height=self.h, fg_color="#FFFFFF")
-        self.back_btn = ctk.CTkButton(self.left.right_bot.bot,width=150,height=30,text="返回",font=("microsoft yahei", 14, "bold"),)
-        self.back_btn.place(x=kwargs["width"]-1050,y=5)
-        self.back_btn.bind("<Button-1>", back_to_accounting)
+        self.left = left_part(self, self.o_id, self.m_id, width=self.w, height=self.h, fg_color="#FFFFFF")
         self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
+
         self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
         self.left.forwark_btn.bind("<Button-1>", orderforwark)
         self.left.backward_btn.bind("<Button-1>", orderbackward)
+        self.left.right_bot.bot.back_btn.bind("<Button-1>", back_to_accounting)
 
     
     

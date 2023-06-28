@@ -14,5 +14,6 @@
 
 ## TODO
 
-* Accounting 一次入帳後跟更新查詢
-* order編輯
+* Order 編輯訂單
+* Printdata 列印格式
+* Copy 備份到雲端

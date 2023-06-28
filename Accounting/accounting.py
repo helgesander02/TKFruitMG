@@ -9,6 +9,7 @@ class left_part(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         self.w = kwargs["width"]
         self.h = kwargs["height"]
+        self.master = master
         self.customer_id_entry = ctk.CTkEntry(self,width=210, height=50,
                                                     fg_color="#EEEEEE",
                                                     placeholder_text="客戶編號" 
@@ -40,6 +41,47 @@ class left_part(ctk.CTkFrame):
         self.confirm_btn.place(x=25,y=self.h-220)
         self.right_top.place(x=270,y=5)
         self.right_bot.place(x=270,y=220)
+
+        self.right_bot.j_btn.bind("<Button-1>", self.master.open_into_account)
+        self.confirm_btn.bind("<Button-1>", self.test)
+        self.customer_id_entry.bind("<Return>", self.test)
+
+    def reset(self):
+            self.right_bot.place_forget()
+            self.right_bot = right_bot_part(self,width=self.w-300,height=self.h-320,fg_color="#EEEEEE")
+            self.right_bot.place(x=270,y=220)
+
+            self.right_top.place_forget()
+            self.right_top = right_top_part(self,width=self.w-300,height=200,fg_color="#EEEEEE")
+            self.right_top.place(x=270,y=5)
+
+            self.right_bot.j_btn.bind("<Button-1>", self.master.open_into_account)
+
+    def test(self, event):
+        self.reset()
+        c_id = self.customer_id_entry.get()
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        with con:
+            cur = con.cursor()
+            cur.execute(f"SELECT name, phone, address, remark \
+                            FROM customer \
+                            WHERE c_id='{'abc' if c_id == '' else c_id}'")
+            result = cur.fetchone()
+
+        try:
+            self.right_top.name_entry.configure(text=f"{str(result[0]).rstrip()}")
+            self.right_top.phone_entry.configure(text=f"{str(result[1]).rstrip()}")
+            self.right_top.address_entry.configure(text=f"{str(result[2]).rstrip()}")
+            self.right_top.remark_entry.configure(text=f"{str(result[3]).rstrip()}")
+
+        except:
+            pass
+
+        self.right_bot.InsertData(c_id, 
+                                    self.sell_date1_entry.get_date(), 
+                                    self.sell_date2_entry.get_date(),
+                                    self.finish_chk.get())
 
 class right_top_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -81,13 +123,18 @@ class once_enter(ctk.CTkToplevel):
                     if int(overage[i][1]) <= money:
                         temp = int(overage[i][1])
                         money -= int(overage[i][1])
-                    elif int(overage[i][1]) > money:
+                    else:
                         temp = money
                         money = 0
-                    cur.execute(f"INSERT INTO accounting VALUES('{self.select_ac_id(c_id_=c_id)}','{overage[i][0]}')")
-                    cur.execute(f"INSERT INTO receipt VALUES('{self.select_ac_id(c_id_=c_id)}','{self.entry1.get()}','{self.entry2.get()}','{temp}','0','')")
+
+                    ac_id = self.select_ac_id(c_id)
+                    cur.execute(f"INSERT INTO accounting VALUES('{ac_id}','{overage[i][0]}')")
+                    cur.execute(f"INSERT INTO receipt VALUES('{ac_id}','{self.entry1.get()}','{self.entry2.get()}','{temp}','0','')")
                     con.commit()
+
+            master.reload()
             self.destroy()
+
         self.geometry("300x200")
         self.lbl1 = ctk.CTkLabel(self,text="收款日期",width=100,height=40,font=("microsoft yahei", 14, 'bold'))
         self.lbl2 = ctk.CTkLabel(self,text="收款方式",width=100,height=40,font=("microsoft yahei", 14, 'bold'))
@@ -107,18 +154,16 @@ class once_enter(ctk.CTkToplevel):
         self.entry1.grid(row=0,column=1,padx=5,pady=5)
         self.entry2.grid(row=1,column=1,padx=5,pady=5)
         self.entry3.grid(row=2,column=1,padx=5,pady=5)
-        # print(c_id)
-        # print(data)
-        # print(overage)
-    def select_ac_id(self,c_id_):
-        ac = f"ac{c_id_}"
+
+    def select_ac_id(self,c_id):
+        ac = f"ac{c_id}"
         #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        cur = con.cursor()
-        cur.execute(f"select ac_id from accounting")
-        ac_all = cur.fetchall()    
-        cur.close()
-        con.close()
+        with con:
+            cur = con.cursor()
+            cur.execute(f"select ac_id from accounting")
+            ac_all = cur.fetchall()    
+
         if len(ac_all) > 0:
             n_id = str(ac_all[-1][0]).rstrip()
             ac_id = str(int(n_id[len(ac):]) + 1)
@@ -129,12 +174,12 @@ class once_enter(ctk.CTkToplevel):
 class right_bot_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        
         self.w = kwargs["width"]
         self.h = kwargs["height"]
+        self.master = master
         self.top = top_bar(self, width=self.w, height=40)
         self.toplevel = None
-        self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-80, fg_color="#EEEEEE")
+        self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-100, fg_color="#EEEEEE")
         self.select_order = []
         self.bot = ctk.CTkFrame(self, width=self.w, height=40)
         self.j_btn = ctk.CTkButton(self.bot, width=150, height=30, text="入賬" ,font=("microsoft yahei", 14, 'bold'))
@@ -145,12 +190,21 @@ class right_bot_part(ctk.CTkFrame):
         self.bot.place(x=0,y=self.h-40)
         self.once_btn.place(x=self.w-400,y=5)
         self.j_btn.place(x=self.w-200,y=5)
+        self.j_text.place(x=self.w-600)
+
+    def reload(self):
+        self.mid.place_forget()
+        self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-100, fg_color="#EEEEEE") 
+        self.mid.place(x=0,y=40)
+
+        c_id = self.master.customer_id_entry.get()
+        self.InsertData(c_id, self.master.sell_date1_entry.get_date(), 
+                                    self.master.sell_date2_entry.get_date(),
+                                    self.master.finish_chk.get())
         
     def open_once_enter(self):
         overage = self.SelectOrder_test()
-        w = self.winfo_parent()
-        m = self.master.nametowidget(w)
-        c_id = m.customer_id_entry.get()
+        c_id = self.master.customer_id_entry.get()
         if self.toplevel is None or not self.toplevel.winfo_exists():
             self.toplevel = once_enter(self,overage,c_id)
             self.toplevel.attributes('-topmost','true')
@@ -161,51 +215,49 @@ class right_bot_part(ctk.CTkFrame):
     def InsertData(self, c_id, date1, date2, chk):
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
-        cur = con.cursor()
-        if c_id == "":
-            cur.execute(f"SELECT goods.o_id, goods.remark, SUM(goods.sub_total) \
-                                FROM order_form JOIN goods \
-                                ON order_form.o_id = goods.o_id \
-                                WHERE goods.date BETWEEN SYMMETRIC '{date1}' AND '{date2}' \
-                                GROUP BY goods.o_id, goods.remark")
-            result1 = cur.fetchall()
-            cur.execute(f"SELECT accounting.o_id, SUM(receipt.money-receipt.discount) \
-                                FROM accounting JOIN receipt \
-                                ON accounting.ac_id = receipt.ac_id \
-                                WHERE accounting.o_id IN \
-                                ( \
-                                SELECT goods.o_id \
-                                FROM order_form JOIN goods \
-                                ON order_form.o_id = goods.o_id \
-                                WHERE goods.date BETWEEN SYMMETRIC '{date1}' AND '{date2}' \
-                                GROUP BY goods.o_id \
-                                ) \
-                                GROUP BY accounting.o_id")
-            result2 = cur.fetchall()
-            cur.close()
-            con.close()
-        else:
-            cur.execute(f"SELECT goods.o_id, goods.remark, SUM(goods.sub_total) \
-                                FROM order_form JOIN goods \
-                                ON order_form.o_id = goods.o_id \
-                                WHERE order_form.c_id = '{c_id}' AND (goods.date BETWEEN SYMMETRIC '{date1}' AND '{date2}') \
-                                GROUP BY goods.o_id, goods.remark")
-            result1 = cur.fetchall()
-            cur.execute(f"SELECT accounting.o_id, SUM(receipt.money-receipt.discount) \
-                                FROM accounting JOIN receipt \
-                                ON accounting.ac_id = receipt.ac_id \
-                                WHERE accounting.o_id IN \
-                                ( \
-                                SELECT goods.o_id \
-                                FROM order_form JOIN goods \
-                                ON order_form.o_id = goods.o_id \
-                                WHERE order_form.c_id = '{c_id}' AND (goods.date BETWEEN SYMMETRIC '{date1}' AND '{date2}') \
-                                GROUP BY goods.o_id \
-                                ) \
-                                GROUP BY accounting.o_id")
-            result2 = cur.fetchall()
-            cur.close()
-            con.close()
+        with con:
+            cur = con.cursor()
+            if c_id == "":
+                cur.execute(f"SELECT goods.o_id, goods.remark, SUM(goods.sub_total) \
+                                    FROM order_form JOIN goods \
+                                    ON order_form.o_id = goods.o_id \
+                                    WHERE goods.date BETWEEN SYMMETRIC '{date1}' AND '{date2}' \
+                                    GROUP BY goods.o_id, goods.remark")
+                result1 = cur.fetchall()
+                cur.execute(f"SELECT accounting.o_id, SUM(receipt.money-receipt.discount) \
+                                    FROM accounting JOIN receipt \
+                                    ON accounting.ac_id = receipt.ac_id \
+                                    WHERE accounting.o_id IN \
+                                    ( \
+                                    SELECT goods.o_id \
+                                    FROM order_form JOIN goods \
+                                    ON order_form.o_id = goods.o_id \
+                                    WHERE goods.date BETWEEN SYMMETRIC '{date1}' AND '{date2}' \
+                                    GROUP BY goods.o_id \
+                                    ) \
+                                    GROUP BY accounting.o_id")
+                result2 = cur.fetchall()
+
+            else:
+                cur.execute(f"SELECT goods.o_id, goods.remark, SUM(goods.sub_total) \
+                                    FROM order_form JOIN goods \
+                                    ON order_form.o_id = goods.o_id \
+                                    WHERE order_form.c_id = '{c_id}' AND (goods.date BETWEEN SYMMETRIC '{date1}' AND '{date2}') \
+                                    GROUP BY goods.o_id, goods.remark")
+                result1 = cur.fetchall()
+                cur.execute(f"SELECT accounting.o_id, SUM(receipt.money-receipt.discount) \
+                                    FROM accounting JOIN receipt \
+                                    ON accounting.ac_id = receipt.ac_id \
+                                    WHERE accounting.o_id IN \
+                                    ( \
+                                    SELECT goods.o_id \
+                                    FROM order_form JOIN goods \
+                                    ON order_form.o_id = goods.o_id \
+                                    WHERE order_form.c_id = '{c_id}' AND (goods.date BETWEEN SYMMETRIC '{date1}' AND '{date2}') \
+                                    GROUP BY goods.o_id \
+                                    ) \
+                                    GROUP BY accounting.o_id")
+                result2 = cur.fetchall()
 
         for i in range(len(result1)):
             al = 0
@@ -310,7 +362,12 @@ class item(ctk.CTkFrame):
 class Accounting_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        def open_into_account(event):
+        self.w = kwargs["width"]
+        self.h = kwargs["height"]        
+        self.left = left_part(self, width=self.w, height=self.h, fg_color="#FFFFFF")
+        self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
+    
+    def open_into_account(self, event):
             order_id_select = self.left.right_bot.SelectOrder()
             menber_id = self.left.customer_id_entry.get()
             if order_id_select == []: 
@@ -318,46 +375,5 @@ class Accounting_Main_Frame(ctk.CTkFrame):
                 self.left.right_bot.j_text.configure(text="請選擇訂單")
             else:
                 self.left.grid_forget()
-                self.left = Into_Account_Main_Frame(self, order_id_select, menber_id, width=kwargs["width"], height=kwargs["height"], fg_color="#FFFFFF")
-                self.left.grid(row=0,column=0,padx=10,pady=10)
-
-        def reset():
-            self.left.right_bot.place_forget()
-            self.left.right_bot = right_bot_part(self.left,width=self.left.w-300,height=self.left.h-320,fg_color="#EEEEEE")
-            self.left.right_bot.place(x=270,y=220)
-
-            self.left.right_top.place_forget()
-            self.left.right_top = right_top_part(self.left,width=self.left.w-300,height=200,fg_color="#EEEEEE")
-            self.left.right_top.place(x=270,y=5)
-
-            self.left.right_bot.j_btn.bind("<Button-1>",open_into_account)
-
-        def test(event):
-            reset()
-            c_id = self.left.customer_id_entry.get()
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
-            cur = con.cursor()
-            cur.execute(f"SELECT name, phone, address, remark \
-                            FROM customer \
-                            WHERE c_id='{'abc' if c_id == '' else c_id}'")
-            result = cur.fetchone()
-            try:
-                self.left.right_top.name_entry.configure(text=f"{str(result[0]).rstrip()}")
-                self.left.right_top.phone_entry.configure(text=f"{str(result[1]).rstrip()}")
-                self.left.right_top.address_entry.configure(text=f"{str(result[2]).rstrip()}")
-                self.left.right_top.remark_entry.configure(text=f"{str(result[3]).rstrip()}")
-            except Exception as e:
-                pass
-            cur.close()
-            con.close()
-            self.left.right_bot.InsertData(c_id, 
-                                        self.left.sell_date1_entry.get_date(), 
-                                        self.left.sell_date2_entry.get_date(),
-                                        self.left.finish_chk.get())
-        
-        self.left = left_part(self, width=kwargs["width"], height=kwargs["height"], fg_color="#FFFFFF")
-        self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
-        self.left.right_bot.j_btn.bind("<Button-1>",open_into_account)
-        self.left.confirm_btn.bind("<Button-1>", test)
-        self.left.customer_id_entry.bind("<Return>", test)
+                self.left = Into_Account_Main_Frame(self, order_id_select, menber_id, width=self.w, height=self.h, fg_color="#FFFFFF")
+                self.left.grid(row=0,column=0)
