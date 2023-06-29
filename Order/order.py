@@ -5,7 +5,7 @@ import os
 from PIL import ImageTk,Image
 
 from .into_order import Into_Order_Main_Frame
-from .into_top_level import Top_level_view_information, Top_level_edit_information, Top_level_item
+from .into_top_level import Top_level_view_information, Top_level_edit_information
 
 class left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -173,7 +173,7 @@ class entrybox(ctk.CTkFrame):
         Reinfoimg = ctk.CTkImage(infoimg,size=(30,30))
         self.info = ctk.CTkButton(self, image=Reinfoimg, width=w, height=40, fg_color="#EEEEEE", hover_color="#EEEEEE", text="")
 
-        editimg = Image.open(f"{os.getcwd()}\\img\\pencil.png")
+        editimg = Image.open(f"{os.getcwd()}\\img\\edit.png")
         Reeditimg = ctk.CTkImage(editimg,size=(30,30))
         self.edit = ctk.CTkButton(self, image=Reeditimg, width=w, height=40, fg_color="#EEEEEE", hover_color="#EEEEEE", text="")
 

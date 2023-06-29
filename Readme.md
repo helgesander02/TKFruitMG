@@ -14,6 +14,4 @@
 
 ## TODO
 
-* Order 編輯訂單
-* Printdata 列印格式
-* Copy 備份到雲端
+□ Copy 備份到雲端
