@@ -5,7 +5,7 @@ import os
 from PIL import ImageTk,Image
 
 from .into_order import Into_Order_Main_Frame
-from .into_top_level import Top_level_view_information, Top_level_item
+from .into_top_level import Top_level_view_information, Top_level_edit_information, Top_level_item
 
 class left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -167,6 +167,7 @@ class entrybox(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         w = (kwargs["width"])/7
         self.o_id = ctk.CTkEntry(self,width=w+w+w+w,height=40)
+        self.reload_right_bot_mid =  master.reload
 
         infoimg = Image.open(f"{os.getcwd()}\\img\\info.png")
         Reinfoimg = ctk.CTkImage(infoimg,size=(30,30))
@@ -190,35 +191,23 @@ class entrybox(ctk.CTkFrame):
         self.info.bind("<Button-1>", self.eninfo)
         self.edit.bind("<Button-1>", self.enedit)
         self.delete.bind("<Button-1>", self.endelete)
-        self.delete.bind("<Button-1>", master.reload)
+        self.delete.bind("<Button-1>", self.reload_right_bot_mid)
 
     def eninfo(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_view_information(self)
             self.toplevel_window.attributes('-topmost','true')
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
-            with con:
-                cur = con.cursor()
-                cur.execute(f"SELECT item_name, specification, size, price, quantity, sub_total, remark FROM goods WHERE o_id = '{self.o_id.get()}'")
-                result = cur.fetchall()
-
-            for r in result:
-                it = Top_level_item(self.toplevel_window.mid, width=680, fg_color="#EEEEEE")
-                it.pack()
-                it.item_name_entry.insert(0, str(r[0]).rstrip())
-                it.norm_entry.insert(0, str(r[1]).rstrip())
-                it.size_entry.insert(0, str(r[2]).rstrip())
-                it.price_entry.insert(0, str(r[3]).rstrip())
-                it.quantity_entry.insert(0, str(r[4]).rstrip())
-                it.total_entry.insert(0, str(r[5]).rstrip())
-                it.remark_entry.insert(0, str(r[6]).rstrip())
         
         else:
             self.toplevel_window.focus()
     
     def enedit(self, event):
-            pass
+        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
+            self.toplevel_window = Top_level_edit_information(self)
+            self.toplevel_window.attributes('-topmost','true')
+        
+        else:
+            self.toplevel_window.focus()
 
     def endelete(self, event):
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")

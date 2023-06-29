@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import psycopg2
 
 class Top_level_view_information(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
@@ -9,9 +10,23 @@ class Top_level_view_information(ctk.CTkToplevel):
         
         self.top.place(x=0,y=0)
         self.mid.place(x=0,y=30)
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        with con:
+            cur = con.cursor()
+            cur.execute(f"SELECT item_name, specification, size, price, quantity, sub_total, remark FROM goods WHERE o_id = '{args[0].o_id}'")
+            result = cur.fetchall()
 
-        #it = Top_level_item(self.mid, width=700-20, fg_color="#EEEEEE")
-        #it.pack()
+        for r in result:
+            it = Top_level_item(self.mid, width=700-20, fg_color="#EEEEEE")
+            it.pack()
+            it.item_name_entry.insert(0, str(r[0]).rstrip())
+            it.norm_entry.insert(0, str(r[1]).rstrip())
+            it.size_entry.insert(0, str(r[2]).rstrip())
+            it.price_entry.insert(0, str(r[3]).rstrip())
+            it.quantity_entry.insert(0, str(r[4]).rstrip())
+            it.total_entry.insert(0, str(r[5]).rstrip())
+            it.remark_entry.insert(0, str(r[6]).rstrip())
 
 class Top_level_top_bar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):

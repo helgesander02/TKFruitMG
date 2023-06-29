@@ -216,14 +216,15 @@ class bot(ctk.CTkFrame):
         else: 
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
-            cur = con.cursor()
-            cur.execute(f"insert into order_form(o_id, c_id) \
-                        values('{self.save_file[0][10]}','{self.save_file[0][8]}')")
-            for i in self.save_file:
-                cur.execute(f"insert into goods(o_id,item_id,item_name,date,specification,size,price,quantity,sub_total,remark)\
-                            values('{i[10]}','{i[0]}','{i[1]}','{i[9]}','{i[2]}','{i[3]}','{i[4]}','{i[5]}','{i[6]}','{i[7]}')")
-            con.commit()
-            con.close()
+            with con:
+                cur = con.cursor()
+                cur.execute(f"insert into order_form(o_id, c_id) \
+                            values('{self.save_file[0][10]}','{self.save_file[0][8]}')")
+                for i in self.save_file:
+                    cur.execute(f"insert into goods(o_id,item_id,item_name,date,specification,size,price,quantity,sub_total,remark)\
+                                values('{i[10]}','{i[0]}','{i[1]}','{i[9]}','{i[2]}','{i[3]}','{i[4]}','{i[5]}','{i[6]}','{i[7]}')")
+                con.commit()
+
             self.remind.configure(text="已存檔")
 
 class Into_Order_Main_Frame(ctk.CTkFrame):

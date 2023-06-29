@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import psycopg2
 from datetime import date
-from .into_top_level import Top_level_view_information, Top_level_item
+from .into_top_level import Top_level_view_information
 # from .accounting import Accounting_Main_Frame
 
 class left_part(ctk.CTkFrame):
@@ -11,24 +11,6 @@ class left_part(ctk.CTkFrame):
             if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
                 self.toplevel_window = Top_level_view_information(self)
                 self.toplevel_window.attributes('-topmost','true')
-                con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-                #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
-                cur = con.cursor()
-                cur.execute(f"SELECT item_name, specification, size, price, quantity, sub_total, remark FROM goods WHERE o_id = '{self.o_id}'")
-                result = cur.fetchall()
-                cur.close()
-                con.close()
-
-                for r in result:
-                    it = Top_level_item(self.toplevel_window.mid, width=700-20, fg_color="#EEEEEE")
-                    it.pack()
-                    it.item_name_entry.insert(0, str(r[0]).rstrip())
-                    it.norm_entry.insert(0, str(r[1]).rstrip())
-                    it.size_entry.insert(0, str(r[2]).rstrip())
-                    it.price_entry.insert(0, str(r[3]).rstrip())
-                    it.quantity_entry.insert(0, str(r[4]).rstrip())
-                    it.total_entry.insert(0, str(r[5]).rstrip())
-                    it.remark_entry.insert(0, str(r[6]).rstrip())
          
             else:
                 self.toplevel_window.focus()
