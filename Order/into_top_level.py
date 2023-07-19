@@ -13,7 +13,7 @@ class Top_level_view_information(ctk.CTkToplevel):
         self.mid.place(x=0,y=30)
 
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
         with con:
             cur = con.cursor()
             cur.execute(f"SELECT item_id, item_name, date, specification, size, price, quantity, sub_total, remark \
@@ -33,7 +33,6 @@ class Top_level_view_information(ctk.CTkToplevel):
             it.total_entry.insert(0, str(r[7]).rstrip())
             it.remark_entry.insert(0, str(r[8]).rstrip())
         
-
 class Top_level_edit_information(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -55,7 +54,7 @@ class Top_level_edit_information(ctk.CTkToplevel):
         self.reload.bind("<Button-1>", self.ReLoad)
 
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
         with con:
             cur = con.cursor()
             cur.execute(f"SELECT item_id, item_name, date, specification, size, price, quantity, sub_total, remark \
@@ -78,7 +77,7 @@ class Top_level_edit_information(ctk.CTkToplevel):
 
     def UpData(self, event):
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")     
+        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
         with con:
             cur = con.cursor()
             cur.execute(f"DELETE FROM goods WHERE o_id='{self.master.o_id.get()}'")
@@ -102,7 +101,7 @@ class Top_level_edit_information(ctk.CTkToplevel):
         self.mid.place(x=0,y=30)
 
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
         with con:
             cur = con.cursor()
             cur.execute(f"SELECT item_id, item_name, date, specification, size, price, quantity, sub_total, remark \

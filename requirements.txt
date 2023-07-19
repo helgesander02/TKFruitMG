@@ -1,8 +1,8 @@
 customtkinter
 tkcalendar
 psycopg2
-pandas
 reportlab
 PyMuPDF
 Pillow
+pywin32
 pyinstaller

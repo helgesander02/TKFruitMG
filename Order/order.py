@@ -64,7 +64,7 @@ class left_part(ctk.CTkFrame):
             self.reset()
             self.c_id = self.customer_id_entry.get()
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
             with con:
                 cur = con.cursor()
                 cur.execute(f"SELECT name, phone, address, remark \
@@ -211,7 +211,7 @@ class entrybox(ctk.CTkFrame):
 
     def endelete(self, event):
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
         with con:
             cur = con.cursor()
             cur.execute(f"DELETE FROM order_form WHERE o_id='{self.o_id.get()}'")
@@ -235,7 +235,7 @@ class bot_mid_part(ctk.CTkScrollableFrame):
         self.master.reload()
 
     def InsertData(self, c_id, date1, date2):
-        #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")    
         with con:
             cur = con.cursor()

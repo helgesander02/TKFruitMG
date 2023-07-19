@@ -113,7 +113,7 @@ class top(ctk.CTkFrame):
 
     def select_od_id(self,date_in):
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
         with con:
             cur = con.cursor()
             cur.execute(f"select o_id,date from goods where date='{date_in}' order by o_id")
@@ -142,7 +142,7 @@ class bot(ctk.CTkFrame):
 
         def item_name(event):
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
             with con:
                 cur = con.cursor()
                 cur.execute(f"SELECT item_name from item where item_id = '{self.entry_1.item_id.get()}'")
@@ -215,7 +215,7 @@ class bot(ctk.CTkFrame):
             
         else: 
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            #con = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
+            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
             with con:
                 cur = con.cursor()
                 cur.execute(f"insert into order_form(o_id, c_id) \

@@ -4,7 +4,7 @@ from reportlab.lib import colors
 from reportlab.platypus import TableStyle
 
 
-pdfmetrics.registerFont(TTFont('microsoft.ttf', "./Printdata/microsoft.ttf"))
+pdfmetrics.registerFont(TTFont('microsoft.ttf', "./font/microsoft.ttf"))
 
 titletbstyle = TableStyle([
     ('FONTSIZE', (0, 0), (-1, -1), 9),
@@ -24,7 +24,9 @@ columntbstyle = TableStyle([
     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ('LINEABOVE', (0, 0), (-1, -1), 0.5, colors.black),
     ('LINEBELOW', (0, 0), (-1, -1), 0.5, colors.black), 
-    ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),    
+    ('ALIGN', (0, 0), (2, 0), 'LEFT'),
+    ('ALIGN', (3, 0), (5, 0), 'RIGHT'),
+    ('ALIGN', (6, 0), (-1, -1), 'LEFT'),    
 ])
 
 normaltbstyle = TableStyle([

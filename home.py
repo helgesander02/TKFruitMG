@@ -2,11 +2,13 @@ import customtkinter as ctk
 import os
 import sv_dt
 from PIL import ImageTk,Image
+import psycopg2
 
 from Company.company import Company_Main_Frame
 from Order.order import Order_Main_Frame
 from Accounting.accounting import Accounting_Main_Frame
 from Printdata.printdata import Printdata_Main_Frame
+from sql import createdatatable
 
 class Select_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -30,8 +32,7 @@ class Select_Frame(ctk.CTkFrame):
 
         self.lab_other.grid(row=0, column=2)
 
-    def open_copy(self):
-            
+    def open_copy(self):        
             if self.copymsg is None or not self.copymsg.winfo_exists():
                 self.copymsg = CopyMsg(self)
                 self.copymsg.focus()
@@ -111,6 +112,14 @@ class App(ctk.CTk):
         h = self.winfo_screenheight()
         self.geometry(f"{w}x{h}+{0}+{0}")
         self.title("Management System")
+        try:
+            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            with con:
+                cur = con.cursor()
+                cur.execute(f"select * from customer")
+        except:
+            createdatatable()
 
         #Select_Frame
         self.Select_Frame = Select_Frame(self, width = w , height = 160, fg_color=("#5b5a5a"))

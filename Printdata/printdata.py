@@ -27,7 +27,8 @@ class Right_part(ctk.CTkFrame):
         self.main_body.pack()
 
     def PrintPDF(self, event):
-        win32api.ShellExecute (0, "print", os.getcwd() + "\\allpdf\\menu.pdf", win32print.GetDefaultPrinter(), ".", 0)
+        currentprinter = win32print.GetDefaultPrinter()
+        win32api.ShellExecute(0, "print", f"{os.getcwd()}\\allpdf\\menu.pdf", '/d:"%s"' % currentprinter, ".", 0)
 
 class Left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -52,10 +53,10 @@ class Left_part(ctk.CTkFrame):
         self.right.place(x=280,y=20) 
 
     def ReadPDF(self, event):
-        conn = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #conn = psycopg2.connect("postgres://fruitshop_user:wZWG0OmRbh73d3dMdk0OvrUZ0Xq02RI1@dpg-chma7ag2qv27ib60utog-a.singapore-postgres.render.com/fruitshop")
-        with conn:
-            cur = conn.cursor()
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
+        with con:
+            cur = con.cursor()
             cur.execute(f"SELECT order_form.o_id, goods.item_name, goods.date, goods.specification, goods.size, goods.price, goods.quantity, goods.sub_total, goods.remark  \
                             FROM order_form JOIN goods ON order_form.o_id=goods.o_id \
                             WHERE order_form.c_id = '{self.search_id.get()}' \
