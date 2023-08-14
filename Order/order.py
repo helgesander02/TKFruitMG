@@ -5,7 +5,7 @@ import os
 from PIL import ImageTk,Image
 
 from .into_order import Into_Order_Main_Frame
-from .into_top_level import Top_level_view_information, Top_level_edit_information
+from .into_top_level import Top_level_view_information, Top_level_edit_information, Top_level_check_delete
 
 class left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -133,25 +133,31 @@ class bot_top_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         w = kwargs["width"]/7
-        self.bar_1 = ctk.CTkLabel(self, width=w+w+w+w, height=40, 
+        self.bar_1 = ctk.CTkLabel(self, width=w+w, height=40, 
                                     text="訂單編號",
                                     fg_color='#3B8ED0',
                                     font=("microsoft yahei", 14, 'bold'), 
                                     text_color=("#FFFFFF"))
 
-        self.bar_2 = ctk.CTkLabel(self, width=w, height=40, 
-                                    text="詳細資料",
+        self.bar_2 = ctk.CTkLabel(self, width=w+w, height=40, 
+                                    text="訂單小計",
                                     fg_color='#3B8ED0',
                                     font=("microsoft yahei", 14, 'bold'), 
                                     text_color=("#FFFFFF"))
 
         self.bar_3 = ctk.CTkLabel(self, width=w, height=40, 
-                                    text="編輯",
+                                    text="詳細資料",
                                     fg_color='#3B8ED0',
                                     font=("microsoft yahei", 14, 'bold'), 
                                     text_color=("#FFFFFF"))
 
         self.bar_4 = ctk.CTkLabel(self, width=w, height=40, 
+                                    text="編輯",
+                                    fg_color='#3B8ED0',
+                                    font=("microsoft yahei", 14, 'bold'), 
+                                    text_color=("#FFFFFF"))
+
+        self.bar_5 = ctk.CTkLabel(self, width=w, height=40, 
                                     text="刪除",
                                     fg_color='#3B8ED0',
                                     font=("microsoft yahei", 14, 'bold'), 
@@ -161,13 +167,16 @@ class bot_top_part(ctk.CTkFrame):
         self.bar_2.grid(row=0,column=1)
         self.bar_3.grid(row=0,column=2)
         self.bar_4.grid(row=0,column=3)
+        self.bar_5.grid(row=0,column=4)
 
 class entrybox(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        w = (kwargs["width"])/7
-        self.o_id = ctk.CTkEntry(self,width=w+w+w+w,height=40)
-        self.reload_right_bot_mid =  master.reload
+        w = (kwargs["width"])/7     
+        self.master =  master
+        self.o_id = ctk.CTkEntry(self,width=w+w,height=40)
+
+        self.total = ctk.CTkEntry(self,width=w+w,height=40)
 
         infoimg = Image.open(f"{os.getcwd()}\\img\\info.png")
         Reinfoimg = ctk.CTkImage(infoimg,size=(30,30))
@@ -184,14 +193,17 @@ class entrybox(ctk.CTkFrame):
         self.toplevel_window = None
 
         self.o_id.grid(row=0,column=0)
-        self.info.grid(row=0,column=1)
-        self.edit.grid(row=0,column=2)
-        self.delete.grid(row=0,column=3)
+        self.total.grid(row=0,column=1)
+        self.info.grid(row=0,column=2)
+        self.edit.grid(row=0,column=3)
+        self.delete.grid(row=0,column=4)
 
         self.info.bind("<Button-1>", self.eninfo)
         self.edit.bind("<Button-1>", self.enedit)
         self.delete.bind("<Button-1>", self.endelete)
-        self.delete.bind("<Button-1>", self.reload_right_bot_mid)
+
+    def reload_right_bot_mid(self):
+        self.master.reload()
 
     def eninfo(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
@@ -210,20 +222,12 @@ class entrybox(ctk.CTkFrame):
             self.toplevel_window.focus()
 
     def endelete(self, event):
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
-        with con:
-            cur = con.cursor()
-            cur.execute(f"DELETE FROM order_form WHERE o_id='{self.o_id.get()}'")
-            cur.execute(f"DELETE FROM goods WHERE o_id='{self.o_id.get()}'")
-
-            cur.execute(f"SELECT ac_id FROM accounting WHERE o_id='{self.o_id.get()}'")
-            ac_ids = cur.fetchall()
-
-            cur.execute(f"DELETE FROM accounting WHERE o_id='{self.o_id.get()}'")
-            for ac_id in ac_ids:
-                cur.execute(f"DELETE FROM receipt WHERE ac_id='{ac_id[0]}'")            
-
+        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
+            self.toplevel_window = Top_level_check_delete(self)
+            self.toplevel_window.attributes('-topmost','true')    
+        else:
+            self.toplevel_window.focus()
+                    
 class bot_mid_part(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)   
@@ -231,7 +235,7 @@ class bot_mid_part(ctk.CTkScrollableFrame):
         self.h = kwargs["height"]
         self.master = master
 
-    def reload(self, event):
+    def reload(self):
         self.master.reload()
 
     def InsertData(self, c_id, date1, date2):
@@ -240,23 +244,24 @@ class bot_mid_part(ctk.CTkScrollableFrame):
         with con:
             cur = con.cursor()
             if c_id == "":
-                cur.execute(f"SELECT order_form.o_id \
+                cur.execute(f"SELECT goods.o_id, SUM(goods.sub_total) \
                             FROM order_form JOIN goods \
                             ON order_form.o_id = goods.o_id \
                             WHERE (goods.date BETWEEN SYMMETRIC '{date1}' AND '{date2}') \
-                            GROUP BY order_form.o_id")
+                            GROUP BY goods.o_id")
                 result = cur.fetchall() 
             else:
-                cur.execute(f"SELECT order_form.o_id \
+                cur.execute(f"SELECT goods.o_id, SUM(goods.sub_total) \
                             FROM order_form JOIN goods \
                             ON order_form.o_id = goods.o_id \
                             WHERE order_form.c_id = '{c_id}' AND (goods.date BETWEEN SYMMETRIC '{date1}' AND '{date2}') \
-                            GROUP BY order_form.o_id")
+                            GROUP BY goods.o_id")
                 result = cur.fetchall()    
 
         for row in result:
             entry = entrybox(self ,width=self.w, fg_color="#EEEEEE")
             entry.o_id.insert(0, row[0]) 
+            entry.total.insert(0, row[1])
             entry.pack()
 
 class bot_bot_part(ctk.CTkFrame):

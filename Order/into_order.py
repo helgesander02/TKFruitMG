@@ -135,8 +135,8 @@ class bot(ctk.CTkFrame):
             self.entry_1 = entrybox(self.mid_frame, width=self.w)
             self.entry_1.pack()
             self.entry_1.item_id.focus()
-            self.entry_1.remark.bind('<Return>',temp_data)
-            self.entry_1.remark.bind('<Return>',next_row)
+            self.entry_1.remark.bind('<Tab>',temp_data)
+            self.entry_1.remark.bind('<Tab>',next_row)
             self.entry_1.item_id.bind('<Tab>',item_name)
             self.entry_1.quantity.bind('<Tab>',total_price)
 
@@ -148,16 +148,33 @@ class bot(ctk.CTkFrame):
                 cur.execute(f"SELECT item_name from item where item_id = '{self.entry_1.item_id.get()}'")
                 result = cur.fetchone()
 
-            self.entry_1.item_name.insert(0,str(result[0]).rstrip())
-            self.entry_1.specification.focus() 
+            if self.entry_1.item_name.get() == "":
+                self.entry_1.item_name.insert(0,str(result[0]).rstrip())
+                self.entry_1.specification.focus()
+            else:
+                 self.entry_1.specification.focus()
 
         def total_price(event):
             price = self.entry_1.price.get()
             quan = self.entry_1.quantity.get()
-            total = int(price) * int(quan)
-            self.totalsum += total
-            self.entry_1.subtotal.insert(0,total)
-            self.entry_1.remark.focus()
+            
+            if price=="" or quan=="":
+                total = 0
+                self.totalsum += total
+
+            elif self.entry_1.subtotal.get() == "":
+                total = int(price) * int(quan)
+                self.totalsum += total
+                self.entry_1.subtotal.insert(0,total)
+                self.entry_1.remark.focus()
+
+            else:
+                total = int(price) * int(quan)
+                self.totalsum += (total-int(self.entry_1.subtotal.get()))
+                self.entry_1.subtotal.delete(0, len(self.entry_1.subtotal.get()))
+                self.entry_1.subtotal.insert(0,total)
+                self.entry_1.remark.focus()
+
             self.total.configure(text="總計："+str(self.totalsum))
 
         def temp_data(event):
@@ -205,8 +222,9 @@ class bot(ctk.CTkFrame):
         self.entry_1 = entrybox(self.mid_frame ,width=self.w)
         self.entry_1.pack()
         self.entry_1.item_id.bind('<Tab>',item_name)
-        self.entry_1.remark.bind('<Return>',temp_data)
-        self.entry_1.remark.bind('<Return>',next_row)
+        self.entry_1.remark.bind('<Tab>',temp_data)
+        self.entry_1.remark.bind('<Tab>',next_row)
+        self.entry_1.price.bind('<Tab>',total_price)
         self.entry_1.quantity.bind('<Tab>',total_price)
 
     def save_data(self):

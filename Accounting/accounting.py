@@ -13,8 +13,7 @@ class left_part(ctk.CTkFrame):
         self.customer_id_entry = ctk.CTkEntry(self,width=210, height=50,
                                                     fg_color="#EEEEEE",
                                                     placeholder_text="客戶編號" 
-                                                    )
-        
+                                                    )     
 
         self.sell_date1_entry = tkc.DateEntry(self, selectmode='day',
                                                     font=("microsoft yahei", 20),year=2000,month=1,day=1,date_pattern="yyyy-mm-dd")
@@ -211,6 +210,10 @@ class right_bot_part(ctk.CTkFrame):
             self.toplevel.focus()
         else:
             self.toplevel.focus()
+
+    def open_check_account(self, event):
+        self.toplevel = Top_level_check_account(self)
+        self.toplevel.focus()
         
     def InsertData(self, c_id, date1, date2, chk):
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")

@@ -2,8 +2,8 @@ import customtkinter as ctk
 import tkcalendar as tkc
 import os
 import psycopg2
-import win32api
-import win32print
+#import win32api
+#import win32print
 from datetime import date
 from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table
@@ -19,16 +19,16 @@ class Right_part(ctk.CTkFrame):
 
         self.top_bar = ctk.CTkFrame(self, width=self.w, height=40)
         self.download_btn = ctk.CTkButton(self.top_bar, width=self.w, height=40, text="確認列印", font=("microsoft yahei", 20, 'bold'))
-        self.download_btn.bind("<Button-1>", self.PrintPDF)
+        #self.download_btn.bind("<Button-1>", self.PrintPDF)
         self.main_body = PDFViewer(self, width=self.w-20, height=self.h-80)  
 
         self.download_btn.pack()
         self.top_bar.pack()
         self.main_body.pack()
 
-    def PrintPDF(self, event):
-        currentprinter = win32print.GetDefaultPrinter()
-        win32api.ShellExecute(0, "print", f"{os.getcwd()}\\allpdf\\menu.pdf", '/d:"%s"' % currentprinter, ".", 0)
+    #def PrintPDF(self, event):
+        #currentprinter = win32print.GetDefaultPrinter()
+        #win32api.ShellExecute(0, "print", f"{os.getcwd()}\\allpdf\\menu.pdf", '/d:"%s"' % currentprinter, ".", 0)
 
 class Left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):

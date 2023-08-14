@@ -18,6 +18,7 @@ class left_part(ctk.CTkFrame):
         def rightbot_reset(event):
             self.right_bot.grid_forget()
             self.right_bot = right_bot_part(self,width=self.w-450,height=self.h-450,fg_color="#EEEEEE")
+            self.right_bot.bot.back_btn.bind("<Button-1>", master.back_to_accounting)
             self.right_bot.bot.reset_btn.bind("<Button-1>", rightbot_reset)
             self.right_bot.bot.confirm_btn.bind("<Button-1>", rightbot_confirm)
             self.right_bot.place(x=400,y=340)
@@ -268,8 +269,8 @@ class right_bot_mid(ctk.CTkScrollableFrame):
             self.entry_1 = entrybox(self, width=kwargs["width"])
             self.entry_1.pack()
             self.entry_1.bar_1.focus()
-            self.entry_1.bar_5.bind('<Return>',temp_data)
-            self.entry_1.bar_5.bind('<Return>',next_row)
+            self.entry_1.bar_5.bind('<Tab>',temp_data)
+            self.entry_1.bar_5.bind('<Tab>',next_row)
 
         def temp_data(event):
             self.all_entry.append(self.entry_1)
@@ -282,8 +283,8 @@ class right_bot_mid(ctk.CTkScrollableFrame):
             self.entry_1.bar_1.insert(0, f"{date.today().year}{date.today().month}{date.today().day}")
         self.entry_1.pack()
 
-        self.entry_1.bar_5.bind('<Return>',temp_data)
-        self.entry_1.bar_5.bind('<Return>',next_row)
+        self.entry_1.bar_5.bind('<Tab>',temp_data)
+        self.entry_1.bar_5.bind('<Tab>',next_row)
 
 class right_bot_botbar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -311,40 +312,6 @@ class right_bot_botbar(ctk.CTkFrame):
 class Into_Account_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, order_id_select, menber_id, **kwargs):
         super().__init__(master, **kwargs)
-        def orderforwark(event):
-            if self.location+1 < len(self.order_id_select):
-                self.location += 1
-                self.o_id = self.order_id_select[self.location]
-
-                self.left.grid_forget()
-                self.left = left_part(self, self.o_id, self.m_id, 
-                                        width=self.w, height=self.h, fg_color="#FFFFFF")
-                self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
-                self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
-                self.left.right_bot.bot.back_btn.bind("<Button-1>", back_to_accounting)
-                self.left.forwark_btn.bind("<Button-1>", orderforwark)
-                self.left.backward_btn.bind("<Button-1>", orderbackward)
-    
-        def orderbackward(event):
-            if self.location-1 > -1:
-                self.location -= 1
-                self.o_id = self.order_id_select[self.location]
-                
-                self.left.grid_forget()
-                self.left = left_part(self, self.o_id, self.m_id, 
-                                        width=self.w, height=self.h, fg_color="#FFFFFF")
-                self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
-                self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
-                self.left.right_bot.bot.back_btn.bind("<Button-1>", back_to_accounting)
-                self.left.forwark_btn.bind("<Button-1>", orderforwark)
-                self.left.backward_btn.bind("<Button-1>", orderbackward)
-                
-        def back_to_accounting(event):
-            from .accounting import Accounting_Main_Frame
-            self.left.grid_forget()
-            self.left = Accounting_Main_Frame(self, width=kwargs["width"], height=kwargs["height"], fg_color="#FFFFFF")
-            self.left.grid(row=0,column=0)
-
         self.w = kwargs["width"]
         self.h = kwargs["height"]
         self.location = 0
@@ -356,10 +323,43 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
         self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
 
         self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
-        self.left.forwark_btn.bind("<Button-1>", orderforwark)
-        self.left.backward_btn.bind("<Button-1>", orderbackward)
-        self.left.right_bot.bot.back_btn.bind("<Button-1>", back_to_accounting)
+        self.left.forwark_btn.bind("<Button-1>", self.orderforwark)
+        self.left.backward_btn.bind("<Button-1>", self.orderbackward)
+        self.left.right_bot.bot.back_btn.bind("<Button-1>", self.back_to_accounting)
 
+    def orderforwark(self, event):
+            if self.location+1 < len(self.order_id_select):
+                self.location += 1
+                self.o_id = self.order_id_select[self.location]
+
+                self.left.grid_forget()
+                self.left = left_part(self, self.o_id, self.m_id, 
+                                        width=self.w, height=self.h, fg_color="#FFFFFF")
+                self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
+                self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
+                self.left.right_bot.bot.back_btn.bind("<Button-1>", self.back_to_accounting)
+                self.left.forwark_btn.bind("<Button-1>", self.orderforwark)
+                self.left.backward_btn.bind("<Button-1>", self.orderbackward)
+    
+    def orderbackward(self, event):
+        if self.location-1 > -1:
+            self.location -= 1
+            self.o_id = self.order_id_select[self.location]
+            
+            self.left.grid_forget()
+            self.left = left_part(self, self.o_id, self.m_id, 
+                                    width=self.w, height=self.h, fg_color="#FFFFFF")
+            self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
+            self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
+            self.left.right_bot.bot.back_btn.bind("<Button-1>", self.back_to_accounting)
+            self.left.forwark_btn.bind("<Button-1>", self.orderforwark)
+            self.left.backward_btn.bind("<Button-1>", self.orderbackward)
+            
+    def back_to_accounting(self, event):
+        from .accounting import Accounting_Main_Frame
+        self.left.grid_forget()
+        self.left = Accounting_Main_Frame(self, width=self.w, height=self.h, fg_color="#FFFFFF")
+        self.left.grid(row=0,column=0)
     
     
           

@@ -207,12 +207,37 @@ class entrybox(ctk.CTkFrame):
             self.toplevel_window.focus()
 
     def endelete(self, event):
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")     
-        with con:
-            cur = con.cursor()
-            cur.execute(f"DELETE FROM item WHERE item_id = '{self.item_id.get()}'")
-        self.reload()
+        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
+            self.toplevel_window = Top_level_check_delete(self)
+            self.toplevel_window.attributes('-topmost','true')    
+        else:
+            self.toplevel_window.focus()
 
     def reload(self):
         self.master.reload()
+
+class Top_level_check_delete(ctk.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.geometry("300x150")
+        self.master = args[0]
+        def click(event):
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")     
+            with con:
+                cur = con.cursor()
+                cur.execute(f"DELETE FROM item WHERE item_id = '{self.master.item_id.get()}'")
+            self.master.reload()
+            self.destroy()
+
+        def cancel(event):
+            self.destroy()
+
+        self.msg = ctk.CTkLabel(self, text="是否確定要刪除 !!", font=("microsoft yahei", 20, 'bold'))
+        self.confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
+        self.confirm.bind('<Button-1>', click)
+        self.cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
+        self.cancel.bind('<Button-1>', cancel)
+        self.msg.place(x=50,y=50)
+        self.confirm.place(x=50,y=120)
+        self.cancel.place(x=160,y=120)

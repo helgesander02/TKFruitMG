@@ -288,23 +288,48 @@ class entrybox(ctk.CTkFrame):
             self.toplevel_window.focus()
 
     def endelete(self, event):
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")     
-        with con:
-            cur = con.cursor()
-            cur.execute(f"DELETE FROM customer WHERE c_id = '{self.c_id.get()}'")
-            cur.execute(f"DELETE FROM order_form WHERE c_id = '{self.c_id.get()}'")
-
-            cur.execute(f"SELECT o_id FROM order_form WHERE c_id = '{self.c_id.get()}'")
-            o_ids = cur.fetchall()
-            for o_id in o_ids:
-                cur.execute(f"DELETE FROM goods WHERE o_id = '{o_id}'")
-                cur.execute(f"SELECT ac_id FROM accounting WHERE o_id = '{o_id}'")
-                ac_ids = cur.fetchall()
-                cur.execute(f"DELETE FROM accounting WHERE o_id = {o_id}")
-                for ac_id in ac_ids:
-                    cur.execute(f"DELETE FROM receipt WHERE ac_id = {ac_id}")
-        self.reload()
+        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
+            self.toplevel_window = Top_level_check_delete(self)
+            self.toplevel_window.attributes('-topmost','true')    
+        else:
+            self.toplevel_window.focus()
 
     def reload(self):
         self.master.reload()
+
+class Top_level_check_delete(ctk.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.geometry("300x150")
+        self.master = args[0]
+        def click(event):
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")     
+            with con:
+                cur = con.cursor()
+                cur.execute(f"DELETE FROM customer WHERE c_id = '{self.master.c_id.get()}'")
+                cur.execute(f"DELETE FROM order_form WHERE c_id = '{self.master.c_id.get()}'")
+
+                cur.execute(f"SELECT o_id FROM order_form WHERE c_id = '{self.master.c_id.get()}'")
+                o_ids = cur.fetchall()
+                for o_id in o_ids:
+                    cur.execute(f"DELETE FROM goods WHERE o_id = '{o_id}'")
+                    cur.execute(f"SELECT ac_id FROM accounting WHERE o_id = '{o_id}'")
+                    ac_ids = cur.fetchall()
+                    cur.execute(f"DELETE FROM accounting WHERE o_id = {o_id}")
+                    for ac_id in ac_ids:
+                        cur.execute(f"DELETE FROM receipt WHERE ac_id = {ac_id}")
+            self.master.reload()
+            self.destroy()
+
+        def cancel(event):
+            self.destroy()
+
+        self.msg = ctk.CTkLabel(self, text="是否確定要刪除 !!", font=("microsoft yahei", 20, 'bold'))
+        self.confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
+        self.confirm.bind('<Button-1>', click)
+        self.cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
+        self.cancel.bind('<Button-1>', cancel)
+        self.msg.place(x=50,y=50)
+        self.confirm.place(x=50,y=120)
+        self.cancel.place(x=160,y=120)

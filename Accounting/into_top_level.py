@@ -67,3 +67,11 @@ class Top_level_item(ctk.CTkFrame):
         self.quantity_entry.grid(row=0,column=4)
         self.total_entry.grid(row=0,column=5)
         self.remark_entry.grid(row=0,column=6)
+
+class Top_level_check_account(ctk.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.geometry("300x150")
+        self.master = args[0]
+        self.msg = ctk.CTkLabel(self, text="入賬成功 !!", font=("microsoft yahei", 14, 'bold'))
+        self.msg.place(x=50,y=50)
