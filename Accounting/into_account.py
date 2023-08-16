@@ -52,9 +52,9 @@ class left_part(ctk.CTkFrame):
         self.m_id = m_id
         self.ac_id = self.select_ac_id()
         self.toplevel_window = None
-        self.customer_id = ctk.CTkLabel(self, text=f"客戶編號：{self.m_id}", font=("microsoft yahei", 20, 'bold'))
+        self.customer_id = ctk.CTkLabel(self, text=f"客戶編號：{self.m_id}", font=("microsoft yahei", 20, 'bold'), text_color=("#333333"))
 
-        self.order_id = ctk.CTkLabel(self, text=f"訂單編號：{self.o_id}", font=("microsoft yahei", 20, 'bold'))
+        self.order_id = ctk.CTkLabel(self, text=f"訂單編號：{self.o_id}", font=("microsoft yahei", 20, 'bold'), text_color=("#333333"))
 
         self.information_btn = ctk.CTkButton(self,width=320,height=40,
                                                     fg_color="#3B8ED0",
@@ -63,18 +63,20 @@ class left_part(ctk.CTkFrame):
                                                     )
         self.information_btn.bind("<Button-1>", viewinformation) 
 
-        self.location = ctk.CTkLabel(self, text="", font=("microsoft yahei", 20, 'bold'))
+        self.location = ctk.CTkLabel(self, text="", font=("microsoft yahei", 20, 'bold'), text_color=("#333333"))
 
         self.forwark_btn = ctk.CTkButton(self,width=155,height=40,
                                                     fg_color="#3B8ED0",
                                                     text="下一筆",
                                                     font=("microsoft yahei", 16, 'bold'),
+                                                    text_color=("#333333"),
                                                     )
         
         self.backward_btn = ctk.CTkButton(self,width=155,height=40,
                                                     fg_color="#3B8ED0",
                                                     text="上一筆",
                                                     font=("microsoft yahei", 16, 'bold'),
+                                                    text_color=("#333333"),
                                                     )
 
 
@@ -251,9 +253,15 @@ class entrybox(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         w = kwargs["width"]/5
         self.bar_1 = ctk.CTkEntry(self,width=w,height=40)
+        if date.today().month < 10:
+            self.bar_1.insert(0, f"{date.today().year}0{date.today().month}{date.today().day}")
+        else:
+            self.bar_1.insert(0, f"{date.today().year}{date.today().month}{date.today().day}")
         self.bar_2 = ctk.CTkEntry(self,width=w,height=40)
         self.bar_3 = ctk.CTkEntry(self,width=w,height=40)
+        self.bar_3.insert(0, "0")
         self.bar_4 = ctk.CTkEntry(self,width=w,height=40)
+        self.bar_4.insert(0, "0")
         self.bar_5 = ctk.CTkEntry(self,width=w,height=40)
 
         self.bar_1.grid(row=0,column=0)
@@ -277,10 +285,6 @@ class right_bot_mid(ctk.CTkScrollableFrame):
 
         self.all_entry = []
         self.entry_1 = entrybox(self ,width=kwargs["width"])
-        if date.today().month < 10:
-            self.entry_1.bar_1.insert(0, f"{date.today().year}0{date.today().month}{date.today().day}")
-        else:
-            self.entry_1.bar_1.insert(0, f"{date.today().year}{date.today().month}{date.today().day}")
         self.entry_1.pack()
 
         self.entry_1.bar_5.bind('<Tab>',temp_data)

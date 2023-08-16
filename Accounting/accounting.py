@@ -22,6 +22,7 @@ class left_part(ctk.CTkFrame):
 
         self.finish_chk = ctk.CTkCheckBox(self,width=40,height=40, text="是否隱藏收帳完成的", 
                                                     font=("microsoft yahei", 16, 'bold'),
+                                                    text_color=("#333333"),
                                                     )
 
         self.confirm_btn = ctk.CTkButton(self,width=200,height=40,
@@ -85,15 +86,15 @@ class left_part(ctk.CTkFrame):
 class right_top_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        self.customer_name = ctk.CTkLabel(self,text="客戶名稱：", font=("microsoft yahei", 20, 'bold'))
-        self.address = ctk.CTkLabel(self,text="地址：", font=("microsoft yahei", 20, 'bold'))
-        self.phone = ctk.CTkLabel(self,text="　　手機：", font=("microsoft yahei", 20, 'bold'))
-        self.remark = ctk.CTkLabel(self,text="備註：", font=("microsoft yahei", 20, 'bold'))
+        self.customer_name = ctk.CTkLabel(self,text="客戶名稱：", font=("microsoft yahei", 20, 'bold'), text_color=("#333333"))
+        self.address = ctk.CTkLabel(self,text="地址：", font=("microsoft yahei", 20, 'bold'), text_color=("#333333"))
+        self.phone = ctk.CTkLabel(self,text="　　手機：", font=("microsoft yahei", 20, 'bold'), text_color=("#333333"))
+        self.remark = ctk.CTkLabel(self,text="備註：", font=("microsoft yahei", 20, 'bold'), text_color=("#333333"))
 
-        self.name_entry = ctk.CTkLabel(self, text="", font=("microsoft yahei", 20))
-        self.phone_entry = ctk.CTkLabel(self, text="", font=("microsoft yahei", 20))
-        self.address_entry = ctk.CTkLabel(self, text="", font=("microsoft yahei", 20))
-        self.remark_entry = ctk.CTkLabel(self, text="", font=("microsoft yahei", 20))
+        self.name_entry = ctk.CTkLabel(self, text="", font=("microsoft yahei", 20), text_color=("#333333"))
+        self.phone_entry = ctk.CTkLabel(self, text="", font=("microsoft yahei", 20), text_color=("#333333"))
+        self.address_entry = ctk.CTkLabel(self, text="", font=("microsoft yahei", 20), text_color=("#333333"))
+        self.remark_entry = ctk.CTkLabel(self, text="", font=("microsoft yahei", 20), text_color=("#333333"))
 
         self.customer_name.place(x=60,y=50)
         self.name_entry.place(x=170,y=50)
@@ -181,6 +182,8 @@ class right_bot_part(ctk.CTkFrame):
         self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-100, fg_color="#EEEEEE")
         self.select_order = []
         self.bot = ctk.CTkFrame(self, width=self.w, height=40)
+        self.sum = ctk.CTkLabel(self.bot, height=40, text="總額：" ,font=("microsoft yahei", 20, 'bold'), text_color="#000000")
+        self.nmb = ctk.CTkLabel(self.bot, height=40, text="" ,font=("microsoft yahei", 20, 'bold'), text_color="#000000")
         self.j_btn = ctk.CTkButton(self.bot, width=150, height=30, text="入賬" ,font=("microsoft yahei", 14, 'bold'))
         self.once_btn = ctk.CTkButton(self.bot, width=150, height=30, text="一次入帳多筆" ,font=("microsoft yahei", 14, 'bold'),command=self.open_once_enter)
         self.j_text = ctk.CTkLabel(self.bot, width=50, height=40, text="" ,font=("microsoft yahei", 20, 'bold'), text_color="#FF0000")
@@ -188,6 +191,8 @@ class right_bot_part(ctk.CTkFrame):
         self.mid.place(x=0,y=40)
         self.bot.place(x=0,y=self.h-40)
         self.once_btn.place(x=self.w-400,y=5)
+        self.sum.place(x=20)
+        self.nmb.place(x=100)
         self.j_btn.place(x=self.w-200,y=5)
         self.j_text.place(x=self.w-600)
 
@@ -262,6 +267,7 @@ class right_bot_part(ctk.CTkFrame):
                                     GROUP BY accounting.o_id")
                 result2 = cur.fetchall()
 
+        s = 0
         for i in range(len(result1)):
             al = 0
             overage = result1[i][2]
@@ -274,12 +280,14 @@ class right_bot_part(ctk.CTkFrame):
             it = item(self.mid, width=self.w-20, fg_color="#EEEEEE")
             it.dat.insert(0, f"{result1[i][0]}")
             it.remark.insert(0, f"{result1[i][1]}")
-            it.sbtotal.insert(0, f"{result1[i][2]}")      
+            it.sbtotal.insert(0, f"{result1[i][2]}")
+            s+= int(result1[i][2])     
             it.al_total.insert(0, f"{al}")
             it.overage.insert(0, f"{overage}")
            
             self.select_order.append(it)              
             it.pack()
+        self.nmb.configure(text=f"{s:,}") 
 
     def SelectOrder(self):
         select_chkbox = []
