@@ -46,28 +46,31 @@ class Top_level_edit_information(ctk.CTkToplevel):
         self.top = Top_level_top_bar(self, width=800, height=40)
         self.mid = Top_level_mid(self, width=780, height=320, fg_color="#EEEEEE")
         self.bot = ctk.CTkFrame(self, width=800, height=40)
-        self.updata = ctk.CTkButton(self.bot, width=120, height=30, text="更新", font=("microsoft yahei", 16, 'bold'))
-        self.reload = ctk.CTkButton(self.bot, width=120, height=30, text="重設", font=("microsoft yahei", 16, 'bold'), command=self.ReLoad())
+        self.updata = ctk.CTkButton(self.bot, width=100, height=20, text="更新", font=("microsoft yahei", 12, 'bold'))
+        self.load = ctk.CTkButton(self.bot, width=100, height=20, text="重設", font=("microsoft yahei", 12, 'bold'))
+        self.new = ctk.CTkButton(self.bot, width=100, height=20, text="新增", font=("microsoft yahei", 12, 'bold'))
         
         self.top.place(x=0,y=0)
         self.mid.place(x=0,y=40)
-        self.bot.place(x=0,y=360)
+        self.bot.place(x=0,y=370)
         self.updata.place(x=650,y=5)
-        self.reload.place(x=500,y=5)
+        self.load.place(x=500,y=5)
+        self.new.place(x=350,y=5)
         self.updata.bind("<Button-1>", self.UpData)
-        self.reload.bind("<Button-1>", self.ReLoad)
+        self.load.bind("<Button-1>", self.ReLoad)
+        self.new.bind("<Button-1>", self.New)
 
     def UpData(self, event):
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
         with con:
             cur = con.cursor()
-            cur.execute(f"DELETE FROM goods WHERE o_id='{self.master.o_id.get()}'")
+            cur.execute(f"DELETE FROM goods WHERE o_id='{self.o_id}'")
             con.commit()
 
             for it in self.allit:
                 cur.execute(f"INSERT INTO goods(o_id, item_id, item_name, date, specification, size, price, quantity, sub_total, remark) \
-                                VALUES('{self.master.o_id.get()}','{it.item_id_entry.get()}','{it.item_name_entry.get()}', \
+                                VALUES('{self.o_id}','{it.item_id_entry.get()}','{it.item_name_entry.get()}', \
                                         '{it.date_entry.get()}','{it.norm_entry.get()}', '{it.size_entry.get()}', \
                                         '{it.price_entry.get()}','{it.quantity_entry.get()}','{it.total_entry.get()}', \
                                         '{it.remark_entry.get()}')")
@@ -76,22 +79,39 @@ class Top_level_edit_information(ctk.CTkToplevel):
         self.master.reload_right_bot_mid()
         self.destroy()
 
-    def ReLoad(self):
+    def reload(self):
         self.mid.place_forget()
         self.allit = []
         self.mid = Top_level_mid(self, width=780, height=320, fg_color="#EEEEEE")
-        self.mid.place(x=0,y=30)
+        self.mid.place(x=0,y=40)
+
+    def ReLoad(self, event):
+        self.mid.place_forget()
+        self.allit = []
+        self.mid = Top_level_mid(self, width=780, height=320, fg_color="#EEEEEE")
+        self.mid.place(x=0,y=40)
+
+    def New(self, event):
+        it = Top_level_item(self.mid, width=780, fg_color="#EEEEEE")
+        it.pack()
+        self.allit.append(it)
+
+class Top_level_mid(ctk.CTkScrollableFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.master = master
+        self.o_id = self.master.o_id
 
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
         with con:
             cur = con.cursor()
             cur.execute(f"SELECT item_id, item_name, date, specification, size, price, quantity, sub_total, remark \
-                            FROM goods WHERE o_id = '{self.master.o_id.get()}'")
+                            FROM goods WHERE o_id = '{self.o_id}'")
             result = cur.fetchall()
 
         for r in result:
-            it = Top_level_item(self.mid, width=780, fg_color="#EEEEEE")
+            it = Top_level_item(self, width=780, fg_color="#EEEEEE")
             it.pack()
             it.item_id_entry.insert(0, str(r[0]).rstrip())
             it.item_name_entry.insert(0, str(r[1]).rstrip())
@@ -102,17 +122,11 @@ class Top_level_edit_information(ctk.CTkToplevel):
             it.quantity_entry.insert(0, str(r[6]).rstrip())
             it.total_entry.insert(0, str(r[7]).rstrip())
             it.remark_entry.insert(0, str(r[8]).rstrip())
-            self.allit.append(it)
-
-class Top_level_mid(ctk.CTkScrollableFrame):
-    def __init__(self, master, **kwargs):
-        super().__init__(master, **kwargs)
-        self.master = master
-        self.o_id = self.master.o_id
+            self.master.allit.append(it)
         
         
     def reload(self):
-        self.master.ReLoad()
+        self.master.reload()
 
 class Top_level_top_bar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -142,8 +156,44 @@ class Top_level_top_bar(ctk.CTkFrame):
 
 class Top_level_item(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
+        def item_name(event):
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
+            with con:
+                cur = con.cursor()
+                cur.execute(f"SELECT item_name from item where item_id = '{self.item_id_entry.get()}'")
+                result = cur.fetchone()
+
+            if self.item_name_entry.get() == "":
+                self.item_name_entry.insert(0,str(result[0]).rstrip())
+                self.date_entry.focus()
+            else:
+                self.date_entry.focus()
+
+        def total_price(event):
+            price = self.price_entry.get()
+            quan = self.quantity_entry.get()
+            
+            if price=="" or quan=="":
+                total = 0
+                self.totalsum += total
+
+            elif self.total_entry.get() == "":
+                total = int(price) * int(quan)
+                self.totalsum += total
+                self.total_entry.insert(0,total)
+                self.remark_entry.focus()
+
+            else:
+                total = int(price) * int(quan)
+                self.totalsum += (total-int(self.total_entry.get()))
+                self.total_entry.delete(0, len(self.total_entry.get()))
+                self.total_entry.insert(0,total)
+                self.remark_entry.focus()
+
         super().__init__(master, **kwargs)
         w = kwargs["width"]/10
+        self.totalsum = 0
         self.master = master
         self.o_id = master.o_id
         self.toplevel_window = None
@@ -172,6 +222,9 @@ class Top_level_item(ctk.CTkFrame):
         self.remark_entry.grid(row=0,column=8)
         self.delete.grid(row=0,column=9)
         self.delete.bind("<Button-1>", self.itemdelete)
+        self.item_id_entry.bind('<Tab>',item_name)
+        self.price_entry.bind('<Tab>',total_price)
+        self.quantity_entry.bind('<Tab>',total_price)
 
     def reload(self):
             self.master.reload()
@@ -227,9 +280,10 @@ class Top_level_check_itemdelete(ctk.CTkToplevel):
         def click(event):
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
-            with con:
-                cur = con.cursor()
-                cur.execute(f"DELETE FROM goods WHERE o_id='{self.master.o_id}' AND item_id='{self.master.item_id_entry.get()}'")
+            if self.master.item_id_entry.get() != "":
+                with con:
+                    cur = con.cursor()
+                    cur.execute(f"DELETE FROM goods WHERE o_id='{self.master.o_id}' AND item_id='{self.master.item_id_entry.get()}'")
             self.master.reload()
             self.destroy()
 

@@ -69,14 +69,12 @@ class left_part(ctk.CTkFrame):
                                                     fg_color="#3B8ED0",
                                                     text="下一筆",
                                                     font=("microsoft yahei", 16, 'bold'),
-                                                    text_color=("#333333"),
                                                     )
         
         self.backward_btn = ctk.CTkButton(self,width=155,height=40,
                                                     fg_color="#3B8ED0",
                                                     text="上一筆",
                                                     font=("microsoft yahei", 16, 'bold'),
-                                                    text_color=("#333333"),
                                                     )
 
 
@@ -252,16 +250,10 @@ class entrybox(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         w = kwargs["width"]/5
-        self.bar_1 = ctk.CTkEntry(self,width=w,height=40)
-        if date.today().month < 10:
-            self.bar_1.insert(0, f"{date.today().year}0{date.today().month}{date.today().day}")
-        else:
-            self.bar_1.insert(0, f"{date.today().year}{date.today().month}{date.today().day}")
+        self.bar_1 = ctk.CTkEntry(self,width=w,height=40)     
         self.bar_2 = ctk.CTkEntry(self,width=w,height=40)
         self.bar_3 = ctk.CTkEntry(self,width=w,height=40)
-        self.bar_3.insert(0, "0")
         self.bar_4 = ctk.CTkEntry(self,width=w,height=40)
-        self.bar_4.insert(0, "0")
         self.bar_5 = ctk.CTkEntry(self,width=w,height=40)
 
         self.bar_1.grid(row=0,column=0)
@@ -276,18 +268,27 @@ class right_bot_mid(ctk.CTkScrollableFrame):
         def next_row(event):
             self.entry_1 = entrybox(self, width=kwargs["width"])
             self.entry_1.pack()
+            if date.today().month < 10:
+                self.entry_1.bar_1.insert(0, f"{date.today().year}0{date.today().month}{date.today().day}")
+            else:
+                self.entry_1.bar_1.insert(0, f"{date.today().year}{date.today().month}{date.today().day}")
+            self.entry_1.bar_3.insert(0, "0")
+            self.entry_1.bar_4.insert(0, "0")
             self.entry_1.bar_1.focus()
-            self.entry_1.bar_5.bind('<Tab>',temp_data)
-            self.entry_1.bar_5.bind('<Tab>',next_row)
-
-        def temp_data(event):
             self.all_entry.append(self.entry_1)
+            self.entry_1.bar_5.bind('<Tab>',next_row)
+            
 
         self.all_entry = []
         self.entry_1 = entrybox(self ,width=kwargs["width"])
         self.entry_1.pack()
-
-        self.entry_1.bar_5.bind('<Tab>',temp_data)
+        if date.today().month < 10:
+            self.entry_1.bar_1.insert(0, f"{date.today().year}0{date.today().month}{date.today().day}")
+        else:
+            self.entry_1.bar_1.insert(0, f"{date.today().year}{date.today().month}{date.today().day}")
+        self.entry_1.bar_3.insert(0, "0")
+        self.entry_1.bar_4.insert(0, "0")
+        self.all_entry.append(self.entry_1)
         self.entry_1.bar_5.bind('<Tab>',next_row)
 
 class right_bot_botbar(ctk.CTkFrame):
@@ -314,14 +315,14 @@ class right_bot_botbar(ctk.CTkFrame):
         self.save.place(x=kwargs["width"]-1000,y=5)   
 
 class Into_Account_Main_Frame(ctk.CTkFrame):
-    def __init__(self, master, order_id_select, menber_id, **kwargs):
+    def __init__(self, master, order_id_select, **kwargs):
         super().__init__(master, **kwargs)
         self.w = kwargs["width"]
         self.h = kwargs["height"]
         self.location = 0
         self.order_id_select = order_id_select
         self.o_id = self.order_id_select[self.location]
-        self.m_id = menber_id
+        self.m_id = self.select_mid(self.o_id)
 
         self.left = left_part(self, self.o_id, self.m_id, width=self.w, height=self.h, fg_color="#FFFFFF")
         self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
@@ -331,19 +332,31 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
         self.left.backward_btn.bind("<Button-1>", self.orderbackward)
         self.left.right_bot.bot.back_btn.bind("<Button-1>", self.back_to_accounting)
 
-    def orderforwark(self, event):
-            if self.location+1 < len(self.order_id_select):
-                self.location += 1
-                self.o_id = self.order_id_select[self.location]
+    def select_mid(self, o_id):
+        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        with con:
+            cur = con.cursor()
+            cur.execute(f"SELECT c_id \
+                            FROM order_form \
+                            WHERE o_id = '{o_id}'")
+            result = cur.fetchall() 
 
-                self.left.grid_forget()
-                self.left = left_part(self, self.o_id, self.m_id, 
-                                        width=self.w, height=self.h, fg_color="#FFFFFF")
-                self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
-                self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
-                self.left.right_bot.bot.back_btn.bind("<Button-1>", self.back_to_accounting)
-                self.left.forwark_btn.bind("<Button-1>", self.orderforwark)
-                self.left.backward_btn.bind("<Button-1>", self.orderbackward)
+        return str(result[0][0]).rstrip()
+
+    def orderforwark(self, event):
+        if self.location+1 < len(self.order_id_select):
+            self.location += 1
+            self.o_id = self.order_id_select[self.location]
+
+            self.left.grid_forget()
+            self.left = left_part(self, self.o_id, self.m_id, 
+                                    width=self.w, height=self.h, fg_color="#FFFFFF")
+            self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
+            self.left.location.configure(text=f"總共選擇{len(self.order_id_select)}筆訂單   現在位置第{self.location+1}筆")
+            self.left.right_bot.bot.back_btn.bind("<Button-1>", self.back_to_accounting)
+            self.left.forwark_btn.bind("<Button-1>", self.orderforwark)
+            self.left.backward_btn.bind("<Button-1>", self.orderbackward)
     
     def orderbackward(self, event):
         if self.location-1 > -1:

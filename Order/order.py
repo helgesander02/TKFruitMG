@@ -232,18 +232,16 @@ class bot_mid_part(ctk.CTkScrollableFrame):
             entry.total.insert(0, row[2])
             s+=int(row[2])
             entry.pack()
-        self.master.bot.nmb.configure(text=f"{s:,}") 
+        self.master.bot.nmb.configure(text=f"總額： {s:,}") 
 
 class bot_bot_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.w = kwargs["width"]
         self.h = kwargs["height"]        
-        self.sum = ctk.CTkLabel(self, text="總額：", font=("microsoft yahei", 20, 'bold'), text_color=("#000000"))
-        self.nmb = ctk.CTkLabel(self, text="", font=("microsoft yahei", 20, 'bold'), text_color=("#000000"))
+        self.nmb = ctk.CTkLabel(self, text="總額：", font=("microsoft yahei", 20, 'bold'), text_color=("#000000"))
 
-        self.sum.place(x=20,y=5)
-        self.nmb.place(x=100,y=5)
+        self.nmb.place(x=20,y=5)
 
 class Order_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):

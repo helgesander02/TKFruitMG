@@ -182,8 +182,7 @@ class right_bot_part(ctk.CTkFrame):
         self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-100, fg_color="#EEEEEE")
         self.select_order = []
         self.bot = ctk.CTkFrame(self, width=self.w, height=40)
-        self.sum = ctk.CTkLabel(self.bot, height=40, text="總額：" ,font=("microsoft yahei", 20, 'bold'), text_color="#000000")
-        self.nmb = ctk.CTkLabel(self.bot, height=40, text="" ,font=("microsoft yahei", 20, 'bold'), text_color="#000000")
+        self.nmb = ctk.CTkLabel(self.bot, height=40, text="總額：" ,font=("microsoft yahei", 20, 'bold'), text_color="#000000")
         self.j_btn = ctk.CTkButton(self.bot, width=150, height=30, text="入賬" ,font=("microsoft yahei", 14, 'bold'))
         self.once_btn = ctk.CTkButton(self.bot, width=150, height=30, text="一次入帳多筆" ,font=("microsoft yahei", 14, 'bold'),command=self.open_once_enter)
         self.j_text = ctk.CTkLabel(self.bot, width=50, height=40, text="" ,font=("microsoft yahei", 20, 'bold'), text_color="#FF0000")
@@ -191,8 +190,7 @@ class right_bot_part(ctk.CTkFrame):
         self.mid.place(x=0,y=40)
         self.bot.place(x=0,y=self.h-40)
         self.once_btn.place(x=self.w-400,y=5)
-        self.sum.place(x=20)
-        self.nmb.place(x=100)
+        self.nmb.place(x=20)
         self.j_btn.place(x=self.w-200,y=5)
         self.j_text.place(x=self.w-600)
 
@@ -287,7 +285,7 @@ class right_bot_part(ctk.CTkFrame):
            
             self.select_order.append(it)              
             it.pack()
-        self.nmb.configure(text=f"{s:,}") 
+        self.nmb.configure(text=f"總額： {s:,}") 
 
     def SelectOrder(self):
         select_chkbox = []
@@ -380,11 +378,10 @@ class Accounting_Main_Frame(ctk.CTkFrame):
     
     def open_into_account(self, event):
             order_id_select = self.left.right_bot.SelectOrder()
-            menber_id = self.left.customer_id_entry.get()
             if order_id_select == []: 
                 self.left
                 self.left.right_bot.j_text.configure(text="請選擇訂單")
             else:
                 self.left.grid_forget()
-                self.left = Into_Account_Main_Frame(self, order_id_select, menber_id, width=self.w, height=self.h, fg_color="#FFFFFF")
+                self.left = Into_Account_Main_Frame(self, order_id_select, width=self.w, height=self.h, fg_color="#FFFFFF")
                 self.left.grid(row=0,column=0)

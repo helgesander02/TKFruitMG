@@ -135,7 +135,7 @@ class bot(ctk.CTkFrame):
             self.entry_1 = entrybox(self.mid_frame, width=self.w)
             self.entry_1.pack()
             self.entry_1.item_id.focus()
-            self.entry_1.remark.bind('<Tab>',temp_data)
+            self.save_file.append(self.entry_1)
             self.entry_1.remark.bind('<Tab>',next_row)
             self.entry_1.item_id.bind('<Tab>',item_name)
             self.entry_1.quantity.bind('<Tab>',total_price)
@@ -176,24 +176,12 @@ class bot(ctk.CTkFrame):
                 self.entry_1.remark.focus()
 
             self.total.configure(text="總計："+str(self.totalsum))
-
-        def temp_data(event):
-            self.temp = []
-            self.temp.append(self.entry_1.item_id.get())
-            self.temp.append(self.entry_1.item_name.get())
-            self.temp.append(self.entry_1.specification.get())
-            self.temp.append(self.entry_1.size.get())
-            self.temp.append(self.entry_1.price.get())
-            self.temp.append(self.entry_1.quantity.get())
-            self.temp.append(self.entry_1.subtotal.get())
-            self.temp.append(self.entry_1.remark.get())
-            self.temp.append(c_id.get())
-            self.temp.append(cal.get_date())
-            self.temp.append(self.order_id)
-            self.save_file.append(self.temp)
+            
 
         self.w = kwargs["width"]
         self.order_id = order_id
+        self.c_id = c_id
+        self.cal = cal
         self.top_bar = bar(self,width=self.w,height=40,fg_color="#EEEEEE")
         self.top_bar.place(x=0,y=0)
 
@@ -222,7 +210,7 @@ class bot(ctk.CTkFrame):
         self.entry_1 = entrybox(self.mid_frame ,width=self.w)
         self.entry_1.pack()
         self.entry_1.item_id.bind('<Tab>',item_name)
-        self.entry_1.remark.bind('<Tab>',temp_data)
+        self.save_file.append(self.entry_1)
         self.entry_1.remark.bind('<Tab>',next_row)
         self.entry_1.price.bind('<Tab>',total_price)
         self.entry_1.quantity.bind('<Tab>',total_price)
@@ -237,10 +225,13 @@ class bot(ctk.CTkFrame):
             with con:
                 cur = con.cursor()
                 cur.execute(f"insert into order_form(o_id, c_id) \
-                            values('{self.save_file[0][10]}','{self.save_file[0][8]}')")
-                for i in self.save_file:
+                            values('{self.order_id}','{self.c_id.get()}')")
+                for entrybox in self.save_file:
                     cur.execute(f"insert into goods(o_id,item_id,item_name,date,specification,size,price,quantity,sub_total,remark)\
-                                values('{i[10]}','{i[0]}','{i[1]}','{i[9]}','{i[2]}','{i[3]}','{i[4]}','{i[5]}','{i[6]}','{i[7]}')")
+                                values('{self.order_id}','{entrybox.item_id.get()}','{entrybox.item_name.get()}', \
+                                    '{self.cal.get_date()}','{entrybox.specification.get()}','{entrybox.size.get()}', \
+                                    '{entrybox.price.get()}','{entrybox.quantity.get()}','{entrybox.subtotal.get()}', \
+                                    '{entrybox.remark.get()}')")
                 con.commit()
 
             self.remind.configure(text="已存檔")
