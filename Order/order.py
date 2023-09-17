@@ -14,14 +14,20 @@ class left_part(ctk.CTkFrame):
         self.h = kwargs["height"]
         self.customer_id_entry = ctk.CTkEntry(self,width=210, height=50,
                                                     fg_color="#EEEEEE",
+                                                    text_color="#000000",
+                                                    font=("microsoft yahei", 20),
                                                     placeholder_text="客戶編號" 
                                                     )
         
 
         self.sell_date1_entry = tkc.DateEntry(self, selectmode='day',
-                                                    font=("microsoft yahei", 20),year=2000,month=1,day=1,date_pattern="yyyy-mm-dd")
+                                                    font=("microsoft yahei", 20),
+                                                    year=2000,month=1,day=1,
+                                                    date_pattern="yyyy-mm-dd")
+        
         self.sell_date2_entry = tkc.DateEntry(self, selectmode='day',
-                                                    font=("microsoft yahei", 20),date_pattern="yyyy-mm-dd")
+                                                    font=("microsoft yahei", 20),
+                                                    date_pattern="yyyy-mm-dd")
 
 
         self.confirm_btn = ctk.CTkButton(self,width=200,height=40,
@@ -69,7 +75,7 @@ class right_bot_part(ctk.CTkFrame):
 
         self.top = bot_top_part(self, width=self.w, height=40)
         self.mid = bot_mid_part(self, width=self.w-20, height=self.h-80, fg_color="#EEEEEE")
-        self.bot = bot_bot_part(self, width=self.w, height=40)
+        self.bot = bot_bot_part(self, width=self.w, height=40, fg_color="#DDDDDD")
 
         self.top.place(x=0,y=0)
         self.mid.place(x=0,y=40)
@@ -133,11 +139,11 @@ class entrybox(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         w = (kwargs["width"])/6     
         self.master =  master
-        self.name = ctk.CTkEntry(self, width=w, height=40)
+        self.name = ctk.CTkEntry(self, width=w, height=40, fg_color="#FFFFFF", text_color="#000000")
 
-        self.o_id = ctk.CTkEntry(self, width=w, height=40)
+        self.o_id = ctk.CTkEntry(self, width=w, height=40, fg_color="#FFFFFF", text_color="#000000")
 
-        self.total = ctk.CTkEntry(self, width=w, height=40)
+        self.total = ctk.CTkEntry(self, width=w, height=40, fg_color="#FFFFFF", text_color="#000000")
 
         infoimg = Image.open(f"{os.getcwd()}\\img\\info.png")
         Reinfoimg = ctk.CTkImage(infoimg,size=(30,30))
@@ -170,6 +176,7 @@ class entrybox(ctk.CTkFrame):
     def eninfo(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_view_information(self)
+            self.toplevel_window.title("")
             self.toplevel_window.attributes('-topmost','true')
         
         else:
@@ -178,6 +185,7 @@ class entrybox(ctk.CTkFrame):
     def enedit(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_edit_information(self)
+            self.toplevel_window.title("")
             self.toplevel_window.attributes('-topmost','true')
         
         else:
@@ -186,6 +194,7 @@ class entrybox(ctk.CTkFrame):
     def endelete(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_check_delete(self)
+            self.toplevel_window.title("")
             self.toplevel_window.attributes('-topmost','true')    
         else:
             self.toplevel_window.focus()

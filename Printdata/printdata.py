@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import tkcalendar as tkc
+import tkinter as tk
 import os
 import psycopg2
 #import win32api
@@ -54,12 +55,7 @@ class Left_part(ctk.CTkFrame):
 
     def ReadPDF(self, event):
         if self.search_id.get() == "":
-            if self.toplevel is None or not self.toplevel.winfo_exists():
-                self.toplevel = Top_level_check_cid(self)
-                self.toplevel.attributes('-topmost','true')
-                self.toplevel.focus()
-            else:
-                self.toplevel.focus()
+            tk.messagebox.showinfo(title='', message="請輸入客戶代號!!")
 
         else:
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
@@ -147,13 +143,6 @@ class Left_part(ctk.CTkFrame):
             self.right.place_forget()
             self.right = Right_part(self,width=self.w-300, height=self.h)
             self.right.place(x=280,y=20)    
-
-class Top_level_check_cid(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.geometry("250x100")
-        self.msg = ctk.CTkLabel(self, text="請輸入客戶編號 !!", font=("microsoft yahei", 20, 'bold'))
-        self.msg.place(x=40,y=30)
 
 class Printdata_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):

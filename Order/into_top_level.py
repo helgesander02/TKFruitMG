@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import tkinter as tk
 import psycopg2
 import os
 from PIL import ImageTk,Image
@@ -6,9 +7,9 @@ from PIL import ImageTk,Image
 class Top_level_view_information(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.geometry("800x400")
-        self.top = Top_level_top_bar(self, width=800, height=40)
-        self.mid = ctk.CTkScrollableFrame(self, width=800-20, height=400-40, fg_color="#EEEEEE")
+        self.geometry("1000x400")
+        self.top = Top_level_top_bar(self, width=1000, height=40)
+        self.mid = ctk.CTkScrollableFrame(self, width=980, height=400-40, fg_color="#EEEEEE")
         self.o_id = self.master.o_id.get()
         self.mid.o_id = self.o_id
              
@@ -24,7 +25,7 @@ class Top_level_view_information(ctk.CTkToplevel):
             result = cur.fetchall()
 
         for r in result:
-            it = Top_level_item(self.mid, width=780, fg_color="#EEEEEE")
+            it = Top_level_item(self.mid, width=980, fg_color="#EEEEEE")
             it.pack()
             it.item_id_entry.insert(0, str(r[0]).rstrip())
             it.item_name_entry.insert(0, str(r[1]).rstrip())
@@ -39,13 +40,13 @@ class Top_level_view_information(ctk.CTkToplevel):
 class Top_level_edit_information(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.geometry("800x400")
+        self.geometry("1000x400")
         self.master = args[0]
         self.allit = []
         self.o_id = self.master.o_id.get()
-        self.top = Top_level_top_bar(self, width=800, height=40)
-        self.mid = Top_level_mid(self, width=780, height=320, fg_color="#EEEEEE")
-        self.bot = ctk.CTkFrame(self, width=800, height=40)
+        self.top = Top_level_top_bar(self, width=1000, height=40)
+        self.mid = Top_level_mid(self, width=980, height=320, fg_color="#EEEEEE")
+        self.bot = ctk.CTkFrame(self, width=1000, height=40, fg_color="#DDDDDD")
         self.updata = ctk.CTkButton(self.bot, width=100, height=20, text="更新", font=("microsoft yahei", 12, 'bold'))
         self.load = ctk.CTkButton(self.bot, width=100, height=20, text="重設", font=("microsoft yahei", 12, 'bold'))
         self.new = ctk.CTkButton(self.bot, width=100, height=20, text="新增", font=("microsoft yahei", 12, 'bold'))
@@ -53,46 +54,57 @@ class Top_level_edit_information(ctk.CTkToplevel):
         self.top.place(x=0,y=0)
         self.mid.place(x=0,y=40)
         self.bot.place(x=0,y=370)
-        self.updata.place(x=650,y=5)
-        self.load.place(x=500,y=5)
-        self.new.place(x=350,y=5)
+        self.updata.place(x=850,y=5)
+        self.load.place(x=700,y=5)
+        self.new.place(x=550,y=5)
         self.updata.bind("<Button-1>", self.UpData)
         self.load.bind("<Button-1>", self.ReLoad)
         self.new.bind("<Button-1>", self.New)
 
     def UpData(self, event):
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
-        with con:
-            cur = con.cursor()
-            cur.execute(f"DELETE FROM goods WHERE o_id='{self.o_id}'")
-            con.commit()
+        for i in range(len(self.allit)):
+            if self.allit[i].item_id_entry.get() == "":
+                self.allit.pop(i)
 
-            for it in self.allit:
-                cur.execute(f"INSERT INTO goods(o_id, item_id, item_name, date, specification, size, price, quantity, sub_total, remark) \
-                                VALUES('{self.o_id}','{it.item_id_entry.get()}','{it.item_name_entry.get()}', \
-                                        '{it.date_entry.get()}','{it.norm_entry.get()}', '{it.size_entry.get()}', \
-                                        '{it.price_entry.get()}','{it.quantity_entry.get()}','{it.total_entry.get()}', \
-                                        '{it.remark_entry.get()}')")
-                con.commit()
+        try:
+            if len(self.allit) == 0:
+                tk.messagebox.showinfo(title='更新銷貨單', message="未輸入資料!!")
+            else:
+                con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+                #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
+                with con:
+                    cur = con.cursor()
+                    cur.execute(f"DELETE FROM goods WHERE o_id='{self.o_id}'")
+                    con.commit()
 
-        self.master.reload_right_bot_mid()
-        self.destroy()
+                    for it in self.allit:
+                        cur.execute(f"INSERT INTO goods(o_id, item_id, item_name, date, specification, size, price, quantity, sub_total, remark) \
+                                        VALUES('{self.o_id}','{it.item_id_entry.get()}','{it.item_name_entry.get()}', \
+                                                '{it.date_entry.get()}','{it.norm_entry.get()}', '{it.size_entry.get()}', \
+                                                '{it.price_entry.get()}','{it.quantity_entry.get()}','{it.total_entry.get()}', \
+                                                '{it.remark_entry.get()}')")
+                        con.commit()
+
+                self.master.reload_right_bot_mid()
+                self.destroy()
+                tk.messagebox.showinfo(title='更新銷貨單', message="更改完成")
+        except:
+            tk.messagebox.showinfo(title='更新銷貨單', message="未輸入資料!!")
 
     def reload(self):
         self.mid.place_forget()
         self.allit = []
-        self.mid = Top_level_mid(self, width=780, height=320, fg_color="#EEEEEE")
+        self.mid = Top_level_mid(self, width=980, height=320, fg_color="#EEEEEE")
         self.mid.place(x=0,y=40)
 
     def ReLoad(self, event):
         self.mid.place_forget()
         self.allit = []
-        self.mid = Top_level_mid(self, width=780, height=320, fg_color="#EEEEEE")
+        self.mid = Top_level_mid(self, width=980, height=320, fg_color="#EEEEEE")
         self.mid.place(x=0,y=40)
 
     def New(self, event):
-        it = Top_level_item(self.mid, width=780, fg_color="#EEEEEE")
+        it = Top_level_item(self.mid, width=980, fg_color="#EEEEEE")
         it.pack()
         self.allit.append(it)
 
@@ -111,7 +123,7 @@ class Top_level_mid(ctk.CTkScrollableFrame):
             result = cur.fetchall()
 
         for r in result:
-            it = Top_level_item(self, width=780, fg_color="#EEEEEE")
+            it = Top_level_item(self, width=980, fg_color="#EEEEEE")
             it.pack()
             it.item_id_entry.insert(0, str(r[0]).rstrip())
             it.item_name_entry.insert(0, str(r[1]).rstrip())
@@ -168,6 +180,8 @@ class Top_level_item(ctk.CTkFrame):
                 self.item_name_entry.insert(0,str(result[0]).rstrip())
                 self.date_entry.focus()
             else:
+                self.item_name_entry.delete(0, len(self.item_name_entry.get()))
+                self.item_name_entry.insert(0,str(result[0]).rstrip())
                 self.date_entry.focus()
 
         def total_price(event):
@@ -264,13 +278,13 @@ class Top_level_check_delete(ctk.CTkToplevel):
             self.destroy()
 
         self.msg = ctk.CTkLabel(self, text="是否確定要刪除此訂貨單 !!", font=("microsoft yahei", 20, 'bold'))
-        self.confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
+        self.confirm = ctk.CTkButton(self,width=100,height=25,text="確認", font=("microsoft yahei", 14, 'bold'))
         self.confirm.bind('<Button-1>', click)
-        self.cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
+        self.cancel = ctk.CTkButton(self,width=100,height=25,text="取消", font=("microsoft yahei", 14, 'bold'))
         self.cancel.bind('<Button-1>', cancel)
-        self.msg.place(x=35,y=50)
-        self.confirm.place(x=50,y=120)
-        self.cancel.place(x=160,y=120)
+        self.msg.place(x=35,y=40)
+        self.confirm.place(x=45,y=110)
+        self.cancel.place(x=155,y=110)
 
 class Top_level_check_itemdelete(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
@@ -291,10 +305,10 @@ class Top_level_check_itemdelete(ctk.CTkToplevel):
             self.destroy()
 
         self.msg = ctk.CTkLabel(self, text="是否確定要刪除此明細 !!", font=("microsoft yahei", 20, 'bold'))
-        self.confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
+        self.confirm = ctk.CTkButton(self,width=100,height=25,text="確認", font=("microsoft yahei", 14, 'bold'))
         self.confirm.bind('<Button-1>', click)
-        self.cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
+        self.cancel = ctk.CTkButton(self,width=100,height=25,text="取消", font=("microsoft yahei", 14, 'bold'))
         self.cancel.bind('<Button-1>', cancel)
-        self.msg.place(x=50,y=50)
-        self.confirm.place(x=50,y=120)
-        self.cancel.place(x=160,y=120)
+        self.msg.place(x=50,y=40)
+        self.confirm.place(x=45,y=110)
+        self.cancel.place(x=155,y=110)

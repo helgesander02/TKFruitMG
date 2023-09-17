@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import tkinter as tk
 import psycopg2
 from datetime import date
 from .into_top_level import Top_level_view_information
@@ -24,27 +25,40 @@ class left_part(ctk.CTkFrame):
             self.right_bot.place(x=400,y=340)
         
         def rightbot_confirm(event):
-            if len(self.right_bot.mid.all_entry) != 0:
-                con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-                #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
-                with con:
-                    cur = con.cursor()
-                    cur.execute(f"insert into accounting(ac_id, o_id) \
-                            values('{self.ac_id}','{self.o_id}')")
-                    for en in self.right_bot.mid.all_entry:
-                        cur.execute(f"insert into receipt(ac_id, date, m_way, money, discount, remark)\
-                                values('{self.ac_id}','{en.bar_1.get()}','{en.bar_2.get()}','{en.bar_3.get()}','{en.bar_4.get()}','{en.bar_5.get()}')")      
+            for i in range(len(self.right_bot.mid.all_entry)):
+                if self.right_bot.mid.all_entry[i].bar_3.get() == "0" or self.right_bot.mid.all_entry[i].bar_2.get() == "":
+                    self.right_bot.mid.all_entry.pop(i)
+            
+            try:
+                if len(self.right_bot.mid.all_entry) != 0:
+                    con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+                    #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
+                    with con:
+                        cur = con.cursor()
+                        cur.execute(f"insert into accounting(ac_id, o_id) \
+                                values('{self.ac_id}','{self.o_id}')")
+                        for en in self.right_bot.mid.all_entry:
+                            cur.execute(f"insert into receipt(ac_id, date, m_way, money, discount, remark)\
+                                    values('{self.ac_id}','{en.bar_1.get()}','{en.bar_2.get()}','{en.bar_3.get()}','{en.bar_4.get()}','{en.bar_5.get()}')")      
 
-                self.right_bot.bot.save.configure(text="已儲存")
-            else:
-                self.right_bot.bot.save.configure(text="未按下Enter")
+                    tk.messagebox.showinfo(title='儲存入帳', message="入帳成功", )
+                else:
+                    tk.messagebox.showinfo(title='儲存入帳', message="入帳失敗 檢查輸入是否有錯!!", )
+            except:
+                tk.messagebox.showinfo(title='儲存入帳', message="入帳失敗 檢查輸入是否有錯!!", )
 
         def reload_right_top_mid(event):
-            self.right_top.mid.place_forget()
+            self.right_top.place_forget()
             self.right_top = right_top_part(self,width=self.w-450,height=330,fg_color="#EEEEEE")
             self.right_top.mid.insertdata(self.o_id)
-            self.right_top.bot.sum.configure(text=f"收款總額：{self.right_top.mid.sum}")
+            self.right_top.bot.sum.configure(text=f"收款總額：{self.right_top.mid.sum}      剩餘：{self.right_top.mid.remain:,}")
             self.right_top.place(x=400,y=0)
+            self.right_bot.place_forget()
+            self.right_bot = right_bot_part(self,width=self.w-450,height=self.h-450,fg_color="#EEEEEE")
+            self.right_bot.bot.reset_btn.bind("<Button-1>", rightbot_reset)
+            self.right_bot.bot.confirm_btn.bind("<Button-1>", rightbot_confirm)
+            self.right_bot.bot.confirm_btn.bind("<Button-1>", reload_right_top_mid)
+            self.right_bot.place(x=400,y=340)
 
         self.w = kwargs["width"]
         self.h = kwargs["height"]
@@ -80,7 +94,7 @@ class left_part(ctk.CTkFrame):
 
         self.right_top = right_top_part(self,width=self.w-450,height=330,fg_color="#EEEEEE")
         self.right_top.mid.insertdata(self.o_id)
-        self.right_top.bot.sum.configure(text=f"收款總額：{self.right_top.mid.sum}")
+        self.right_top.bot.sum.configure(text=f"收款總額：{self.right_top.mid.sum:,}      剩餘：{self.right_top.mid.remain:,}")
 
         self.right_bot = right_bot_part(self,width=self.w-450,height=self.h-450,fg_color="#EEEEEE")
         self.right_bot.bot.reset_btn.bind("<Button-1>", rightbot_reset)
@@ -103,7 +117,7 @@ class left_part(ctk.CTkFrame):
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
         with con:
             cur = con.cursor()
-            cur.execute(f"select ac_id from accounting")
+            cur.execute(f"select ac_id from accounting join order_form on accounting.o_id = order_form.o_id where order_form.c_id = '{self.m_id}'")
             ac_all = cur.fetchall()    
 
         if len(ac_all) > 0:     
@@ -167,6 +181,7 @@ class right_top_mid(ctk.CTkScrollableFrame):
         super().__init__(master, **kwargs)
         self.w = kwargs["width"]
         self.sum = 0
+        self.remain = 0
 
     def insertdata(self, o_id):
         #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
@@ -179,6 +194,11 @@ class right_top_mid(ctk.CTkScrollableFrame):
                                 WHERE accounting.o_id = '{o_id}' \
                                 GROUP BY receipt.ac_id, receipt.date, receipt.m_way, receipt.remark")
             result = cur.fetchall()    
+            cur.execute(f"SELECT SUM(sub_total)\
+                                FROM goods \
+                                WHERE o_id = '{o_id}' \
+                               ")
+            result1 = cur.fetchall()
 
         for row in range(len(result)):
             entry = entrybox(self ,width=self.w)
@@ -190,12 +210,13 @@ class right_top_mid(ctk.CTkScrollableFrame):
             entry.bar_4.insert(0, str(result[row][4]).rstrip())
             entry.bar_5.insert(0, str(result[row][5]).rstrip())
             self.sum += int(result[row][3])-int(result[row][4])
+            self.remain += result1[0][0] - self.sum
         
 class right_top_botbar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        self.sum = ctk.CTkLabel(self,text="收款總額：", font=("microsoft yahei", 14, 'bold'))
-        self.sum.place(x=kwargs["width"]-200,y=5)
+        self.sum = ctk.CTkLabel(self,text="收款總額：", font=("microsoft yahei", 14, 'bold'), text_color="#000000")
+        self.sum.place(x=50,y=5)
 
 class right_bot_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -250,11 +271,11 @@ class entrybox(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         w = kwargs["width"]/5
-        self.bar_1 = ctk.CTkEntry(self,width=w,height=40)     
-        self.bar_2 = ctk.CTkEntry(self,width=w,height=40)
-        self.bar_3 = ctk.CTkEntry(self,width=w,height=40)
-        self.bar_4 = ctk.CTkEntry(self,width=w,height=40)
-        self.bar_5 = ctk.CTkEntry(self,width=w,height=40)
+        self.bar_1 = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")     
+        self.bar_2 = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.bar_3 = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.bar_4 = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.bar_5 = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
 
         self.bar_1.grid(row=0,column=0)
         self.bar_2.grid(row=0,column=1)

@@ -1,126 +1,8 @@
 import os
 import customtkinter as ctk
+import tkinter as tk    
 from PIL import ImageTk,Image
 import psycopg2
-
-class Top_level_edit_customer(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.master = args[0]
-        def click(event):
-            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            cur = con.cursor()
-            cur.execute(f"UPDATE customer SET name = '{self.name_entry.get()}', \
-                            phone = '{self.phone_entry.get()}', \
-                            address = '{self.address_entry.get()}', \
-                            remark = '{self.remark_entry.get(1.0,'end-1c')}' \
-                            WHERE c_id = '{self.id_entry.get()}'")
-
-            con.commit()
-            con.close()
-            self.master.reload()      
-            self.destroy()
-
-        def cancel(event):
-            self.destroy()
-        
-        self.geometry("250x325")
-        self.confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
-        self.confirm.bind('<Button-1>', click)
-        self.cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
-        self.cancel.bind('<Button-1>', cancel)
-        self.customer_id = ctk.CTkLabel(self, text="客戶編號：")
-        self.name = ctk.CTkLabel(self, text="客戶名稱：")
-        self.phone = ctk.CTkLabel(self, text="　　手機：")
-        self.address = ctk.CTkLabel(self, text="　　住址：")
-        self.remark = ctk.CTkLabel(self, text="　　備註：")
-
-        self.id_entry = ctk.CTkEntry(self,border_width=0)   
-        self.name_entry = ctk.CTkEntry(self,border_width=0)
-        self.phone_entry = ctk.CTkEntry(self,border_width=0)      
-        self.address_entry = ctk.CTkEntry(self,border_width=0)
-        self.remark_entry = ctk.CTkTextbox(self,width=140,height=80)      
-
-        self.customer_id.place(x=20,y=20)
-        self.name.place(x=20,y=60)
-        self.phone.place(x=20,y=100)
-        self.address.place(x=20,y=140)
-        self.remark.place(x=20,y=180)
-
-        self.confirm.place(x=25,y=280)
-        self.cancel.place(x=145,y=280)
-
-        self.id_entry.place(x=85,y=20)
-        self.name_entry.place(x=85,y=60)
-        self.phone_entry.place(x=85,y=100)
-        self.address_entry.place(x=85,y=140)
-        self.remark_entry.place(x=85,y=180)
-
-        self.id_entry.insert(0, str(self.master.c_id.get()))
-        self.name_entry.insert(0, str(self.master.name.get()))
-        if str(self.master.phone.get()) != "":
-            self.phone_entry.insert(0, str(self.master.phone.get()))
-        if str(self.master.address.get()) != "":
-            self.address_entry.insert(0, str(self.master.address.get()))
-        if  str(self.master.remark.get()) != "":
-            self.remark_entry.insert(0, str(self.master.remark.get()))
-
-class Top_level_add_customer(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.master = args[0]
-        def click(event):
-            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            cur = con.cursor()
-            cur.execute(f"INSERT INTO customer (c_id, name, phone, address, remark) \
-                            VALUES('{self.id_entry.get()}', \
-                            '{self.name_entry.get()}', \
-                            '{self.phone_entry.get()}', \
-                            '{self.address_entry.get()}' \
-                            ,'{self.remark_entry.get(1.0,'end-1c')}') \
-                            ")
-
-            con.commit()
-            con.close()
-            self.master.reload_botdata()
-            self.destroy()
-
-        def cancel(event):
-            self.destroy()
-
-        self.geometry("250x325")
-        self.confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
-        self.confirm.bind('<Button-1>', click)
-        self.cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
-        self.cancel.bind('<Button-1>', cancel)
-        self.customer_id = ctk.CTkLabel(self, text="客戶編號：")
-        self.name = ctk.CTkLabel(self, text="客戶名稱：")
-        self.phone = ctk.CTkLabel(self, text="　　手機：")
-        self.address = ctk.CTkLabel(self, text="　　住址：")
-        self.remark = ctk.CTkLabel(self, text="　　備註：")
-
-        self.id_entry = ctk.CTkEntry(self,border_width=0)
-        self.name_entry = ctk.CTkEntry(self,border_width=0)
-        self.phone_entry = ctk.CTkEntry(self,border_width=0)
-        self.address_entry = ctk.CTkEntry(self,border_width=0)
-        self.remark_entry = ctk.CTkTextbox(self,width=140,height=80)
-
-        self.customer_id.place(x=20,y=20)
-        self.name.place(x=20,y=60)
-        self.phone.place(x=20,y=100)
-        self.address.place(x=20,y=140)
-        self.remark.place(x=20,y=180)
-
-        self.confirm.place(x=25,y=280)
-        self.cancel.place(x=145,y=280)
-
-        self.id_entry.place(x=85,y=20)
-        self.name_entry.place(x=85,y=60)
-        self.phone_entry.place(x=85,y=100)
-        self.address_entry.place(x=85,y=140)
-        self.remark_entry.place(x=85,y=180)
 
 class right_top_part_A(ctk.CTkFrame):    
     def __init__(self, master, **kwargs):
@@ -130,7 +12,7 @@ class right_top_part_A(ctk.CTkFrame):
         btn_image = ctk.CTkImage(img,size=(25,25))
         
         self.toplevel_window = None
-        self.text_1 = ctk.CTkTextbox(self, width=250, height=50, font=("Arial",24))
+        self.text_1 = ctk.CTkTextbox(self, width=250, height=50, font=("microsoft yahei", 24, 'bold'), fg_color="#FFFFFF", corner_radius=0)
         self.button_for_search = ctk.CTkButton(self, width=50, height=50, image=btn_image, text="", border_spacing=0, corner_radius=0)
         self.button_1 = ctk.CTkButton(self, width=200, height=50, text="新增客戶", font=("microsoft yahei", 14, 'bold'))
         self.right_bot_title = right_bot_title_part_A(self, width=self.w, height=40, fg_color="#EEEEEE")
@@ -158,6 +40,7 @@ class right_top_part_A(ctk.CTkFrame):
     def open_toplevel_add_customer(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_add_customer(self)
+            self.toplevel_window.title("")
             self.toplevel_window.attributes('-topmost','true')
         else:
             self.toplevel_window.focus()
@@ -255,11 +138,11 @@ class entrybox(ctk.CTkFrame):
         self.master = master
         self.toplevel_window = None
         w = (kwargs["width"])/7
-        self.c_id = ctk.CTkEntry(self,width=w,height=40)
-        self.name = ctk.CTkEntry(self,width=w,height=40)
-        self.phone = ctk.CTkEntry(self,width=w,height=40)
-        self.address = ctk.CTkEntry(self,width=w,height=40)
-        self.remark = ctk.CTkEntry(self,width=w,height=40)
+        self.c_id = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.name = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.phone = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.address = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.remark = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
 
         editimg = Image.open(f"{os.getcwd()}\\img\\edit.png")
         Reeditimg = ctk.CTkImage(editimg,size=(30,30))
@@ -283,6 +166,7 @@ class entrybox(ctk.CTkFrame):
     def enedit(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_edit_customer(self)
+            self.toplevel_window.title("")
             self.toplevel_window.attributes('-topmost','true')      
         else:
             self.toplevel_window.focus()
@@ -290,6 +174,7 @@ class entrybox(ctk.CTkFrame):
     def endelete(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_check_delete(self)
+            self.toplevel_window.title("")
             self.toplevel_window.attributes('-topmost','true')    
         else:
             self.toplevel_window.focus()
@@ -300,7 +185,7 @@ class entrybox(ctk.CTkFrame):
 class Top_level_check_delete(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.geometry("300x150")
+        self.geometry("250x150")
         self.master = args[0]
         def click(event):
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
@@ -326,10 +211,129 @@ class Top_level_check_delete(ctk.CTkToplevel):
             self.destroy()
 
         self.msg = ctk.CTkLabel(self, text="是否確定要刪除 !!", font=("microsoft yahei", 20, 'bold'))
-        self.confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
+        self.confirm = ctk.CTkButton(self,width=100,height=25,text="確認", font=("microsoft yahei", 14, 'bold'))
         self.confirm.bind('<Button-1>', click)
-        self.cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
+        self.cancel = ctk.CTkButton(self,width=100,height=25,text="取消", font=("microsoft yahei", 14, 'bold'))
         self.cancel.bind('<Button-1>', cancel)
-        self.msg.place(x=50,y=50)
-        self.confirm.place(x=50,y=120)
-        self.cancel.place(x=160,y=120)
+        self.msg.place(x=50,y=40)
+        self.confirm.place(x=25,y=110)
+        self.cancel.place(x=135,y=110)
+
+class Top_level_edit_customer(ctk.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.master = args[0]
+        def click(event):
+            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            cur = con.cursor()
+            cur.execute(f"UPDATE customer SET name = '{self.name_entry.get()}', \
+                            phone = '{self.phone_entry.get()}', \
+                            address = '{self.address_entry.get()}', \
+                            remark = '{self.remark_entry.get(1.0,'end-1c')}' \
+                            WHERE c_id = '{self.id_entry.get()}'")
+
+            con.commit()
+            con.close()
+            self.master.reload()      
+            self.destroy()
+
+        def cancel(event):
+            self.destroy()
+        
+        self.geometry("250x325")
+        self.confirm = ctk.CTkButton(self,width=100,height=25,text="確認", font=("microsoft yahei", 12, 'bold'))
+        self.confirm.bind('<Button-1>', click)
+        self.cancel = ctk.CTkButton(self,width=100,height=25,text="取消", font=("microsoft yahei", 12, 'bold'))
+        self.cancel.bind('<Button-1>', cancel)
+        self.customer_id = ctk.CTkLabel(self, text="客戶編號：", font=("microsoft yahei", 14, 'bold'))
+        self.name = ctk.CTkLabel(self, text="客戶名稱：", font=("microsoft yahei", 14, 'bold'))
+        self.phone = ctk.CTkLabel(self, text="　　手機：", font=("microsoft yahei", 14, 'bold'))
+        self.address = ctk.CTkLabel(self, text="　　住址：", font=("microsoft yahei", 14, 'bold'))
+        self.remark = ctk.CTkLabel(self, text="　　備註：", font=("microsoft yahei", 14, 'bold'))
+
+        self.id_entry = ctk.CTkEntry(self,border_width=0)   
+        self.name_entry = ctk.CTkEntry(self,border_width=0)
+        self.phone_entry = ctk.CTkEntry(self,border_width=0)      
+        self.address_entry = ctk.CTkEntry(self,border_width=0)
+        self.remark_entry = ctk.CTkTextbox(self,width=140,height=80)      
+
+        self.customer_id.place(x=20,y=20)
+        self.name.place(x=20,y=60)
+        self.phone.place(x=20,y=100)
+        self.address.place(x=20,y=140)
+        self.remark.place(x=20,y=180)
+
+        self.confirm.place(x=15,y=280)
+        self.cancel.place(x=135,y=280)
+
+        self.id_entry.place(x=90,y=20)
+        self.name_entry.place(x=90,y=60)
+        self.phone_entry.place(x=90,y=100)
+        self.address_entry.place(x=90,y=140)
+        self.remark_entry.place(x=90,y=180)
+
+        self.id_entry.insert(0, str(self.master.c_id.get()))
+        self.name_entry.insert(0, str(self.master.name.get()))
+        if str(self.master.phone.get()) != "":
+            self.phone_entry.insert(0, str(self.master.phone.get()))
+        if str(self.master.address.get()) != "":
+            self.address_entry.insert(0, str(self.master.address.get()))
+        if  str(self.master.remark.get()) != "":
+            self.remark_entry.insert(0, str(self.master.remark.get()))
+
+class Top_level_add_customer(ctk.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.master = args[0]
+        def click(event):
+            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            cur = con.cursor()
+            cur.execute(f"INSERT INTO customer (c_id, name, phone, address, remark) \
+                            VALUES('{self.id_entry.get()}', \
+                            '{self.name_entry.get()}', \
+                            '{self.phone_entry.get()}', \
+                            '{self.address_entry.get()}' \
+                            ,'{self.remark_entry.get(1.0,'end-1c')}') \
+                            ")
+
+            con.commit()
+            con.close()
+            self.master.reload_botdata()
+            self.destroy()
+
+        def cancel(event):
+            self.destroy()
+
+        self.geometry("250x325")
+        self.confirm = ctk.CTkButton(self,width=100,height=25,text="確認", font=("microsoft yahei", 12, 'bold'))
+        self.confirm.bind('<Button-1>', click)
+        self.cancel = ctk.CTkButton(self,width=100,height=25,text="取消", font=("microsoft yahei", 12, 'bold'))
+        self.cancel.bind('<Button-1>', cancel)
+        self.customer_id = ctk.CTkLabel(self, text="客戶編號：", font=("microsoft yahei", 14, 'bold'))
+        self.name = ctk.CTkLabel(self, text="客戶名稱：", font=("microsoft yahei", 14, 'bold'))
+        self.phone = ctk.CTkLabel(self, text="　　手機：", font=("microsoft yahei", 14, 'bold'))
+        self.address = ctk.CTkLabel(self, text="　　住址：", font=("microsoft yahei", 14, 'bold'))
+        self.remark = ctk.CTkLabel(self, text="　　備註：", font=("microsoft yahei", 14, 'bold'))
+
+        self.id_entry = ctk.CTkEntry(self,border_width=0)
+        self.name_entry = ctk.CTkEntry(self,border_width=0)
+        self.phone_entry = ctk.CTkEntry(self,border_width=0)
+        self.address_entry = ctk.CTkEntry(self,border_width=0)
+        self.remark_entry = ctk.CTkTextbox(self,width=140,height=80)
+
+        self.customer_id.place(x=20,y=20)
+        self.name.place(x=20,y=60)
+        self.phone.place(x=20,y=100)
+        self.address.place(x=20,y=140)
+        self.remark.place(x=20,y=180)
+
+        self.confirm.place(x=15,y=280)
+        self.cancel.place(x=135,y=280)
+
+        self.id_entry.place(x=90,y=20)
+        self.name_entry.place(x=90,y=60)
+        self.phone_entry.place(x=90,y=100)
+        self.address_entry.place(x=90,y=140)
+        self.remark_entry.place(x=90,y=180)

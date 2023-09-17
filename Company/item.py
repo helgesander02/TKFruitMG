@@ -3,73 +3,6 @@ import customtkinter as ctk
 from PIL import ImageTk,Image
 import psycopg2
 
-class Top_level_add_item(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.master = args[0]
-        def confirm(event):
-            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            with con:
-                cur = con.cursor()
-                cur.execute(f"INSERT INTO item(item_id, item_name) VALUES('{self.item_id_entry.get()}','{self.item_name_entry.get()}')")
-            self.master.reload_botdata()
-            self.destroy()
-
-        def cancel(event):
-            self.destroy()
-
-        self.item_id = ctk.CTkLabel(self,text="品項編號：")
-        self.item_name = ctk.CTkLabel(self,text="品項名稱：")
-        self.item_id_entry = ctk.CTkEntry(self)
-        self.item_name_entry = ctk.CTkEntry(self)
-        self.confirm = ctk.CTkButton(self,text="確認")
-        self.confirm.bind('<Button-1>', confirm)
-        self.cancel = ctk.CTkButton(self,text="取消")
-        self.cancel.bind('<Button-1>', cancel)
-
-        self.item_id.grid(row=0, column=0,padx=10,pady=10)
-        self.item_name.grid(row=1, column=0,padx=10,pady=10)
-        self.item_id_entry.grid(row=0, column=1,padx=10,pady=10)
-        self.item_name_entry.grid(row=1, column=1,padx=10,pady=10)
-        self.cancel.grid(row=2,column=1,padx=10,pady=10)
-        self.confirm.grid(row=2,column=0,padx=10,pady=10)
-
-class Top_level_edit_item(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.master = args[0]
-        def confirm(event):
-            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            with con:
-                cur = con.cursor()
-                cur.execute(f"UPDATE item SET item_name = '{self.item_name_entry.get()}' \
-                            WHERE item_id = '{self.item_id_entry.get()}'")
-            self.master.reload()
-            self.destroy()
-
-        def cancel(event):
-            self.destroy()
-
-        self.item_id = ctk.CTkLabel(self,text="品項編號：")
-        self.item_name = ctk.CTkLabel(self,text="品項名稱：")
-        self.item_id_entry = ctk.CTkEntry(self)
-        self.item_name_entry = ctk.CTkEntry(self)
-        self.confirm = ctk.CTkButton(self,text="確認")
-        self.confirm.bind('<Button-1>', confirm)
-        self.cancel = ctk.CTkButton(self,text="取消")
-        self.cancel.bind('<Button-1>', cancel)
-
-        self.item_id.grid(row=0, column=0,padx=10,pady=10)
-        self.item_name.grid(row=1, column=0,padx=10,pady=10)
-        self.item_id_entry.grid(row=0, column=1,padx=10,pady=10)
-        self.item_name_entry.grid(row=1, column=1,padx=10,pady=10)
-        self.cancel.grid(row=2,column=1,padx=10,pady=10)
-        self.confirm.grid(row=2,column=0,padx=10,pady=10)
-        self.item_id_entry.insert(0, str(self.master.item_id.get()))
-        self.item_name_entry.insert(0, str(self.master.item_name.get()))
-
 class right_top_part_B(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -78,7 +11,7 @@ class right_top_part_B(ctk.CTkFrame):
         btn_image = ctk.CTkImage(img,size=(25,25))
 
         self.toplevel_window = None
-        self.text_1 = ctk.CTkTextbox(self,width=250,height=50,font=("Arial",24))
+        self.text_1 = ctk.CTkTextbox(self,width=250,height=50, font=("microsoft yahei", 24, 'bold'), fg_color="#FFFFFF", corner_radius=0)
         self.button_for_search = ctk.CTkButton(self,width=50,height=50,image=btn_image,text="",border_spacing=0,corner_radius=0,command=self.search)
         self.button_1 = ctk.CTkButton(self,width=200,height=50,text="新增品項",font=("microsoft yahei", 14, 'bold'))
         self.right_bot_title = right_bot_title_part_B(self, width=self.w, height=40, fg_color="#EEEEEE")
@@ -106,6 +39,7 @@ class right_top_part_B(ctk.CTkFrame):
     def open_toplevel_add_item(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_add_item(self)
+            self.toplevel_window.title("")
             self.toplevel_window.attributes('-topmost','true')
         else:
             self.toplevel_window.focus()
@@ -177,8 +111,8 @@ class entrybox(ctk.CTkFrame):
         self.master = master
         self.toplevel_window = None
         w = (kwargs["width"])/7
-        self.item_id = ctk.CTkEntry(self,width=w,height=40)
-        self.item_name = ctk.CTkEntry(self,width=w,height=40)
+        self.item_id = ctk.CTkEntry(self,width=w, height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.item_name = ctk.CTkEntry(self,width=w, height=40, fg_color="#FFFFFF", text_color="#000000")
 
         editimg = Image.open(f"{os.getcwd()}\\img\\edit.png")
         Reeditimg = ctk.CTkImage(editimg,size=(30,30))
@@ -202,6 +136,7 @@ class entrybox(ctk.CTkFrame):
     def enedit(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_edit_item(self)
+            self.toplevel_window.title("")
             self.toplevel_window.attributes('-topmost','true')      
         else:
             self.toplevel_window.focus()
@@ -209,6 +144,7 @@ class entrybox(ctk.CTkFrame):
     def endelete(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             self.toplevel_window = Top_level_check_delete(self)
+            self.toplevel_window.title("")
             self.toplevel_window.attributes('-topmost','true')    
         else:
             self.toplevel_window.focus()
@@ -219,7 +155,7 @@ class entrybox(ctk.CTkFrame):
 class Top_level_check_delete(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.geometry("300x150")
+        self.geometry("250x150")
         self.master = args[0]
         def click(event):
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
@@ -234,10 +170,77 @@ class Top_level_check_delete(ctk.CTkToplevel):
             self.destroy()
 
         self.msg = ctk.CTkLabel(self, text="是否確定要刪除 !!", font=("microsoft yahei", 20, 'bold'))
-        self.confirm = ctk.CTkButton(self,width=80,height=15,text="確認")
+        self.confirm = ctk.CTkButton(self,width=100,height=25,text="確認", font=("microsoft yahei", 14, 'bold'))
         self.confirm.bind('<Button-1>', click)
-        self.cancel = ctk.CTkButton(self,width=80,height=15,text="取消")
+        self.cancel = ctk.CTkButton(self,width=100,height=25,text="取消", font=("microsoft yahei", 14, 'bold'))
         self.cancel.bind('<Button-1>', cancel)
-        self.msg.place(x=50,y=50)
-        self.confirm.place(x=50,y=120)
-        self.cancel.place(x=160,y=120)
+        self.msg.place(x=50,y=40)
+        self.confirm.place(x=25,y=110)
+        self.cancel.place(x=135,y=110)
+
+class Top_level_add_item(ctk.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.master = args[0]
+        def confirm(event):
+            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            with con:
+                cur = con.cursor()
+                cur.execute(f"INSERT INTO item(item_id, item_name) VALUES('{self.item_id_entry.get()}','{self.item_name_entry.get()}')")
+            self.master.reload_botdata()
+            self.destroy()
+
+        def cancel(event):
+            self.destroy()
+
+        self.item_id = ctk.CTkLabel(self,text="品項編號：", font=("microsoft yahei", 14, 'bold'))
+        self.item_name = ctk.CTkLabel(self,text="品項名稱：", font=("microsoft yahei", 14, 'bold'))
+        self.item_id_entry = ctk.CTkEntry(self)
+        self.item_name_entry = ctk.CTkEntry(self)
+        self.confirm = ctk.CTkButton(self,text="確認", font=("microsoft yahei", 14, 'bold'))
+        self.confirm.bind('<Button-1>', confirm)
+        self.cancel = ctk.CTkButton(self,text="取消", font=("microsoft yahei", 14, 'bold'))
+        self.cancel.bind('<Button-1>', cancel)
+
+        self.item_id.grid(row=0, column=0,padx=10,pady=10)
+        self.item_name.grid(row=1, column=0,padx=10,pady=10)
+        self.item_id_entry.grid(row=0, column=1,padx=10,pady=10)
+        self.item_name_entry.grid(row=1, column=1,padx=10,pady=10)
+        self.cancel.grid(row=2,column=1,padx=10,pady=10)
+        self.confirm.grid(row=2,column=0,padx=10,pady=10)
+
+class Top_level_edit_item(ctk.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.master = args[0]
+        def confirm(event):
+            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            with con:
+                cur = con.cursor()
+                cur.execute(f"UPDATE item SET item_name = '{self.item_name_entry.get()}' \
+                            WHERE item_id = '{self.item_id_entry.get()}'")
+            self.master.reload()
+            self.destroy()
+
+        def cancel(event):
+            self.destroy()
+
+        self.item_id = ctk.CTkLabel(self,text="品項編號：", font=("microsoft yahei", 14, 'bold'))
+        self.item_name = ctk.CTkLabel(self,text="品項名稱：", font=("microsoft yahei", 14, 'bold'))
+        self.item_id_entry = ctk.CTkEntry(self)
+        self.item_name_entry = ctk.CTkEntry(self)
+        self.confirm = ctk.CTkButton(self,text="確認", font=("microsoft yahei", 14, 'bold'))
+        self.confirm.bind('<Button-1>', confirm)
+        self.cancel = ctk.CTkButton(self,text="取消", font=("microsoft yahei", 14, 'bold'))
+        self.cancel.bind('<Button-1>', cancel)
+
+        self.item_id.grid(row=0, column=0,padx=10,pady=10)
+        self.item_name.grid(row=1, column=0,padx=10,pady=10)
+        self.item_id_entry.grid(row=0, column=1,padx=10,pady=10)
+        self.item_name_entry.grid(row=1, column=1,padx=10,pady=10)
+        self.cancel.grid(row=2,column=1,padx=10,pady=10)
+        self.confirm.grid(row=2,column=0,padx=10,pady=10)
+        self.item_id_entry.insert(0, str(self.master.item_id.get()))
+        self.item_name_entry.insert(0, str(self.master.item_name.get()))

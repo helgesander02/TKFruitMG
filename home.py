@@ -1,6 +1,5 @@
 import customtkinter as ctk
 import os
-import sv_dt
 from PIL import ImageTk,Image
 import psycopg2
 
@@ -8,7 +7,7 @@ from Company.company import Company_Main_Frame
 from Order.order import Order_Main_Frame
 from Accounting.accounting import Accounting_Main_Frame
 from Printdata.printdata import Printdata_Main_Frame
-from sql import createdatatable
+from sql import createdatatable, sv, back_up
 
 class Select_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -24,30 +23,20 @@ class Select_Frame(ctk.CTkFrame):
         Recopyimg = ctk.CTkImage(copyimg,size=(50,50))
         self.btn_copy = ctk.CTkButton(self ,text="" ,image=Recopyimg ,width=160 ,height=160,
                                                                 fg_color=("#5b5a5a"), corner_radius=0,
-                                                                command=self.open_copy)
+                                                                command=sv)
         self.btn_copy.grid(row=0, column=1)
 
-        self.lab_other = ctk.CTkLabel(self, width = kwargs["width"]-320, height = kwargs["height"], 
+        restoreimg = Image.open(f"{os.getcwd()}\\img\\restore.png")
+        Restoreimg = ctk.CTkImage(restoreimg,size=(50,50))
+        self.btn_restore = ctk.CTkButton(self ,text="" ,image=Restoreimg ,width=160 ,height=160,
+                                                                fg_color=("#5b5a5a"), corner_radius=0,
+                                                                command=back_up)
+        self.btn_restore.grid(row=0, column=2)
+
+        self.lab_other = ctk.CTkLabel(self, width = kwargs["width"]-480, height = kwargs["height"], 
                                                                 fg_color=("#5b5a5a"), text="")
 
-        self.lab_other.grid(row=0, column=2)
-
-    def open_copy(self):        
-            if self.copymsg is None or not self.copymsg.winfo_exists():
-                self.copymsg = CopyMsg(self)
-                self.copymsg.focus()
-                self.copymsg.attributes('-topmost','true')
-                sv_dt.sv()
-            else:
-                self.copymsg.focus()
-
-class CopyMsg(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.geometry("200x100")
-
-        self.label = ctk.CTkLabel(self, text="已成功儲存資料")
-        self.label.pack(padx=20, pady=20)
+        self.lab_other.grid(row=0, column=3)
 
 class Home_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -162,13 +151,11 @@ class App(ctk.CTk):
         #切換功能
         #btn事件教學 https://ithelp.ithome.com.tw/articles/10275712?sc=iThomeR
         self.Select_Frame.btn_home.bind("<Button-1>", open_home)
+        self.Select_Frame.btn_restore.bind("<Button-1>", open_home)
         self.Main_Frame.btn_company.bind("<Button-1>", open_company)
         self.Main_Frame.btn_order.bind("<Button-1>", open_order)
         self.Main_Frame.btn_accounting.bind("<Button-1>", open_accounting)
         self.Main_Frame.btn_print.bind("<Button-1>", open_printdata)
     
-        
-
-
 app = App()
 app.mainloop()

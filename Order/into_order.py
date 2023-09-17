@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import tkinter as tk
 import tkcalendar as tkc
 import psycopg2
 
@@ -66,14 +67,14 @@ class entrybox(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         w = (kwargs["width"]-20)/8
         # self.serial = ctk.CTkEntry(self,width=w,height=40)
-        self.item_id = ctk.CTkEntry(self,width=w,height=40)
-        self.item_name = ctk.CTkEntry(self,width=w,height=40)
-        self.specification = ctk.CTkEntry(self,width=w,height=40)
-        self.size = ctk.CTkEntry(self,width=w,height=40)
-        self.price = ctk.CTkEntry(self,width=w,height=40)
-        self.quantity = ctk.CTkEntry(self,width=w,height=40)
-        self.subtotal = ctk.CTkEntry(self,width=w,height=40)
-        self.remark = ctk.CTkEntry(self,width=w,height=40)
+        self.item_id = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.item_name = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.specification = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.size = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.price = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.quantity = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.subtotal = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
+        self.remark = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color="#000000")
 
         # self.serial.grid(row=0,column=0)
         self.item_id.grid(row=0,column=1)
@@ -89,7 +90,7 @@ class top(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         def ch_date(*args):
-            self.order_id.configure(text=f"訂貨單編號：{self.select_od_id(date_in=self.sel.get())}", font=("microsoft yahei", 24, 'bold'))
+            self.order_id.configure(text=f"訂貨單編號：{self.select_od_id(date_in=self.sel.get())}", font=("microsoft yahei", 24, 'bold'), text_color="#000000")
             try:
                 self.bot.order_id = self.order_id.cget("text")[6:]
             except:
@@ -98,7 +99,7 @@ class top(ctk.CTkFrame):
         self.order_id = ctk.CTkLabel(self)
         self.order_id.place(x=kwargs["width"]-400,y=50)
 
-        self.c_id = ctk.CTkEntry(self,width=250,height=50,placeholder_text="輸入客戶代號",font=("microsoft yahei", 24))
+        self.c_id = ctk.CTkEntry(self,width=250,height=50,placeholder_text="輸入客戶代號",font=("microsoft yahei", 24), fg_color="#DDDDDD", text_color="#000000")
         self.c_id.place(x=40,y=40)
 
         self.sel = ctk.StringVar()
@@ -107,8 +108,8 @@ class top(ctk.CTkFrame):
         self.cal.place(x=450,y=40)
 
         self.c_id.focus()
-        self.order_id.configure(text=f"訂貨單編號：{self.select_od_id(date_in=self.cal.get_date())}", font=("microsoft yahei", 24, 'bold'))
-        self.bot = bot(self,width=kwargs["width"],height=kwargs["height"],c_id=self.c_id,cal=self.cal, order_id=self.order_id.cget("text")[6:])
+        self.order_id.configure(text=f"訂貨單編號：{self.select_od_id(date_in=self.cal.get_date())}", font=("microsoft yahei", 24, 'bold'), text_color="#000000")
+        self.bot = bot(self,width=kwargs["width"],height=kwargs["height"],c_id=self.c_id,cal=self.cal, order_id=self.order_id.cget("text")[6:], fg_color="#EEEEEE")
         self.bot.place(x=0,y=120)
 
     def select_od_id(self,date_in):
@@ -132,7 +133,7 @@ class bot(ctk.CTkFrame):
         super().__init__(master, **kwargs)
         def next_row(event):
             self.allbar += 1
-            self.entry_1 = entrybox(self.mid_frame, width=self.w)
+            self.entry_1 = entrybox(self.mid_frame, width=self.w, fg_color="#EEEEEE")
             self.entry_1.pack()
             self.entry_1.item_id.focus()
             self.save_file.append(self.entry_1)
@@ -185,21 +186,17 @@ class bot(ctk.CTkFrame):
         self.top_bar = bar(self,width=self.w,height=40,fg_color="#EEEEEE")
         self.top_bar.place(x=0,y=0)
 
-        self.mid_frame = ctk.CTkScrollableFrame(self,width=self.w,height=kwargs["height"]-200)
+        self.mid_frame = ctk.CTkScrollableFrame(self,width=self.w,height=kwargs["height"]-200, fg_color="#EEEEEE")
         self.mid_frame.place(x=0,y=40)
 
-        self.bot_frame = ctk.CTkFrame(self,width=self.w,height=40,fg_color="#EEEEEE")
+        self.bot_frame = ctk.CTkFrame(self,width=self.w,height=40, fg_color="#DDDDDD")
         self.bot_frame.place(x=0,y=kwargs["height"]-160)       
         self.btn_exit = ctk.CTkButton(self.bot_frame,width=150,height=30,text="重設訂單", font=("microsoft yahei", 14, 'bold'))
         self.btn_save = ctk.CTkButton(self.bot_frame,width=150,height=30,text="存檔", font=("microsoft yahei", 14, 'bold') ,command=self.save_data)
         self.btn_exit.place(x=self.w-400,y=5)
         self.btn_save.place(x=self.w-200,y=5)
-        self.total = ctk.CTkLabel(self.bot_frame,text="總計：",font=("microsoft yahei", 20, 'bold'))
+        self.total = ctk.CTkLabel(self.bot_frame,text="總計：",font=("microsoft yahei", 20, 'bold'), text_color="#000000")
         self.total.place(x=10,y=7)
-
-        self.remind = ctk.CTkLabel(self.bot_frame,text="",font=("microsoft yahei", 20, 'bold'), text_color="#FF0000")
-        self.remind.place(x=kwargs["width"]-800,y=7)
-
 
         self.toplevel_window = None
 
@@ -207,7 +204,7 @@ class bot(ctk.CTkFrame):
         self.allbar = 1
         self.save_file = []
 
-        self.entry_1 = entrybox(self.mid_frame ,width=self.w)
+        self.entry_1 = entrybox(self.mid_frame ,width=self.w, fg_color="#EEEEEE")
         self.entry_1.pack()
         self.entry_1.item_id.bind('<Tab>',item_name)
         self.save_file.append(self.entry_1)
@@ -216,25 +213,32 @@ class bot(ctk.CTkFrame):
         self.entry_1.quantity.bind('<Tab>',total_price)
 
     def save_data(self):
-        if len(self.save_file) == 0:
-            self.remind.configure(text="未輸入資料")
-            
-        else: 
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
-            with con:
-                cur = con.cursor()
-                cur.execute(f"insert into order_form(o_id, c_id) \
-                            values('{self.order_id}','{self.c_id.get()}')")
-                for entrybox in self.save_file:
-                    cur.execute(f"insert into goods(o_id,item_id,item_name,date,specification,size,price,quantity,sub_total,remark)\
-                                values('{self.order_id}','{entrybox.item_id.get()}','{entrybox.item_name.get()}', \
-                                    '{self.cal.get_date()}','{entrybox.specification.get()}','{entrybox.size.get()}', \
-                                    '{entrybox.price.get()}','{entrybox.quantity.get()}','{entrybox.subtotal.get()}', \
-                                    '{entrybox.remark.get()}')")
-                con.commit()
+        for i in range(len(self.save_file)):
+            if self.save_file[i].item_id.get() == "":
+                self.save_file.pop(i)
 
-            self.remind.configure(text="已存檔")
+        try:
+            if len(self.save_file) == 0:
+                tk.messagebox.showinfo(title='儲存銷貨單', message="未輸入資料!!")
+                
+            else: 
+                con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+                #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
+                with con:
+                    cur = con.cursor()
+                    cur.execute(f"insert into order_form(o_id, c_id) \
+                                values('{self.order_id}','{self.c_id.get()}')")
+                    for entrybox in self.save_file:
+                        cur.execute(f"insert into goods(o_id,item_id,item_name,date,specification,size,price,quantity,sub_total,remark)\
+                                    values('{self.order_id}','{entrybox.item_id.get()}','{entrybox.item_name.get()}', \
+                                        '{self.cal.get_date()}','{entrybox.specification.get()}','{entrybox.size.get()}', \
+                                        '{entrybox.price.get()}','{entrybox.quantity.get()}','{entrybox.subtotal.get()}', \
+                                        '{entrybox.remark.get()}')")
+                    con.commit()
+
+                tk.messagebox.showinfo(title='儲存銷貨單', message="存檔成功")
+        except:
+            tk.messagebox.showinfo(title='儲存銷貨單', message="未輸入資料")
 
 class Into_Order_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -247,14 +251,14 @@ class Into_Order_Main_Frame(ctk.CTkFrame):
 
         def reset(event):
             self.top_part.place_forget()
-            self.top_part = top(self,width=kwargs["width"]-80,height=kwargs["height"]-120)
+            self.top_part = top(self, width=kwargs["width"]-80, height=kwargs["height"]-120, fg_color="#EEEEEE")
             self.top_part.place(x=35,y=25)
             self.back_btn = ctk.CTkButton(self.top_part.bot.bot_frame, width=150,height=30,text="返回",font=("microsoft yahei", 14, "bold"))
             self.back_btn.place(x=kwargs["width"]-680, y=5)
             self.back_btn.bind("<Button-1>", back_to_order)
             self.top_part.bot.btn_exit.bind('<Button-1>', reset)
 
-        self.top_part = top(self,width=kwargs["width"]-80,height=kwargs["height"]-120)
+        self.top_part = top(self, width=kwargs["width"]-80, height=kwargs["height"]-120, fg_color="#EEEEEE")
         self.top_part.place(x=35,y=25)
         self.top_part.bot.btn_exit.bind('<Button-1>', reset)
         self.back_btn = ctk.CTkButton(self.top_part.bot.bot_frame, width=150,height=30,text="返回",font=("microsoft yahei", 14, "bold"))
