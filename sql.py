@@ -5,16 +5,16 @@ import customtkinter as ctk
 import tkinter as tk
 
 def back_up():
-    delete_database()
-
     path = os.getcwd()
     restore_PATH = ctk.filedialog.askopenfilename()
-    pg_dump = "C://Program Files//PostgreSQL//15//bin"
-    os.chdir(pg_dump)
-    restore_CMD=f'psql --dbname=postgresql://postgres:admin@localhost:5432/postgres -f {restore_PATH}'
-    os.system(restore_CMD)
-    tk.messagebox.showinfo(title='成功', message="恢復成功", )
-    os.chdir(path)
+    if restore_PATH != "":
+        delete_database()
+        pg_dump = "C://Program Files//PostgreSQL//15//bin"
+        os.chdir(pg_dump)
+        restore_CMD=f'psql --dbname=postgresql://postgres:admin@localhost:5432/postgres -f {restore_PATH}'
+        os.system(restore_CMD)
+        tk.messagebox.showinfo(title='成功', message="恢復成功", )
+        os.chdir(path)
 
 def delete_database():
     try:

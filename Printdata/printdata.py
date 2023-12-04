@@ -17,7 +17,7 @@ class Right_part(ctk.CTkFrame):
         self.h = kwargs["height"]
 
         self.top_bar = ctk.CTkFrame(self, width=self.w, height=40)
-        self.download_btn = ctk.CTkButton(self.top_bar, width=self.w, height=40, text="確認列印", font=("microsoft yahei", 20, 'bold'))
+        self.download_btn = ctk.CTkButton(self.top_bar, width=self.w, height=40, text="確認列印",fg_color='#3B8ED0', font=("microsoft yahei", 20, 'bold'))
         self.download_btn.bind("<Button-1>", self.PrintPDF)
         self.main_body = PDFViewer(self, width=self.w-20, height=self.h-80)  
 
@@ -26,7 +26,7 @@ class Right_part(ctk.CTkFrame):
         self.main_body.pack()
 
     def PrintPDF(self, event):
-        os.system(f"print /D:'\\computer\printer' '{os.getcwd()}//allpdf//menu.pdf'")
+        os.startfile(f"{os.getcwd()}\\allpdf\\menu.pdf")
 
 class Left_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -39,7 +39,7 @@ class Left_part(ctk.CTkFrame):
         self.cal1 = tkc.DateEntry(self, font=("microsoft yahei", 20), year=2000, month=1, day=1, date_pattern="yyyy-mm-dd")
         self.cal2 = tkc.DateEntry(self, font=("microsoft yahei", 20), date_pattern="yyyy-mm-dd")
 
-        self.confirm = ctk.CTkButton(self, font=("microsoft yahei", 20, 'bold'), width=200, height=40, text="確認查詢")
+        self.confirm = ctk.CTkButton(self, font=("microsoft yahei", 20, 'bold'), width=200, height=40, text="確認查詢", fg_color='#3B8ED0',)
         self.confirm.bind("<Button-1>", self.ReadPDF)
         
         self.right = Right_part(self,width=self.w-300, height=self.h)
@@ -138,7 +138,7 @@ class Left_part(ctk.CTkFrame):
 
                 os.chdir("../")
 
-                self.right.place_forget()
+                self.right.destroy()
                 self.right = Right_part(self,width=self.w-300, height=self.h)
                 self.right.place(x=280,y=20)    
         except:

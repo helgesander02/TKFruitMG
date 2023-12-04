@@ -32,8 +32,8 @@ class Top_level_view_information(ctk.CTkToplevel):
             it.date_entry.insert(0, str(r[2]).rstrip())
             it.norm_entry.insert(0, str(r[3]).rstrip())
             it.size_entry.insert(0, str(r[4]).rstrip())
-            it.price_entry.insert(0, str(r[5]).rstrip())
             it.quantity_entry.insert(0, str(r[6]).rstrip())
+            it.price_entry.insert(0, str(r[5]).rstrip())        
             it.total_entry.insert(0, str(r[7]).rstrip())
             it.remark_entry.insert(0, str(r[8]).rstrip())
         
@@ -92,13 +92,13 @@ class Top_level_edit_information(ctk.CTkToplevel):
             tk.messagebox.showinfo(title='更新銷貨單', message="未輸入資料!!")
 
     def reload(self):
-        self.mid.place_forget()
+        self.mid.destroy()
         self.allit = []
         self.mid = Top_level_mid(self, width=980, height=320, fg_color="#EEEEEE")
         self.mid.place(x=0,y=40)
 
     def ReLoad(self, event):
-        self.mid.place_forget()
+        self.mid.destroy()
         self.allit = []
         self.mid = Top_level_mid(self, width=980, height=320, fg_color="#EEEEEE")
         self.mid.place(x=0,y=40)
@@ -130,8 +130,8 @@ class Top_level_mid(ctk.CTkScrollableFrame):
             it.date_entry.insert(0, str(r[2]).rstrip())
             it.norm_entry.insert(0, str(r[3]).rstrip())
             it.size_entry.insert(0, str(r[4]).rstrip())
-            it.price_entry.insert(0, str(r[5]).rstrip())
             it.quantity_entry.insert(0, str(r[6]).rstrip())
+            it.price_entry.insert(0, str(r[5]).rstrip())
             it.total_entry.insert(0, str(r[7]).rstrip())
             it.remark_entry.insert(0, str(r[8]).rstrip())
             self.master.allit.append(it)
@@ -149,8 +149,8 @@ class Top_level_top_bar(ctk.CTkFrame):
         self.date = ctk.CTkLabel(self, text="日期", font=("microsoft yahei", 12, 'bold'), width=w, height=30,)
         self.norm = ctk.CTkLabel(self, text="規格", font=("microsoft yahei", 12, 'bold'), width=w, height=30,)
         self.size = ctk.CTkLabel(self, text="大小", font=("microsoft yahei", 12, 'bold'), width=w, height=30,)
-        self.price = ctk.CTkLabel(self, text="價格", font=("microsoft yahei", 12, 'bold'), width=w, height=30,)
         self.quantity = ctk.CTkLabel(self, text="數量", font=("microsoft yahei", 12, 'bold'), width=w, height=30,)
+        self.price = ctk.CTkLabel(self, text="價格", font=("microsoft yahei", 12, 'bold'), width=w, height=30,) 
         self.total = ctk.CTkLabel(self, text="小計", font=("microsoft yahei", 12, 'bold'), width=w, height=30,)
         self.remark = ctk.CTkLabel(self, text="備註", font=("microsoft yahei", 12, 'bold'), width=w, height=30,)
         self.delete = ctk.CTkLabel(self, text="刪除", font=("microsoft yahei", 12, 'bold'), width=w, height=30,)
@@ -160,8 +160,8 @@ class Top_level_top_bar(ctk.CTkFrame):
         self.date.grid(row=0,column=2)
         self.norm.grid(row=0,column=3)
         self.size.grid(row=0,column=4)
-        self.price.grid(row=0,column=5)
-        self.quantity.grid(row=0,column=6)
+        self.quantity.grid(row=0,column=5)
+        self.price.grid(row=0,column=6)
         self.total.grid(row=0,column=7)
         self.remark.grid(row=0,column=8)
         self.delete.grid(row=0,column=9)
@@ -216,12 +216,12 @@ class Top_level_item(ctk.CTkFrame):
         self.date_entry = ctk.CTkEntry(self,width=w,height=20)
         self.norm_entry = ctk.CTkEntry(self,width=w,height=20)
         self.size_entry = ctk.CTkEntry(self,width=w,height=20)
-        self.price_entry = ctk.CTkEntry(self,width=w,height=20)
         self.quantity_entry = ctk.CTkEntry(self,width=w,height=20)
+        self.price_entry = ctk.CTkEntry(self,width=w,height=20)       
         self.total_entry = ctk.CTkEntry(self,width=w,height=20)
         self.remark_entry = ctk.CTkEntry(self,width=w,height=20)
 
-        deleteimg = Image.open(f"{os.getcwd()}\\img\\close.png")
+        deleteimg = Image.open(f"{os.getcwd()}\\icon\\close.png")
         Redeleteimg = ctk.CTkImage(deleteimg,size=(20,20))
         self.delete = ctk.CTkButton(self, image=Redeleteimg, width=w, height=20, fg_color="#EEEEEE", hover_color="#EEEEEE", text="")    
 
@@ -230,8 +230,8 @@ class Top_level_item(ctk.CTkFrame):
         self.date_entry.grid(row=0,column=2)
         self.norm_entry.grid(row=0,column=3)
         self.size_entry.grid(row=0,column=4)
-        self.price_entry.grid(row=0,column=5)
-        self.quantity_entry.grid(row=0,column=6)
+        self.quantity_entry.grid(row=0,column=5)
+        self.price_entry.grid(row=0,column=6)  
         self.total_entry.grid(row=0,column=7)
         self.remark_entry.grid(row=0,column=8)
         self.delete.grid(row=0,column=9)

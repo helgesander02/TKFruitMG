@@ -13,20 +13,20 @@ class Select_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.copymsg = None
-        homeimg = Image.open(f"{os.getcwd()}\\img\\home.png")
+        homeimg = Image.open(f"{os.getcwd()}\\icon\\home.png")
         Rehomeimg = ctk.CTkImage(homeimg,size=(50,50))
         self.btn_home = ctk.CTkButton(self ,text="" ,image=Rehomeimg ,width=160 ,height=160,
                                                                 fg_color=("#5b5a5a"), corner_radius=0)
         self.btn_home.grid(row=0, column=0)
 
-        copyimg = Image.open(f"{os.getcwd()}\\img\\copy.png")
+        copyimg = Image.open(f"{os.getcwd()}\\icon\\copy.png")
         Recopyimg = ctk.CTkImage(copyimg,size=(50,50))
         self.btn_copy = ctk.CTkButton(self ,text="" ,image=Recopyimg ,width=160 ,height=160,
                                                                 fg_color=("#5b5a5a"), corner_radius=0,
                                                                 command=sv)
         self.btn_copy.grid(row=0, column=1)
 
-        restoreimg = Image.open(f"{os.getcwd()}\\img\\restore.png")
+        restoreimg = Image.open(f"{os.getcwd()}\\icon\\restore.png")
         Restoreimg = ctk.CTkImage(restoreimg,size=(50,50))
         self.btn_restore = ctk.CTkButton(self ,text="" ,image=Restoreimg ,width=160 ,height=160,
                                                                 fg_color=("#5b5a5a"), corner_radius=0,
@@ -44,7 +44,7 @@ class Home_Main_Frame(ctk.CTkFrame):
         wedge = kwargs["width"]/13
         hedge = kwargs["height"]/6
         #self.frame = ctk.CTkFrame(self, width=kwargs["width"],height=kwargs["height"],fg_color="green")
-        companyimg = Image.open(f"{os.getcwd()}\\img\\company.png")
+        companyimg = Image.open(f"{os.getcwd()}\\icon\\company.png")
         Recompanyimg = ctk.CTkImage(companyimg,size=(60,60))
         self.btn_company = ctk.CTkButton(self ,text="" ,image=Recompanyimg  ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
@@ -52,7 +52,7 @@ class Home_Main_Frame(ctk.CTkFrame):
         self.lab_company = ctk.CTkLabel(self, text="公司管理", font=("microsoft yahei", 20, 'bold'), text_color=("#333333"))
         self.lab_company.place(x=wedge*3+40, y=hedge*2+40)
 
-        orderimg = Image.open(f"{os.getcwd()}\\img\\order.png")
+        orderimg = Image.open(f"{os.getcwd()}\\icon\\order.png")
         Reorderimg = ctk.CTkImage(orderimg,size=(60,60))
         self.btn_order = ctk.CTkButton(self ,text="" ,image=Reorderimg ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
@@ -60,7 +60,7 @@ class Home_Main_Frame(ctk.CTkFrame):
         self.lab_order = ctk.CTkLabel(self, text="訂貨單輸入", font=("microsoft yahei", 20, 'bold'), text_color=("#333333"))
         self.lab_order.place(x=wedge*3+30, y=hedge*4+40)
 
-        accountingimg = Image.open(f"{os.getcwd()}\\img\\accounting.png")
+        accountingimg = Image.open(f"{os.getcwd()}\\icon\\accounting.png")
         Reaccountingimg = ctk.CTkImage(accountingimg,size=(60,60))
         self.btn_accounting = ctk.CTkButton(self ,text="" ,image=Reaccountingimg ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
@@ -68,7 +68,7 @@ class Home_Main_Frame(ctk.CTkFrame):
         self.lab_accounting = ctk.CTkLabel(self, text="入賬管理", font=("microsoft yahei", 20, 'bold'), text_color=("#333333"))
         self.lab_accounting.place(x=wedge*5+40, y=hedge*2+40)
 
-        printimg = Image.open(f"{os.getcwd()}\\img\\print.png")
+        printimg = Image.open(f"{os.getcwd()}\\icon\\print.png")
         Reprintimg = ctk.CTkImage(printimg,size=(60,60))
         self.btn_print = ctk.CTkButton(self ,text="" ,image=Reprintimg ,width=160 ,height=160 ,
                                                                 fg_color=("#DDDDDD"), text_color=("#5b5a5a"))
@@ -120,7 +120,7 @@ class App(ctk.CTk):
         #關掉主要的Frame開啟對應btn的Frame
         #隱藏的方法 https://www.delftstack.com/zh-tw/howto/python-tkinter/how-to-hide-recover-and-delete-tkinter-widgets/
         def open_home (event):   
-            self.Main_Frame.grid_forget()
+            self.Main_Frame.destroy()
             self.Main_Frame = Home_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
             self.Main_Frame.grid(row=1, column=0,sticky='nsew')
             self.Main_Frame.btn_company.bind("<Button-1>", open_company)
@@ -129,22 +129,22 @@ class App(ctk.CTk):
             self.Main_Frame.btn_print.bind("<Button-1>", open_printdata)
 
         def open_company (event):   
-            self.Main_Frame.grid_forget()
+            self.Main_Frame.destroy()
             self.Main_Frame = Company_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
             self.Main_Frame.grid(row=1, column=0,sticky='nsew')
 
         def open_order (event):   
-            self.Main_Frame.grid_forget()
+            self.Main_Frame.destroy()
             self.Main_Frame = Order_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
             self.Main_Frame.grid(row=1, column=0,sticky='nsew')
 
         def open_accounting (event):   
-            self.Main_Frame.grid_forget()
+            self.Main_Frame.destroy()
             self.Main_Frame = Accounting_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
             self.Main_Frame.grid(row=1, column=0,sticky='nsew')
 
         def open_printdata (event):   
-            self.Main_Frame.grid_forget()
+            self.Main_Frame.destroy()
             self.Main_Frame = Printdata_Main_Frame(self, width = w , height = h-160, fg_color=("#FFFFFF"))
             self.Main_Frame.grid(row=1, column=0,sticky='nsew')
 

@@ -17,7 +17,7 @@ class left_part(ctk.CTkFrame):
                 self.toplevel_window.focus()
 
         def rightbot_reset(event):
-            self.right_bot.grid_forget()
+            self.right_bot.destroy()
             self.right_bot = right_bot_part(self,width=self.w-450,height=self.h-450,fg_color="#EEEEEE")
             self.right_bot.bot.back_btn.bind("<Button-1>", master.back_to_accounting)
             self.right_bot.bot.reset_btn.bind("<Button-1>", rightbot_reset)
@@ -48,12 +48,12 @@ class left_part(ctk.CTkFrame):
                 tk.messagebox.showinfo(title='儲存入帳', message="入帳失敗 檢查輸入是否有錯!!", )
 
         def reload_right_top_mid(event):
-            self.right_top.place_forget()
+            self.right_top.destroy()
             self.right_top = right_top_part(self,width=self.w-450,height=330,fg_color="#EEEEEE")
             self.right_top.mid.insertdata(self.o_id)
-            self.right_top.bot.sum.configure(text=f"收款總額：{self.right_top.mid.sum}      剩餘：{self.right_top.mid.remain:,}")
+            self.right_top.bot.sum.configure(text=f"收款總額：{self.right_top.mid.sum:,}      剩餘：{self.right_top.mid.remain:,}")
             self.right_top.place(x=400,y=0)
-            self.right_bot.place_forget()
+            self.right_bot.destroy()
             self.right_bot = right_bot_part(self,width=self.w-450,height=self.h-450,fg_color="#EEEEEE")
             self.right_bot.bot.reset_btn.bind("<Button-1>", rightbot_reset)
             self.right_bot.bot.confirm_btn.bind("<Button-1>", rightbot_confirm)
@@ -299,7 +299,6 @@ class right_bot_mid(ctk.CTkScrollableFrame):
             self.all_entry.append(self.entry_1)
             self.entry_1.bar_5.bind('<Tab>',next_row)
             
-
         self.all_entry = []
         self.entry_1 = entrybox(self ,width=kwargs["width"])
         self.entry_1.pack()
@@ -370,7 +369,7 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
             self.location += 1
             self.o_id = self.order_id_select[self.location]
 
-            self.left.grid_forget()
+            self.left.destroy()
             self.left = left_part(self, self.o_id, self.m_id, 
                                     width=self.w, height=self.h, fg_color="#FFFFFF")
             self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
@@ -384,7 +383,7 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
             self.location -= 1
             self.o_id = self.order_id_select[self.location]
             
-            self.left.grid_forget()
+            self.left.destroy()
             self.left = left_part(self, self.o_id, self.m_id, 
                                     width=self.w, height=self.h, fg_color="#FFFFFF")
             self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
@@ -395,7 +394,7 @@ class Into_Account_Main_Frame(ctk.CTkFrame):
             
     def back_to_accounting(self, event):
         from .accounting import Accounting_Main_Frame
-        self.left.grid_forget()
+        self.left.destroy()
         self.left = Accounting_Main_Frame(self, width=self.w, height=self.h, fg_color="#FFFFFF")
         self.left.grid(row=0,column=0)
     

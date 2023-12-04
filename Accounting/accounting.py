@@ -48,7 +48,7 @@ class left_part(ctk.CTkFrame):
         self.customer_id_entry.bind("<Return>", self.test)
 
     def reset(self):
-            self.right_bot.place_forget()
+            self.right_bot.destroy()
             self.right_bot = right_bot_part(self,width=self.w-300,height=self.h-120,fg_color="#EEEEEE")
             self.right_bot.place(x=270,y=5)
 
@@ -134,12 +134,12 @@ class right_bot_part(ctk.CTkFrame):
         self.master = master
         self.top = top_bar(self, width=self.w, height=40)
         self.toplevel = None
-        self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-100, fg_color="#EEEEEE")
+        self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-85, fg_color="#EEEEEE")
         self.select_order = []
         self.bot = ctk.CTkFrame(self, width=self.w, height=40, fg_color="#DDDDDD")
         self.nmb = ctk.CTkLabel(self.bot, height=40, text="總額：" ,font=("microsoft yahei", 20, 'bold'), text_color="#000000")
-        self.j_btn = ctk.CTkButton(self.bot, width=150, height=30, text="入賬" ,font=("microsoft yahei", 14, 'bold'))
-        self.once_btn = ctk.CTkButton(self.bot, width=150, height=30, text="一次入帳多筆" ,font=("microsoft yahei", 14, 'bold'),command=self.open_once_enter)
+        self.j_btn = ctk.CTkButton(self.bot, width=150, height=30, text="入賬" ,fg_color='#3B8ED0',font=("microsoft yahei", 14, 'bold'))
+        self.once_btn = ctk.CTkButton(self.bot, width=150, height=30, text="一次入帳多筆" ,fg_color='#3B8ED0',font=("microsoft yahei", 14, 'bold'),command=self.open_once_enter)
         self.j_text = ctk.CTkLabel(self.bot, width=50, height=40, text="" ,font=("microsoft yahei", 20, 'bold'), text_color="#FF0000")
         self.top.place(x=0,y=0)
         self.mid.place(x=0,y=40)
@@ -150,7 +150,7 @@ class right_bot_part(ctk.CTkFrame):
         self.j_text.place(x=self.w-600)
 
     def reload(self):
-        self.mid.place_forget()
+        self.mid.destroy()
         self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-100, fg_color="#EEEEEE") 
         self.mid.place(x=0,y=40)
 
@@ -235,6 +235,7 @@ class right_bot_part(ctk.CTkFrame):
                 cur.execute(f"SELECT name FROM customer WHERE customer.c_id = (SELECT c_id FROM order_form WHERE order_form.o_id='{result1[i][0]}')")
                 result3 = cur.fetchall()
 
+            it.day.insert(0, f"{result1[i][0][:4]}/{result1[i][0][4:6]}/{result1[i][0][6:8]}")
             it.name.insert(0, f"{result3[0][0]}")
             it.dat.insert(0, f"{result1[i][0]}")
             it.remark.insert(0, f"{result1[i][1]}")
@@ -273,13 +274,20 @@ class right_bot_part(ctk.CTkFrame):
 class top_bar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        w = (kwargs["width"]-100)/6
-        self.bar_1 = ctk.CTkLabel(self, width=100, height=40, 
+        w = (kwargs["width"]-100)/7
+
+        self.bar_0 = ctk.CTkLabel(self, width=100, height=40, 
                                     text="選擇",
                                     fg_color='#3B8ED0',
                                     font=("microsoft yahei", 14, 'bold'), 
                                     text_color=("#FFFFFF"))
         
+        self.bar_1 = ctk.CTkLabel(self, width=w, height=40, 
+                                    text="日期",
+                                    fg_color='#3B8ED0',
+                                    font=("microsoft yahei", 14, 'bold'), 
+                                    text_color=("#FFFFFF"))
+
         self.bar_2 = ctk.CTkLabel(self, width=w, height=40, 
                                     text="客戶名稱",
                                     fg_color='#3B8ED0',
@@ -316,19 +324,22 @@ class top_bar(ctk.CTkFrame):
                                     font=("microsoft yahei", 14, 'bold'), 
                                     text_color=("#FFFFFF"))
 
-        self.bar_1.grid(row=0,column=0)
-        self.bar_2.grid(row=0,column=1)
-        self.bar_3.grid(row=0,column=2)
-        self.bar_4.grid(row=0,column=3)
-        self.bar_5.grid(row=0,column=4)
-        self.bar_6.grid(row=0,column=5)
-        self.bar_7.grid(row=0,column=6)
+        self.bar_0.grid(row=0,column=0)
+        self.bar_1.grid(row=0,column=1)
+        self.bar_2.grid(row=0,column=2)
+        self.bar_3.grid(row=0,column=3)
+        self.bar_4.grid(row=0,column=4)
+        self.bar_5.grid(row=0,column=5)
+        self.bar_6.grid(row=0,column=6)
+        self.bar_7.grid(row=0,column=7)
 
 class item(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        w = (kwargs["width"]-100)/6
+        w = (kwargs["width"]-100)/7
+
         self.chk_box = ctk.CTkCheckBox(self,width=100,height=40, fg_color="#FFFFFF", text_color=("#000000"), text="")
+        self.day = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color=("#000000"))
         self.name = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color=("#000000"))
         self.dat = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color=("#000000"))
         self.sbtotal = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color=("#000000"))
@@ -337,12 +348,13 @@ class item(ctk.CTkFrame):
         self.remark = ctk.CTkEntry(self,width=w,height=40, fg_color="#FFFFFF", text_color=("#000000"))
         
         self.chk_box.grid(row=0,column=0, sticky=tk.E)
-        self.name.grid(row=0,column=1)
-        self.dat.grid(row=0,column=2)
-        self.sbtotal.grid(row=0,column=3)
-        self.al_total.grid(row=0,column=4)
-        self.overage.grid(row=0,column=5)
-        self.remark.grid(row=0,column=6)
+        self.day.grid(row=0,column=1)
+        self.name.grid(row=0,column=2)
+        self.dat.grid(row=0,column=3)
+        self.sbtotal.grid(row=0,column=4)
+        self.al_total.grid(row=0,column=5)
+        self.overage.grid(row=0,column=6)
+        self.remark.grid(row=0,column=7)
 
 class Accounting_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -358,6 +370,6 @@ class Accounting_Main_Frame(ctk.CTkFrame):
                 self.left
                 self.left.right_bot.j_text.configure(text="請選擇訂單")
             else:
-                self.left.grid_forget()
+                self.left.destroy()
                 self.left = Into_Account_Main_Frame(self, order_id_select, width=self.w, height=self.h, fg_color="#FFFFFF")
                 self.left.grid(row=0,column=0)
