@@ -4,7 +4,7 @@ import tkinter as tk
 from PIL import Image
 import psycopg2
 
-class right_top_part_A(ctk.CTkFrame):    
+class right_part_A(ctk.CTkFrame):    
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs) 
         self.w = kwargs["width"]  
@@ -12,37 +12,56 @@ class right_top_part_A(ctk.CTkFrame):
         self.all_en = []
         self.toplevel_window = None
 
-        self.text_1 = ctk.CTkTextbox(self, width=250, height=50, font=("microsoft yahei", 24, 'bold'), fg_color="#FFFFFF", corner_radius=0)
-        self.text_1.place(x=100, y=75)
+        # top frame
+        self.text_1 = ctk.CTkEntry(self, width=250, height=50, 
+                                     font=("microsoft yahei", 24, 'bold'), 
+                                     fg_color="#FFFFFF",
+                                     border_color="#FFFFFF", 
+                                     text_color="#000000",
+                                     corner_radius=0)
 
         img = Image.open(f"{os.getcwd()}\\icon\\search.png")
         btn_image = ctk.CTkImage(img,size=(25,25))
-        self.button_for_search = ctk.CTkButton(self, width=50, height=50, image=btn_image, text="", border_spacing=0,fg_color='#3B8ED0', corner_radius=0)
+        self.button_for_search = ctk.CTkButton(self, width=50, height=50, 
+                                               text="",
+                                               image=btn_image,  
+                                               border_spacing=0,
+                                               fg_color='#3B8ED0', 
+                                               corner_radius=0)   
+
+        self.button_1 = ctk.CTkButton(self, width=200, height=50, 
+                                      text="新增客戶", 
+                                      fg_color='#3B8ED0', 
+                                      font=("microsoft yahei", 14, 'bold'))
+        
+        self.text_1.place(x=100, y=75)
         self.button_for_search.place(x=350, y=75)
-
-        self.button_1 = ctk.CTkButton(self, width=200, height=50, text="新增客戶", fg_color='#3B8ED0', font=("microsoft yahei", 14, 'bold'))
         self.button_1.place(x=self.w-300, y=75)
-
-        self.right_bot_title = right_bot_title_part_A(self, width=self.w, height=40, fg_color="#EEEEEE")
+        
+        # bot frame title
+        self.right_bot_title = bot_title(self, width=self.w, height=40, fg_color="#EEEEEE")
         self.right_bot_title.place(x=0, y=200)
 
+        # bot frame data
         self.right_bot_data = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-270, fg_color="#EEEEEE")
         self.right_bot_data.m = self
         self.right_bot_data.place(x=0, y=240)
-        self.InsertData()
-  
+        self.insert_data()
+
+        # event
+        self.text_1.bind("<Return>", self.search)
         self.button_for_search.bind("<Button-1>", self.search)
         self.button_1.bind("<Button-1>", self.open_toplevel_add_customer)
     
-    def reload_botdata(self):
+    def reload_bot_data(self):
         self.right_bot_data.destroy()
         self.right_bot_data = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-270, fg_color="#EEEEEE")
         self.right_bot_data.m = self
         self.right_bot_data.place(x=0, y=240)
-        self.InsertData()
+        self.insert_data()
         
     def search(self, event):
-        self.reload_botdata()    
+        self.reload_bot_data()    
 
     def open_toplevel_add_customer(self, event):
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
@@ -52,18 +71,18 @@ class right_top_part_A(ctk.CTkFrame):
         else:
             self.toplevel_window.focus()
     
-    def InsertData(self):
+    def insert_data(self):
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")     
         with con:
             cur = con.cursor()
-            if self.text_1.get(1.0, 'end-1c') == '':
+            if self.text_1.get() == '':
                 cur.execute("SELECT * FROM customer ORDER BY c_id")
             else:
-                cur.execute(f"SELECT * FROM customer WHERE c_id = '{self.text_1.get(1.0, 'end-1c')}' ORDER BY c_id")
+                cur.execute(f"SELECT * FROM customer WHERE c_id = '{self.text_1.get()}' ORDER BY c_id")
             result = cur.fetchall()
             
         for r in result:
-            en = entrybox(self.right_bot_data ,width=self.w, height=40, fg_color="#EEEEEE") 
+            en = bot_data_entrybox(self.right_bot_data ,width=self.w, height=40, fg_color="#EEEEEE") 
             en.pack()                       
             en.c_id.insert(0, str(r[0]).rstrip())
             en.name.insert(0, str(r[1]).rstrip())
@@ -72,7 +91,7 @@ class right_top_part_A(ctk.CTkFrame):
             en.remark.insert(0, str(r[4]).rstrip())
             self.all_en.append(en)
 
-class right_bot_title_part_A(ctk.CTkFrame):
+class bot_title(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         w = kwargs["width"]/7
@@ -127,7 +146,7 @@ class right_bot_title_part_A(ctk.CTkFrame):
         self.bar_6.grid(row=0,column=5)
         self.bar_7.grid(row=0,column=6)  
   
-class entrybox(ctk.CTkFrame):
+class bot_data_entrybox(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.master = master
@@ -166,31 +185,14 @@ class entrybox(ctk.CTkFrame):
             self.toplevel_window.focus()
 
     def endelete(self, event):
-        if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
-            self.toplevel_window = Top_level_check_delete(self)
-            self.toplevel_window.title("")
-            self.toplevel_window.attributes('-topmost','true')    
-        else:
-            self.toplevel_window.focus()
-
-    def reload(self):
-        self.master.m.reload_botdata()
-
-class Top_level_check_delete(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.geometry("250x150")
-        self.master = args[0]
-        
-        def click(event):
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")     
+        if tk.messagebox.askokcancel(message="是否確定要刪除 !!", icon="warning"):
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")   
             with con:
                 cur = con.cursor()
-                cur.execute(f"DELETE FROM customer WHERE c_id = '{self.master.c_id.get()}'")
-                cur.execute(f"DELETE FROM order_form WHERE c_id = '{self.master.c_id.get()}'")
+                cur.execute(f"DELETE FROM customer WHERE c_id = '{self.c_id.get()}'")
+                cur.execute(f"DELETE FROM order_form WHERE c_id = '{self.c_id.get()}'")
 
-                cur.execute(f"SELECT o_id FROM order_form WHERE c_id = '{self.master.c_id.get()}'")
+                cur.execute(f"SELECT o_id FROM order_form WHERE c_id = '{self.c_id.get()}'")
                 o_ids = cur.fetchall()
                 for o_id in o_ids:
                     cur.execute(f"DELETE FROM goods WHERE o_id = '{o_id}'")
@@ -199,27 +201,17 @@ class Top_level_check_delete(ctk.CTkToplevel):
                     cur.execute(f"DELETE FROM accounting WHERE o_id = {o_id}")
                     for ac_id in ac_ids:
                         cur.execute(f"DELETE FROM receipt WHERE ac_id = {ac_id}")
-            self.master.reload()
-            self.destroy()
+            self.reload()
 
-        def cancel(event):
-            self.destroy()
 
-        self.msg = ctk.CTkLabel(self, text="是否確定要刪除 !!", font=("microsoft yahei", 20, 'bold'))
-        self.confirm = ctk.CTkButton(self,width=100,height=25,text="確認", font=("microsoft yahei", 14, 'bold'))
-        self.confirm.bind('<Button-1>', click)
-        self.cancel = ctk.CTkButton(self,width=100,height=25,text="取消", font=("microsoft yahei", 14, 'bold'))
-        self.cancel.bind('<Button-1>', cancel)
-        self.msg.place(x=50,y=40)
-        self.confirm.place(x=25,y=110)
-        self.cancel.place(x=135,y=110)
+    def reload(self):
+        self.master.m.reload_bot_data()
 
 class Top_level_edit_customer(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.master = args[0]
         def click(event):
-            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             cur = con.cursor()
             cur.execute(f"UPDATE customer SET name = '{self.name_entry.get()}', \
@@ -282,7 +274,6 @@ class Top_level_add_customer(ctk.CTkToplevel):
         super().__init__(*args, **kwargs)
         self.master = args[0]
         def click(event):
-            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             cur = con.cursor()
             cur.execute(f"INSERT INTO customer (c_id, name, phone, address, remark) \
@@ -295,7 +286,7 @@ class Top_level_add_customer(ctk.CTkToplevel):
 
             con.commit()
             con.close()
-            self.master.reload_botdata()
+            self.master.reload_bot_data()
             self.destroy()
 
         def cancel(event):

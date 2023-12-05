@@ -5,163 +5,129 @@ import psycopg2
 from datetime import date
 from .into_account import Into_Account_Main_Frame
 
-class left_part(ctk.CTkFrame):
+class main_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.w = kwargs["width"]
         self.h = kwargs["height"]
         self.master = master
+
+        # left part
         self.customer_id_entry = ctk.CTkEntry(self,width=210, height=50,
-                                                    fg_color="#EEEEEE",
-                                                    text_color="#000000",
-                                                    font=("microsoft yahei", 20, 'bold'),
-                                                    placeholder_text="客戶編號" 
-                                                    )     
+                                              fg_color="#EEEEEE",
+                                              text_color="#000000",
+                                              font=("microsoft yahei", 20, 'bold'),
+                                              placeholder_text="客戶編號")     
+        
+        self.finish_chk = ctk.CTkCheckBox(self,width=40,height=40, 
+                                          text="是否隱藏收帳完成的", 
+                                          font=("microsoft yahei", 16, 'bold'),
+                                          text_color=("#333333"))
+        self.finish_chk.select()
 
         self.sell_date1_entry = tkc.DateEntry(self, selectmode='day',
-                                                    font=("microsoft yahei", 20),year=2000,month=1,day=1,date_pattern="yyyy-mm-dd")
+                                              font=("microsoft yahei", 20),
+                                              year=2000, month=1, day=1,
+                                              date_pattern="yyyy-mm-dd")
+        
         self.sell_date2_entry = tkc.DateEntry(self, selectmode='day',
-                                                    font=("microsoft yahei", 20),date_pattern="yyyy-mm-dd")
-
-        self.finish_chk = ctk.CTkCheckBox(self,width=40,height=40, text="是否隱藏收帳完成的", 
-                                                    font=("microsoft yahei", 16, 'bold'),
-                                                    text_color=("#333333"),
-                                                    )
+                                              font=("microsoft yahei", 20),
+                                              date_pattern="yyyy-mm-dd")    
 
         self.confirm_btn = ctk.CTkButton(self,width=200,height=40,
-                                                    fg_color="#3B8ED0",
-                                                    text="確認查詢",
-                                                    font=("microsoft yahei", 20, 'bold'),
-                                                    )
-        self.right_bot = right_bot_part(self,width=self.w-300,height=self.h-120,fg_color="#EEEEEE")
+                                         fg_color="#3B8ED0",
+                                         text="確認查詢",
+                                         font=("microsoft yahei", 20, 'bold'))
         
-        self.customer_id_entry.place(x=25,y=50)
-        self.sell_date1_entry.place(x=25,y=300)
-        self.sell_date2_entry.place(x=25,y=350)
-        self.finish_chk.place(x=25,y=120)
-        self.finish_chk.select()
-        self.confirm_btn.place(x=25,y=self.h-220)
-        self.right_bot.place(x=270,y=5)
+        self.customer_id_entry.place(x=25, y=50)
+        self.finish_chk.place(x=25, y=120)
+        self.sell_date1_entry.place(x=25, y=300)
+        self.sell_date2_entry.place(x=25, y=350)
+        self.confirm_btn.place(x=25, y=self.h-220)
 
+        # right part
+        self.right_bot = right_part(self, width=self.w-300, height=self.h-120, fg_color="#EEEEEE")
+        self.right_bot.place(x=270, y=5)
+
+        # event 
+        self.confirm_btn.bind("<Button-1>", self.insert_data)
+        self.customer_id_entry.bind("<Return>", self.insert_data)
         self.right_bot.j_btn.bind("<Button-1>", self.master.open_into_account)
-        self.confirm_btn.bind("<Button-1>", self.test)
-        self.customer_id_entry.bind("<Return>", self.test)
 
-    def reset(self):
-            self.right_bot.destroy()
-            self.right_bot = right_bot_part(self,width=self.w-300,height=self.h-120,fg_color="#EEEEEE")
-            self.right_bot.place(x=270,y=5)
-
-            self.right_bot.j_btn.bind("<Button-1>", self.master.open_into_account)
-
-    def test(self, event):
+    def insert_data(self, event):
         self.reset()
-        c_id = self.customer_id_entry.get()
-
-        self.right_bot.InsertData(c_id, 
+        self.right_bot.insert_data(self.customer_id_entry.get(), 
                                     self.sell_date1_entry.get_date(), 
                                     self.sell_date2_entry.get_date(),
                                     self.finish_chk.get())
 
-class once_enter(ctk.CTkToplevel):
-    def __init__(self, master,overage,**kwargs):
-        super().__init__(master, **kwargs)
-        def insert_receipt():
-            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
-            with con:
-                cur = con.cursor()
-                money = int(self.entry3.get())
-                for i in range(len(overage)):
-                    temp = 0
-                    if money == 0:break
-                    if int(overage[i][1]) <= money:
-                        temp = int(overage[i][1])
-                        money -= int(overage[i][1])
-                    else:
-                        temp = money
-                        money = 0
+    def reset(self):
+        self.right_bot.destroy()
+        self.right_bot = right_part(self,width=self.w-300,height=self.h-120,fg_color="#EEEEEE")
+        self.right_bot.place(x=270,y=5)
+        self.right_bot.j_btn.bind("<Button-1>", self.master.open_into_account)
 
-                    ac_id = self.select_ac_id(overage[i][2])
-                    cur.execute(f"INSERT INTO accounting VALUES('{ac_id}','{overage[i][0]}')")
-                    cur.execute(f"INSERT INTO receipt VALUES('{ac_id}','{self.entry1.get()}','{self.entry2.get()}','{temp}','0','')")
-                    con.commit()
-
-            master.reload()
-            self.destroy()
-
-        self.geometry("300x200")
-        self.lbl1 = ctk.CTkLabel(self,text="收款日期",width=100,height=40,font=("microsoft yahei", 14, 'bold'))
-        self.lbl2 = ctk.CTkLabel(self,text="收款方式",width=100,height=40,font=("microsoft yahei", 14, 'bold'))
-        self.lbl3 = ctk.CTkLabel(self,text="收款金額",width=100,height=40,font=("microsoft yahei", 14, 'bold'))
-        self.entry1 = ctk.CTkEntry(self,width=150,height=40)
-        if date.today().month<10:
-            self.entry1.insert(0, f"{date.today().year}0{date.today().month}{date.today().day}")
-        else:
-            self.entry1.insert(0, f"{date.today().year}{date.today().month}{date.today().day}")
-        self.entry2 = ctk.CTkEntry(self,placeholder_text="收款方式",width=150,height=40)
-        self.entry3 = ctk.CTkEntry(self,placeholder_text="收款金額",width=150,height=40)
-        self.confirm_btn = ctk.CTkButton(self,text="確認入賬",width=250,height=40,command=insert_receipt,font=("microsoft yahei", 14, 'bold'))
-        self.confirm_btn.grid(row=3,column=0,columnspan=2,pady=5)
-        self.lbl1.grid(row=0,column=0,padx=5,pady=5)
-        self.lbl2.grid(row=1,column=0,padx=5,pady=5)
-        self.lbl3.grid(row=2,column=0,padx=5,pady=5)
-        self.entry1.grid(row=0,column=1,padx=5,pady=5)
-        self.entry2.grid(row=1,column=1,padx=5,pady=5)
-        self.entry3.grid(row=2,column=1,padx=5,pady=5)
-
-    def select_ac_id(self,c_id):
-        ac = f"ac{c_id}"
-        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
-        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        with con:
-            cur = con.cursor()
-            cur.execute(f"select ac_id from accounting join order_form on accounting.o_id = order_form.o_id where order_form.c_id = '{c_id}'")
-            ac_all = cur.fetchall()    
-
-        if len(ac_all) > 0:
-            n_id = str(ac_all[-1][0]).rstrip()
-            ac_id = str(int(n_id[len(ac):]) + 1)
-            return f"{ac}{ac_id}"
-        else:     
-            return f"{ac}1"
-
-class right_bot_part(ctk.CTkFrame):
+class right_part(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.w = kwargs["width"]
         self.h = kwargs["height"]
         self.master = master
-        self.top = top_bar(self, width=self.w, height=40)
         self.toplevel = None
-        self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-85, fg_color="#EEEEEE")
         self.select_order = []
+
+        # right part
+        self.top = top_bar(self, width=self.w, height=40)
+        self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-85, fg_color="#EEEEEE") 
         self.bot = ctk.CTkFrame(self, width=self.w, height=40, fg_color="#DDDDDD")
-        self.nmb = ctk.CTkLabel(self.bot, height=40, text="總額：" ,font=("microsoft yahei", 20, 'bold'), text_color="#000000")
-        self.j_btn = ctk.CTkButton(self.bot, width=150, height=30, text="入賬" ,fg_color='#3B8ED0',font=("microsoft yahei", 14, 'bold'))
-        self.once_btn = ctk.CTkButton(self.bot, width=150, height=30, text="一次入帳多筆" ,fg_color='#3B8ED0',font=("microsoft yahei", 14, 'bold'),command=self.open_once_enter)
-        self.j_text = ctk.CTkLabel(self.bot, width=50, height=40, text="" ,font=("microsoft yahei", 20, 'bold'), text_color="#FF0000")
+
         self.top.place(x=0,y=0)
         self.mid.place(x=0,y=40)
         self.bot.place(x=0,y=self.h-40)
-        self.once_btn.place(x=self.w-400,y=5)
+
+        # right bot part
+        self.nmb = ctk.CTkLabel(self.bot, height=40, 
+                                text="總額：",
+                                font=("microsoft yahei", 20, 'bold'), 
+                                text_color="#000000")
+        
+        self.j_btn = ctk.CTkButton(self.bot, width=150, height=30, 
+                                   text="入賬",
+                                   fg_color='#3B8ED0',
+                                   font=("microsoft yahei", 14, 'bold'))
+        
+        self.once_btn = ctk.CTkButton(self.bot, width=150, height=30, 
+                                      text="一次入帳多筆" ,
+                                      fg_color='#3B8ED0',
+                                      font=("microsoft yahei", 14, 'bold'))
+        
+        self.j_text = ctk.CTkLabel(self.bot, width=50, height=40, 
+                                   text="" ,
+                                   font=("microsoft yahei", 20, 'bold'), 
+                                   text_color="#FF0000")
+
         self.nmb.place(x=20)
         self.j_btn.place(x=self.w-200,y=5)
+        self.once_btn.place(x=self.w-400,y=5)
         self.j_text.place(x=self.w-600)
+
+        # event
+        self.once_btn.bind("<Button-1>", self.open_once_enter)
 
     def reload(self):
         self.mid.destroy()
         self.mid = ctk.CTkScrollableFrame(self, width=self.w-20, height=self.h-100, fg_color="#EEEEEE") 
         self.mid.place(x=0,y=40)
 
-        c_id = self.master.customer_id_entry.get()
-        self.InsertData(c_id, self.master.sell_date1_entry.get_date(), 
-                                    self.master.sell_date2_entry.get_date(),
-                                    self.master.finish_chk.get())
+        self.insert_data(self.master.customer_id_entry.get(), 
+                         self.master.sell_date1_entry.get_date(), 
+                         self.master.sell_date2_entry.get_date(),
+                         self.master.finish_chk.get())
         
-    def open_once_enter(self):
-        if len(self.select_order) == 0:
+    def open_once_enter(self, event):
+        if self.SelectOrder() == []:
             tk.messagebox.showinfo(title='', message="請選擇訂單!!")
+
         else:
             overage = self.SelectOrder_test()
             if self.toplevel is None or not self.toplevel.winfo_exists():
@@ -172,9 +138,8 @@ class right_bot_part(ctk.CTkFrame):
             else:
                 self.toplevel.focus()
         
-    def InsertData(self, c_id, date1, date2, chk):
+    def insert_data(self, c_id, date1, date2, chk):
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
         with con:
             cur = con.cursor()
             if c_id == "":
@@ -260,7 +225,6 @@ class right_bot_part(ctk.CTkFrame):
         select_chkbox = []
         for so in self.select_order:
             if so.chk_box.get() == 1:
-                #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
                 con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
                 with con:
                     cur = con.cursor()
@@ -356,20 +320,91 @@ class item(ctk.CTkFrame):
         self.overage.grid(row=0,column=6)
         self.remark.grid(row=0,column=7)
 
+class once_enter(ctk.CTkToplevel):
+    def __init__(self, master,overage,**kwargs):
+        super().__init__(master, **kwargs)
+        self.geometry("300x200")
+        def insert_receipt():
+            con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+            with con:
+                cur = con.cursor()
+                money = int(self.entry3.get())
+                for i in range(len(overage)):
+                    temp = 0
+                    if money == 0:break
+                    if int(overage[i][1]) <= money:
+                        temp = int(overage[i][1])
+                        money -= int(overage[i][1])
+                    else:
+                        temp = money
+                        money = 0
+
+                    ac_id = self.select_ac_id(overage[i][2])
+                    cur.execute(f"INSERT INTO accounting VALUES('{ac_id}','{overage[i][0]}')")
+                    cur.execute(f"INSERT INTO receipt VALUES('{ac_id}','{self.entry1.get()}','{self.entry2.get()}','{temp}','0','')")
+                    con.commit()
+
+            master.reload()
+            self.destroy()
+
+        # label 
+        self.lbl1 = ctk.CTkLabel(self, width=100, height=40, text="收款日期", font=("microsoft yahei", 14, 'bold'))
+        self.lbl2 = ctk.CTkLabel(self, width=100, height=40, text="收款方式", font=("microsoft yahei", 14, 'bold'))
+        self.lbl3 = ctk.CTkLabel(self, width=100, height=40, text="收款金額", font=("microsoft yahei", 14, 'bold'))
+
+        # entry
+        self.entry1 = ctk.CTkEntry(self, width=150, height=40)
+        if date.today().month<10:
+            self.entry1.insert(0, f"{date.today().year}0{date.today().month}{date.today().day}")
+        else:
+            self.entry1.insert(0, f"{date.today().year}{date.today().month}{date.today().day}")
+        self.entry2 = ctk.CTkEntry(self, width=150, height=40, placeholder_text="收款方式")
+        self.entry3 = ctk.CTkEntry(self, width=150, height=40, placeholder_text="收款金額") 
+
+        # button
+        self.confirm_btn = ctk.CTkButton(self, width=250, height=40, 
+                                         text="確認入賬", 
+                                         font=("microsoft yahei", 14, 'bold'), 
+                                         command=insert_receipt)
+        
+        self.lbl1.grid(row=0, column=0, padx=5, pady=5)
+        self.lbl2.grid(row=1, column=0, padx=5, pady=5)
+        self.lbl3.grid(row=2, column=0, padx=5, pady=5)
+        self.entry1.grid(row=0, column=1, padx=5, pady=5)
+        self.entry2.grid(row=1, column=1, padx=5, pady=5)
+        self.entry3.grid(row=2, column=1, padx=5, pady=5)
+        self.confirm_btn.grid(row=3, column=0, columnspan=2, pady=5)
+
+    def select_ac_id(self,c_id):
+        ac = f"ac{c_id}"
+        con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
+        with con:
+            cur = con.cursor()
+            cur.execute(f"select ac_id from accounting join order_form on accounting.o_id = order_form.o_id where order_form.c_id = '{c_id}'")
+            ac_all = cur.fetchall()    
+
+        if len(ac_all) > 0:
+            n_id = str(ac_all[-1][0]).rstrip()
+            ac_id = str(int(n_id[len(ac):]) + 1)
+            return f"{ac}{ac_id}"
+        
+        else:     
+            return f"{ac}1"
+
 class Accounting_Main_Frame(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.w = kwargs["width"]
         self.h = kwargs["height"]        
-        self.left = left_part(self, width=self.w, height=self.h, fg_color="#FFFFFF")
-        self.left.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
+        self.main_part = main_part(self, width=self.w, height=self.h, fg_color="#FFFFFF")
+        self.main_part.grid(row=0,column=0,padx=10,pady=10,rowspan=2)
     
     def open_into_account(self, event):
-            order_id_select = self.left.right_bot.SelectOrder()
+            order_id_select = self.main_part.right_bot.SelectOrder()
             if order_id_select == []: 
-                self.left
-                self.left.right_bot.j_text.configure(text="請選擇訂單")
+                tk.messagebox.showinfo(title='', message="請選擇訂單!!")
+                
             else:
-                self.left.destroy()
-                self.left = Into_Account_Main_Frame(self, order_id_select, width=self.w, height=self.h, fg_color="#FFFFFF")
-                self.left.grid(row=0,column=0)
+                self.main_part.place_forget()
+                self.intomain_part = Into_Account_Main_Frame(self, order_id_select, width=self.w, height=self.h, fg_color="#FFFFFF")
+                self.intomain_part.grid(row=0,column=0)

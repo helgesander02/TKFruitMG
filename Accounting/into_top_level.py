@@ -5,13 +5,13 @@ class Top_level_view_information(ctk.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.geometry("700x300")
+            
         self.top = Top_level_top_bar(self, width=700, height=40)
         self.mid = ctk.CTkScrollableFrame(self, width=700-20, height=300-40, fg_color="#EEEEEE")
-        
         self.top.place(x=0,y=0)
         self.mid.place(x=0,y=30)
+
         con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-        #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
         with con:
             cur = con.cursor()
             cur.execute(f"SELECT item_name, specification, size, price, quantity, sub_total, remark FROM goods WHERE o_id = '{args[0].o_id}'")
@@ -32,6 +32,7 @@ class Top_level_top_bar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         w = kwargs["width"]/7
+
         self.item_name = ctk.CTkLabel(self, text="品項名稱", font=("microsoft yahei", 12, 'bold'), width=w, height=30,)
         self.norm = ctk.CTkLabel(self, text="規格", font=("microsoft yahei", 12, 'bold'), width=w, height=30,)
         self.size = ctk.CTkLabel(self, text="大小", font=("microsoft yahei", 12, 'bold'), width=w, height=30,)
@@ -52,6 +53,7 @@ class Top_level_item(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         w = kwargs["width"]/7
+
         self.item_name_entry = ctk.CTkEntry(self,width=w,height=20)
         self.norm_entry = ctk.CTkEntry(self,width=w,height=20)
         self.size_entry = ctk.CTkEntry(self,width=w,height=20)
@@ -67,11 +69,3 @@ class Top_level_item(ctk.CTkFrame):
         self.quantity_entry.grid(row=0,column=4)
         self.total_entry.grid(row=0,column=5)
         self.remark_entry.grid(row=0,column=6)
-
-class Top_level_check_account(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.geometry("300x150")
-        self.master = args[0]
-        self.msg = ctk.CTkLabel(self, text="入賬成功 !!", font=("microsoft yahei", 14, 'bold'))
-        self.msg.place(x=50,y=50)

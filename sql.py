@@ -1,8 +1,8 @@
+import customtkinter as ctk
+import tkinter as tk
 import os
 import psycopg2
 import time
-import customtkinter as ctk
-import tkinter as tk
 
 def back_up():
     path = os.getcwd()
@@ -15,6 +15,8 @@ def back_up():
         os.system(restore_CMD)
         tk.messagebox.showinfo(title='成功', message="恢復成功", )
         os.chdir(path)
+    else:
+        tk.messagebox.showinfo(title='失敗', message="恢復失敗", )
 
 def delete_database():
     try:
@@ -41,24 +43,27 @@ def sv():
     if not os.path.exists("./save_sql"):
         os.mkdir("save_sql")
 
-    path = os.getcwd()
+
+    
     TIMESTAMP = time.strftime('%Y-%m-%d-%H-%M-%S')
     BACKUP_FILE = f'{TIMESTAMP}.sql'
-    BACKUP_PATH = f"{path}//save_sql"
-    os.chdir(BACKUP_PATH)
-    
-    pg_dump = "C://Program Files//PostgreSQL//15//bin"
-    os.chdir(pg_dump)
-    BACKUP_CMD = f"pg_dump --dbname=postgresql://postgres:admin@localhost:5432/postgres > {BACKUP_PATH}//{BACKUP_FILE} "
-    os.system(BACKUP_CMD)
-    os.chdir(path)
-    tk.messagebox.showinfo(title='成功', message="備份成功", )
+    BACKUP_PATH = ctk.filedialog.askopenfilename()
+    if BACKUP_PATH != "":
+        path = os.getcwd()
+        os.chdir(BACKUP_PATH)  
+        pg_dump = "C://Program Files//PostgreSQL//15//bin"
+        os.chdir(pg_dump)
+        BACKUP_CMD = f"pg_dump --dbname=postgresql://postgres:admin@localhost:5432/postgres > {BACKUP_PATH}//{BACKUP_FILE} "
+        os.system(BACKUP_CMD)
+        os.chdir(path)
+        tk.messagebox.showinfo(title='成功', message="備份成功", )
+
+    else:
+        tk.messagebox.showinfo(title='失敗', message="備份失敗", )
 
 def createdatatable():
     con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
-    #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
     cur = con.cursor()
-
     with con:
         cur.execute('''CREATE TABLE customer \
         (c_id CHAR(20) PRIMARY KEY NOT NULL, \

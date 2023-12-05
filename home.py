@@ -1,6 +1,6 @@
 import customtkinter as ctk
 import os
-from PIL import ImageTk,Image
+from PIL import Image
 import psycopg2
 
 from Company.company import Company_Main_Frame
@@ -102,7 +102,6 @@ class App(ctk.CTk):
         self.geometry(f"{w}x{h}+{0}+{0}")
         self.title("Management System")
         try:
-            #con = psycopg2.connect("postgres://su:fJoZOP7gLXHK1MYxH8iy3MtUPg1pYxAZ@dpg-cif2ddl9aq09mhg7f8i0-a.singapore-postgres.render.com/fruit_cpr4")
             con = psycopg2.connect(database="postgres", user="postgres", password="admin", host="localhost")
             with con:
                 cur = con.cursor()
